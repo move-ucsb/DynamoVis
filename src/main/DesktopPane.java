@@ -1,5 +1,6 @@
 /*
-  	DYNAMO Animation Tool
+
+  	DynamoVis Animation Tool
     Copyright (C) 2016 Glenn Xavier
     UPDATED: 2021 Mert Toka
 

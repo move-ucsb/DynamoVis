@@ -1,6 +1,8 @@
 /*
-  	DYNAMO Animation Tool
+
+  	DynamoVis Animation Tool
     Copyright (C) 2016 Glenn Xavier
+    UPDATED: 2021 Mert Toka
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,7 +18,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
 */
-
 package utils;
 
 import java.util.ArrayList;
