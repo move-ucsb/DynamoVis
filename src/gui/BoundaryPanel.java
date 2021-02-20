@@ -49,27 +49,26 @@ public class BoundaryPanel extends JPanel {
 
 	DesktopPane parent;
 	SketchData data;
-	
+
 	public WideComboBox boundaryColor;
 	public WideComboBox strokeWeight;
 	public WideComboBox colorRampList;
 	JDialog geCtr;
 	BoundaryPanel me;
 	GradientEditor ge;
-	
-	public BoundaryPanel(DesktopPane father){
+
+	public BoundaryPanel(DesktopPane father) {
 		parent = father;
 		data = parent.data;
-		me = this;		
+		me = this;
 		setLayout(new MigLayout("insets 0", "[grow][]", "[][][][][]"));
-		
-		
+
 		JLabel lblBoundaryColor = new JLabel("Boundary Color");
 		lblBoundaryColor.setForeground(Color.BLACK);
 		lblBoundaryColor.setFont(new Font("Arial", Font.PLAIN, 8));
 		lblBoundaryColor.setBackground(Color.LIGHT_GRAY);
 		this.add(lblBoundaryColor, "cell 0 0,alignx left,aligny baseline");
-		
+
 		boundaryColor = new WideComboBox();
 		boundaryColor.setMaximumSize(new Dimension(120, 32767));
 		boundaryColor.setMaximumRowCount(100);
@@ -77,22 +76,22 @@ public class BoundaryPanel extends JPanel {
 		boundaryColor.setBackground(UIManager.getColor("CheckBox.background"));
 		boundaryColor.setFont(new Font("Arial", Font.PLAIN, 9));
 		this.add(boundaryColor, "cell 0 1,growx");
-		boundaryColor.addActionListener(new ActionListener () {
-		    public void actionPerformed(ActionEvent e) {
-		        WideComboBox cb = (WideComboBox)e.getSource();
-		        String item = (String) cb.getSelectedItem();
-		        data.boundaryColorSelection = parent.attributes.getName(item);
-		        String unit = parent.attributes.getUnit(data.boundaryColorSelection);
-		        if (unit.contains("none")){
-		        	unit = "";		        	
-		        }
-		        data.selectedColorUnit = unit;
-				if (data.fieldColors.get(data.boundaryColorSelection) != null){
-					//parent.colorPanel.colorRampList.setSelectedIndex(data.fieldColors.get(data.strokeColorSelection));
+		boundaryColor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				WideComboBox cb = (WideComboBox) e.getSource();
+				String item = (String) cb.getSelectedItem();
+				data.boundaryColorSelection = parent.attributes.getName(item);
+				String unit = parent.attributes.getUnit(data.boundaryColorSelection);
+				if (unit.contains("none")) {
+					unit = "";
 				}
-		    }
+				data.selectedColorUnit = unit;
+				if (data.fieldColors.get(data.boundaryColorSelection) != null) {
+					// parent.colorPanel.colorRampList.setSelectedIndex(data.fieldColors.get(data.strokeColorSelection));
+				}
+			}
 		});
-		
+
 		JCheckBox boundaryColorToggle = new JCheckBox("");
 		boundaryColorToggle.setForeground(Color.BLACK);
 		boundaryColorToggle.setFont(new Font("Arial", Font.PLAIN, 9));
@@ -109,37 +108,36 @@ public class BoundaryPanel extends JPanel {
 			}
 		});
 		boundaryColorToggle.setSelected(false);
-		
+
 		colorRampList = new WideComboBox(parent.colors.colorRampList.toArray());
 		colorRampList.setMaximumSize(new Dimension(120, 32767));
 		colorRampList.setMaximumRowCount(100);
 		colorRampList.setForeground(Color.BLACK);
 		colorRampList.setBackground(UIManager.getColor("CheckBox.background"));
 		colorRampList.setFont(new Font("Arial", Font.PLAIN, 9));
-		this.add(colorRampList, "cell 0 2,growx");		
-		colorRampList.addActionListener(new ActionListener () {
-		    public void actionPerformed(ActionEvent e) {
-	         WideComboBox comboBox = (WideComboBox) e.getSource();
-	         parent.data.selectedBoundarySwatch = (int) comboBox.getSelectedIndex();	         
-		    }
-		});			
-		
-		
+		this.add(colorRampList, "cell 0 2,growx");
+		colorRampList.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				WideComboBox comboBox = (WideComboBox) e.getSource();
+				parent.data.selectedBoundarySwatch = (int) comboBox.getSelectedIndex();
+			}
+		});
+
 		JButton editColor = new JButton("Edit");
 		editColor.setIconTextGap(0);
 		editColor.setHorizontalTextPosition(SwingConstants.LEFT);
 		editColor.setForeground(Color.BLACK);
-		editColor.setBackground(new Color(227,227,227));
+		editColor.setBackground(new Color(227, 227, 227));
 		editColor.setFont(new Font("Arial", Font.PLAIN, 9));
 		editColor.setMargin(new Insets(0, 0, 0, 0));
 		this.add(editColor, "cell 1 2,grow");
 		editColor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				if (geCtr == null){
+				if (geCtr == null) {
 					geCtr = new JDialog(parent);
 					geCtr.setTitle("Gradient Editor");
-					geCtr.setLocationRelativeTo(parent);					
-					ge = new GradientEditor(parent,geCtr,me);					
+					geCtr.setLocationRelativeTo(parent);
+					ge = new GradientEditor(parent, geCtr, me);
 					geCtr.setContentPane(ge);
 					geCtr.pack();
 					geCtr.setMinimumSize(geCtr.getSize());
@@ -150,7 +148,6 @@ public class BoundaryPanel extends JPanel {
 				geCtr.setVisible(true);
 			}
 		});
-
 
 	}
 }

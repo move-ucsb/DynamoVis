@@ -47,10 +47,10 @@ public class SequenceEncoder implements PropertyChangeListener {
     int end;
 
     public SequenceEncoder(DesktopPane father, String name, int s, int e) throws IOException {
-    	parent = father;
-    	File file = new File(name);
-    	start = s;
-    	end = e;
+        parent = father;
+        File file = new File(name);
+        start = s;
+        end = e;
         this.ch = NIOUtils.writableFileChannel(file);
 
         // Transform to convert between RGB and YUV
@@ -72,51 +72,50 @@ public class SequenceEncoder implements PropertyChangeListener {
         // MP4
         spsList = new ArrayList<ByteBuffer>();
         ppsList = new ArrayList<ByteBuffer>();
-        
-		progressMonitor = new ProgressMonitor(parent,
-	            "Encoding Video...",
-	            "", 0, 100);
-		progressMonitor.setProgress(0);
-		operation = new Task(this);
-		operation.addPropertyChangeListener(this);
-		operation.execute();
-        
+
+        progressMonitor = new ProgressMonitor(parent, "Encoding Video...", "", 0, 100);
+        progressMonitor.setProgress(0);
+        operation = new Task(this);
+        operation.addPropertyChangeListener(this);
+        operation.execute();
 
     }
-    
+
     class Task extends SwingWorker<Void, Void> {
 
-    	SequenceEncoder encoder;
-		public Task(SequenceEncoder se) {
-			encoder = se;
-		}
+        SequenceEncoder encoder;
 
-		@Override
-		protected Void doInBackground() throws Exception {
-	        for (int i = start; i < end; i++) {	        	
-	            BufferedImage bi = ImageIO.read(new File(String.format("temp/" + parent.animationTitle + parent.exportCounter + "/temp%08d.jpeg", i)));
-	            encoder.encodeImage(bi);
-	            setProgress((int) (100*i)/end);
-	        }
-	        encoder.finish();
-	        setProgress(100);
-	        parent.exportCounter++;
-			return null;
-		}
-		
-		public void done() {
-		    try {
-		        @SuppressWarnings("unused")
-				Void result = get();
-		        System.out.println("Video Encoding Completed");
-		    } catch (InterruptedException e) {
-		        
-		    } catch (CancellationException e) {
-		    	System.out.println("Encoding Cancelled...\n");
-		    } catch (ExecutionException e) {
-		    	System.out.println("Encoding Failed: " + e.getCause());
-		    }
-		}    	
+        public Task(SequenceEncoder se) {
+            encoder = se;
+        }
+
+        @Override
+        protected Void doInBackground() throws Exception {
+            for (int i = start; i < end; i++) {
+                BufferedImage bi = ImageIO.read(new File(
+                        String.format("temp/" + parent.animationTitle + parent.exportCounter + "/temp%08d.jpeg", i)));
+                encoder.encodeImage(bi);
+                setProgress((int) (100 * i) / end);
+            }
+            encoder.finish();
+            setProgress(100);
+            parent.exportCounter++;
+            return null;
+        }
+
+        public void done() {
+            try {
+                @SuppressWarnings("unused")
+                Void result = get();
+                System.out.println("Video Encoding Completed");
+            } catch (InterruptedException e) {
+
+            } catch (CancellationException e) {
+                System.out.println("Encoding Cancelled...\n");
+            } catch (ExecutionException e) {
+                System.out.println("Encoding Failed: " + e.getCause());
+            }
+        }
     }
 
     public void encodeImage(BufferedImage bi) throws IOException {
@@ -153,8 +152,8 @@ public class SequenceEncoder implements PropertyChangeListener {
         NIOUtils.closeQuietly(ch);
     }
 
-	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
         if ("progress" == evt.getPropertyName()) {
             int progress = (Integer) evt.getNewValue();
             progressMonitor.setProgress(progress);
@@ -162,6 +161,6 @@ public class SequenceEncoder implements PropertyChangeListener {
         if (progressMonitor.isCanceled()) {
             operation.cancel(true);
         }
-		
-	}
+
+    }
 }

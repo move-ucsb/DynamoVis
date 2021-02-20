@@ -26,36 +26,34 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LoadDiscardFields {	
-	
+public class LoadDiscardFields {
+
 	public List<String> loadData(String fileName) {
 		List<String> list = new ArrayList<String>();
 		CustomCSVReader reader = null;
 		try {
 			File file = new File(fileName);
-            reader = new CustomCSVReader (new FileReader (file));  
+			reader = new CustomCSVReader(new FileReader(file));
 		} catch (FileNotFoundException e2) {
 			e2.printStackTrace();
 		}
-		
+
 		String row[];
-		try {				
-			while ((row = reader.readNext()) != null) {				
-				list.add(row[0].replace(":","").replace("-","").replace(".",""));
-			}		
+		try {
+			while ((row = reader.readNext()) != null) {
+				list.add(row[0].replace(":", "").replace("-", "").replace(".", ""));
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		try {
 			reader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return list;
 	}
 
 }
-
-

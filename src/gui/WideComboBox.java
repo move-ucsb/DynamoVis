@@ -25,41 +25,40 @@ import java.util.Vector;
 import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 
-
 //makes the popup wide enough for listed items
 @SuppressWarnings("serial")
 public class WideComboBox extends JComboBox {
-	  public WideComboBox() { 
-	    } 
-	 
-	    public WideComboBox(final Object items[]){ 
-	        super(items); 
-	    } 
-	 
-	    @SuppressWarnings("rawtypes")
-		public WideComboBox(Vector items) { 
-	        super(items); 
-	    } 
-	 
-	    public WideComboBox(ComboBoxModel aModel) { 
-	        super(aModel); 
-	    } 
-	 
-	    private boolean layingOut = false; 
-	 
-	    public void doLayout(){ 
-	        try{ 
-	            layingOut = true; 
-	            super.doLayout(); 
-	        }finally{ 
-	            layingOut = false; 
-	        } 
-	    } 
-	 
-	    public Dimension getSize(){ 
-	        Dimension dim = super.getSize(); 
-	        if(!layingOut) 
-	            dim.width = Math.max(dim.width, getPreferredSize().width); 
-	        return dim; 
-	    } 
+	public WideComboBox() {
+	}
+
+	public WideComboBox(final Object items[]) {
+		super(items);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public WideComboBox(Vector items) {
+		super(items);
+	}
+
+	public WideComboBox(ComboBoxModel aModel) {
+		super(aModel);
+	}
+
+	private boolean layingOut = false;
+
+	public void doLayout() {
+		try {
+			layingOut = true;
+			super.doLayout();
+		} finally {
+			layingOut = false;
+		}
+	}
+
+	public Dimension getSize() {
+		Dimension dim = super.getSize();
+		if (!layingOut)
+			dim.width = Math.max(dim.width, getPreferredSize().width);
+		return dim;
+	}
 }

@@ -34,17 +34,14 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 
 public class LoadEnvFieldsFromCSV {
-	
-	
+
 	public ArrayList<ArrayList<String>> loadData(String fileName) {
-		ArrayList<ArrayList<String>> data = new ArrayList<ArrayList<String>>();		
+		ArrayList<ArrayList<String>> data = new ArrayList<ArrayList<String>>();
 
 		CSVReader reader = null;
 		try {
 			Path path = Paths.get(fileName);
-			reader = new CSVReaderBuilder (Files.newBufferedReader(path))
-								.withCSVParser(new CSVParser())
-								.build();
+			reader = new CSVReaderBuilder(Files.newBufferedReader(path)).withCSVParser(new CSVParser()).build();
 		} catch (FileNotFoundException e2) {
 			e2.printStackTrace();
 		} catch (IOException e) {
@@ -60,27 +57,27 @@ public class LoadEnvFieldsFromCSV {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if (header == null)
-		{
-		    throw new RuntimeException("No header");
+		if (header == null) {
+			throw new RuntimeException("No header");
 		}
 
 		String[] row;
 		try {
 
-			while ((row = reader.readNext()) != null)
-			{
-					
-					String fieldFull = row[0] + " ";
-					if (!row[1].equals("N/A")){
-						fieldFull = fieldFull + row[1] + " ";						
-					}
-					fieldFull = fieldFull + row[2];
-					String fieldShort = row[2];
-					String units = row[3].replace("^-2","\u00b2").replace("^-3","\u00b3");
-					ArrayList<String> temp = new ArrayList<String>();
-					temp.add(fieldFull);temp.add(fieldShort);temp.add(units);
-					data.add(temp);
+			while ((row = reader.readNext()) != null) {
+
+				String fieldFull = row[0] + " ";
+				if (!row[1].equals("N/A")) {
+					fieldFull = fieldFull + row[1] + " ";
+				}
+				fieldFull = fieldFull + row[2];
+				String fieldShort = row[2];
+				String units = row[3].replace("^-2", "\u00b2").replace("^-3", "\u00b3");
+				ArrayList<String> temp = new ArrayList<String>();
+				temp.add(fieldFull);
+				temp.add(fieldShort);
+				temp.add(units);
+				data.add(temp);
 			}
 
 		} catch (IOException e) {
@@ -93,11 +90,9 @@ public class LoadEnvFieldsFromCSV {
 			reader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}		
+		}
 		return data;
 
+	}
 
-}	
-	
 }
-

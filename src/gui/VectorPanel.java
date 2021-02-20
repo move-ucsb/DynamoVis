@@ -58,24 +58,24 @@ public class VectorPanel extends JPanel {
 	public WideComboBox vectorLength;
 	public WideComboBox headingField;
 	public WideComboBox colorRampList;
-	JCheckBox vectorCheck;	
+	JCheckBox vectorCheck;
 	GradientEditor ge;
 	JDialog geCtr;
 	VectorPanel me;
-	
-	public VectorPanel(DesktopPane father){
+
+	public VectorPanel(DesktopPane father) {
 		parent = father;
 		data = parent.data;
 		me = this;
-		
+
 		setLayout(new MigLayout("insets 0", "[grow][]", "[]"));
-		
+
 		JLabel lblDirection = new JLabel("Direction");
 		lblDirection.setForeground(Color.BLACK);
 		lblDirection.setFont(new Font("Arial", Font.PLAIN, 8));
 		lblDirection.setBackground(Color.LIGHT_GRAY);
-		this.add(lblDirection, "cell 0 0,alignx left,aligny baseline");	
-		
+		this.add(lblDirection, "cell 0 0,alignx left,aligny baseline");
+
 		headingField = new WideComboBox();
 		headingField.setMaximumSize(new Dimension(120, 32767));
 		headingField.setMaximumRowCount(100);
@@ -85,14 +85,14 @@ public class VectorPanel extends JPanel {
 
 		this.add(headingField, "cell 0 1,growx");
 
-		headingField.addActionListener(new ActionListener () {
-		    public void actionPerformed(ActionEvent e) {
-		        WideComboBox cb = (WideComboBox)e.getSource();
-		        String item = (String) cb.getSelectedItem();
-		        data.headingFieldSelection = parent.attributes.getName(item);
-		    }
+		headingField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				WideComboBox cb = (WideComboBox) e.getSource();
+				String item = (String) cb.getSelectedItem();
+				data.headingFieldSelection = parent.attributes.getName(item);
+			}
 		});
-		
+
 		vectorCheck = new JCheckBox("");
 		vectorCheck.setForeground(Color.BLACK);
 		vectorCheck.setBackground(Color.LIGHT_GRAY);
@@ -111,13 +111,13 @@ public class VectorPanel extends JPanel {
 			}
 		});
 		vectorCheck.setSelected(false);
-	
+
 		JLabel lblColor = new JLabel("Vector Color");
 		lblColor.setForeground(Color.BLACK);
 		lblColor.setFont(new Font("Arial", Font.PLAIN, 8));
 		lblColor.setBackground(Color.LIGHT_GRAY);
-		this.add(lblColor, "cell 0 2,alignx left,aligny baseline");	
-		
+		this.add(lblColor, "cell 0 2,alignx left,aligny baseline");
+
 		WideComboBox vectorColor = new WideComboBox();
 		vectorColor.setMaximumSize(new Dimension(120, 32767));
 		vectorColor.setMaximumRowCount(100);
@@ -125,15 +125,15 @@ public class VectorPanel extends JPanel {
 		vectorColor.setBackground(UIManager.getColor("CheckBox.background"));
 		vectorColor.setFont(new Font("Arial", Font.PLAIN, 9));
 
-		this.add(vectorColor, "cell 0 3,growx");		
-		vectorColor.addActionListener(new ActionListener () {
-		    public void actionPerformed(ActionEvent e) {
-		        WideComboBox cb = (WideComboBox)e.getSource();
-		        String item = (String) cb.getSelectedItem();
-		        data.vectorColorSelection = parent.attributes.getName(item);
-		    }
-		});	
-		
+		this.add(vectorColor, "cell 0 3,growx");
+		vectorColor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				WideComboBox cb = (WideComboBox) e.getSource();
+				String item = (String) cb.getSelectedItem();
+				data.vectorColorSelection = parent.attributes.getName(item);
+			}
+		});
+
 		JCheckBox vectorColorCheck = new JCheckBox("");
 		vectorColorCheck.setForeground(Color.BLACK);
 		vectorColorCheck.setBackground(Color.LIGHT_GRAY);
@@ -151,37 +151,36 @@ public class VectorPanel extends JPanel {
 			}
 		});
 		vectorColorCheck.setSelected(false);
-		
+
 		colorRampList = new WideComboBox(parent.colors.colorRampList.toArray());
 		colorRampList.setMaximumSize(new Dimension(120, 32767));
 		colorRampList.setMaximumRowCount(100);
 		colorRampList.setForeground(Color.BLACK);
 		colorRampList.setBackground(UIManager.getColor("CheckBox.background"));
 		colorRampList.setFont(new Font("Arial", Font.PLAIN, 9));
-		this.add(colorRampList, "cell 0 4,growx");		
-		colorRampList.addActionListener(new ActionListener () {
-		    public void actionPerformed(ActionEvent e) {
-	         WideComboBox comboBox = (WideComboBox) e.getSource();
-	         parent.data.selectedVectorSwatch = (int) comboBox.getSelectedIndex();	         
-		    }
-		});		
-		
-		
+		this.add(colorRampList, "cell 0 4,growx");
+		colorRampList.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				WideComboBox comboBox = (WideComboBox) e.getSource();
+				parent.data.selectedVectorSwatch = (int) comboBox.getSelectedIndex();
+			}
+		});
+
 		JButton editColor = new JButton("Edit");
 		editColor.setIconTextGap(0);
 		editColor.setHorizontalTextPosition(SwingConstants.LEFT);
 		editColor.setForeground(Color.BLACK);
-		editColor.setBackground(new Color(227,227,227));
+		editColor.setBackground(new Color(227, 227, 227));
 		editColor.setFont(new Font("Arial", Font.PLAIN, 9));
 		editColor.setMargin(new Insets(0, 0, 0, 0));
 		this.add(editColor, "cell 1 4,grow");
 		editColor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				if (geCtr == null){
+				if (geCtr == null) {
 					geCtr = new JDialog(parent);
 					geCtr.setTitle("Gradient Editor");
-					geCtr.setLocationRelativeTo(parent);					
-					ge = new GradientEditor(parent,geCtr,me);					
+					geCtr.setLocationRelativeTo(parent);
+					ge = new GradientEditor(parent, geCtr, me);
 					geCtr.setContentPane(ge);
 					geCtr.pack();
 					geCtr.setMinimumSize(geCtr.getSize());
@@ -192,13 +191,13 @@ public class VectorPanel extends JPanel {
 				geCtr.setVisible(true);
 			}
 		});
-		
+
 		JLabel lblLength = new JLabel("Vector Length");
 		lblLength.setForeground(Color.BLACK);
 		lblLength.setFont(new Font("Arial", Font.PLAIN, 8));
 		lblLength.setBackground(Color.LIGHT_GRAY);
-		this.add(lblLength, "cell 0 5,alignx left,aligny baseline");	
-		
+		this.add(lblLength, "cell 0 5,alignx left,aligny baseline");
+
 		vectorLength = new WideComboBox();
 		vectorLength.setMaximumSize(new Dimension(120, 32767));
 		vectorLength.setMaximumRowCount(100);
@@ -206,17 +205,16 @@ public class VectorPanel extends JPanel {
 		vectorLength.setBackground(UIManager.getColor("CheckBox.background"));
 		vectorLength.setFont(new Font("Arial", Font.PLAIN, 9));
 
-		this.add(vectorLength, "cell 0 6,growx");	
+		this.add(vectorLength, "cell 0 6,growx");
 
-		
-		vectorLength.addActionListener(new ActionListener () {
-		    public void actionPerformed(ActionEvent e) {
-		        WideComboBox cb = (WideComboBox)e.getSource();
-		        String item = (String) cb.getSelectedItem();
-		        data.vectorFieldSelection = parent.attributes.getName(item);		        
-		    }
-		});	
-		
+		vectorLength.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				WideComboBox cb = (WideComboBox) e.getSource();
+				String item = (String) cb.getSelectedItem();
+				data.vectorFieldSelection = parent.attributes.getName(item);
+			}
+		});
+
 		JCheckBox vectorLengthCheck = new JCheckBox("");
 		vectorLengthCheck.setForeground(Color.BLACK);
 		vectorLengthCheck.setBackground(Color.LIGHT_GRAY);
@@ -234,8 +232,6 @@ public class VectorPanel extends JPanel {
 			}
 		});
 		vectorLengthCheck.setSelected(false);
-		
-	
 
 		RangeSlider slider = new RangeSlider();
 		slider.setValue(5);
@@ -245,43 +241,39 @@ public class VectorPanel extends JPanel {
 		slider.setMaximumSize(new Dimension(120, 32767));
 		this.add(slider, "cell 0 7 2 1,growx");
 		slider.addChangeListener(new ChangeListener() {
-	        public void stateChanged(ChangeEvent evt) {
-	        	RangeSlider slider = (RangeSlider)evt.getSource();
-	        	data.vectorLengthMin = slider.getValue();
-	        	data.vectorLengthMax = slider.getUpperValue();
-	        }
-	    });
-		
-
+			public void stateChanged(ChangeEvent evt) {
+				RangeSlider slider = (RangeSlider) evt.getSource();
+				data.vectorLengthMin = slider.getValue();
+				data.vectorLengthMax = slider.getUpperValue();
+			}
+		});
 
 		ArrayList<Field> fields = parent.attributes.getSelectedFields();
-		for (Field field: fields){
+		for (Field field : fields) {
 			String name = field.getAlias();
 			vectorColor.addItem(name);
 
 			float min = field.getMin();
 			float max = field.getMax();
-			
-			if (max - min >= 345f && max - min <= 375f){
+
+			if (max - min >= 345f && max - min <= 375f) {
 				headingField.addItem(name);
 			} else {
 				vectorLength.addItem(name);
-			}			
+			}
 		}
-		
+
 		headingField.removeItem(parent.attributes.getIndexAlias());
-		vectorLength.removeItem(parent.attributes.getIndexAlias());		
-		
-		
-		
-		if (headingField.getItemCount() == 0){
+		vectorLength.removeItem(parent.attributes.getIndexAlias());
+
+		if (headingField.getItemCount() == 0) {
 			vectorCheck.setEnabled(false);
 			headingField.setEnabled(false);
 			vectorLength.setEnabled(false);
 			vectorLengthCheck.setEnabled(false);
 			vectorColor.setEnabled(false);
 			vectorColorCheck.setEnabled(false);
-		}		
+		}
 
 	}
 }

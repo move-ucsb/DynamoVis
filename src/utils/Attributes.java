@@ -29,109 +29,105 @@ public class Attributes {
 	public void addField(Field field) {
 		this.fields.add(field);
 	}
-	
-	public ArrayList<Field> getSelectedFields(){
+
+	public ArrayList<Field> getSelectedFields() {
 		ArrayList<Field> selectedFields = new ArrayList<Field>();
-		for (Field field : fields){
-			if (field.getSelected()){
+		for (Field field : fields) {
+			if (field.getSelected()) {
 				selectedFields.add(field);
 			}
 		}
 		return selectedFields;
 	}
-	
-	public ArrayList<String> getSelectedFieldNames(){
+
+	public ArrayList<String> getSelectedFieldNames() {
 		ArrayList<String> names = new ArrayList<String>();
-		for (Field field:this.getSelectedFields()){
+		for (Field field : this.getSelectedFields()) {
 			names.add(field.getAlias());
 		}
 		return names;
 	}
-	
-	public ArrayList<Field> getFields(){
+
+	public ArrayList<Field> getFields() {
 		return this.fields;
 	}
-	
-	
-	public boolean checkIfFieldExists(String s){
-		for (Field field : fields){
-			if (field.getName() == s){
+
+	public boolean checkIfFieldExists(String s) {
+		for (Field field : fields) {
+			if (field.getName() == s) {
 				return true;
-			} 
+			}
 		}
 		return false;
 	}
-	
-	public ArrayList<String> getAliasList(){
+
+	public ArrayList<String> getAliasList() {
 		ArrayList<String> list = new ArrayList<String>();
-		for (Field field : fields){
+		for (Field field : fields) {
 			String s = field.getAlias();
 			list.add(s);
 		}
 		return list;
 	}
-	
-	public String getName(String alias){
-		for (Field field : fields){
-			if (field.getAlias() == alias){
+
+	public String getName(String alias) {
+		for (Field field : fields) {
+			if (field.getAlias() == alias) {
 				return field.getName();
 			}
 		}
 		return null;
 	}
-	
-	public String getAlias(String name){
-		for (Field field : fields){
-			if (field.getName() == name){
+
+	public String getAlias(String name) {
+		for (Field field : fields) {
+			if (field.getName() == name) {
 				return field.getAlias();
 			}
 		}
 		return null;
 	}
-	
-	public void setIndex(String name){
+
+	public void setIndex(String name) {
 		this.index = name;
 	}
-	
-	public String getIndex(){
+
+	public String getIndex() {
 		return this.index;
 	}
-	
-	public String getIndexAlias(){
+
+	public String getIndexAlias() {
 		return getAlias(this.index);
 	}
-	
-	public String getUnit(String s){
+
+	public String getUnit(String s) {
 		String unit = null;
-		for (Field field : fields){
-			if (field.getName() == s){
+		for (Field field : fields) {
+			if (field.getName() == s) {
 				unit = field.getUnit();
 			}
 		}
 		return unit;
 	}
-	
-	public float getMin(String s){
+
+	public float getMin(String s) {
 		float min = 0;
-		for (Field field : fields){
-			if (field.getName() == s){
+		for (Field field : fields) {
+			if (field.getName() == s) {
 				min = field.getMin();
 			}
 		}
 		return min;
 	}
-	
-	public float getMax(String s){
+
+	public float getMax(String s) {
 		float max = 0;
-		for (Field field : fields){
-			if (field.getName() == s){
+		for (Field field : fields) {
+			if (field.getName() == s) {
 				max = field.getMax();
 			}
 		}
 		return max;
 	}
-	
-	
+
 }
-
-

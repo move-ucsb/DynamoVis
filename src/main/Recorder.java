@@ -36,7 +36,6 @@ import org.joda.time.DateTime;
 
 import net.miginfocom.swing.MigLayout;
 
-
 public class Recorder extends JPanel {
 
 	/**
@@ -58,24 +57,23 @@ public class Recorder extends JPanel {
 		setLayout(new MigLayout("", "[grow][][]", "[][][]"));
 		time = new ActionListener() {
 
-		    @Override
-		    public void actionPerformed(ActionEvent evt) {
-		    	double frames = ((double) data.frameCounter) / 25d;
-		    	timeLabel.setText(new DecimalFormat("00.00").format(frames) + "s");
-		    }
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				double frames = ((double) data.frameCounter) / 25d;
+				timeLabel.setText(new DecimalFormat("00.00").format(frames) + "s");
+			}
 		};
 		timer = new Timer(timeDelay, time);
-		
-		timeLabel = new JLabel("00.00s");
-		add(timeLabel, "cell 0 0 3 1,alignx right");		
 
-		
+		timeLabel = new JLabel("00.00s");
+		add(timeLabel, "cell 0 0 3 1,alignx right");
+
 		final JToggleButton tglbtnRecord = new JToggleButton("Record");
 		add(tglbtnRecord, "cell 0 1");
 		tglbtnRecord.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {			
+			public void actionPerformed(ActionEvent evt) {
 				data.save = !data.save;
-				if (data.save){					
+				if (data.save) {
 					timer.start();
 					btnSave.setEnabled(false);
 				} else {
@@ -83,42 +81,43 @@ public class Recorder extends JPanel {
 					btnSave.setEnabled(true);
 				}
 			}
-		});		
-		
+		});
+
 		JButton btnStop = new JButton("Stop");
 		add(btnStop, "cell 1 1");
 		btnStop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				if (data.save){
+				if (data.save) {
 					timer.stop();
 					data.save = !data.save;
 					tglbtnRecord.setSelected(false);
 					btnSave.setEnabled(true);
 				}
 			}
-		});	
-		
+		});
+
 		btnSave = new JButton("Save");
 		btnSave.setEnabled(false);
 		add(btnSave, "cell 2 1");
-		
+
 		JComboBox comboBox = new JComboBox();
 		add(comboBox, "flowx,cell 0 2 3 1,growx");
 		comboBox.addItem("h264 Baseline");
 		comboBox.setEnabled(false);
-		
+
 		JComboBox comboBox_1 = new JComboBox();
 		add(comboBox_1, "flowx,cell 0 2 3 1,growx");
 		comboBox_1.addItem("30 fps");
 		comboBox_1.setEnabled(false);
-		
+
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				try {
-					new SequenceEncoder(parent, parent.animationTitle + parent.exportCounter + ".mp4", 0, data.frameCounter);
-					if(tb.isVisible())
-					{
-						new BoxSequenceEncoder(tb,parent.animationTitle + "_3D_"+ parent.exportCounter+".mp4",0,data.frameCounter);
+					new SequenceEncoder(parent, parent.animationTitle + parent.exportCounter + ".mp4", 0,
+							data.frameCounter);
+					if (tb.isVisible()) {
+						new BoxSequenceEncoder(tb, parent.animationTitle + "_3D_" + parent.exportCounter + ".mp4", 0,
+								data.frameCounter);
 					}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -127,12 +126,10 @@ public class Recorder extends JPanel {
 
 				data.frameCounter = 0;
 				timeLabel.setText("00.00s");
-				
-				
+
 			}
-		});	
-		
-		
+		});
+
 	}
 
 }

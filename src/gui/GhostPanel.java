@@ -59,44 +59,43 @@ public class GhostPanel extends JPanel {
 	SketchData data;
 
 	GhostPanel me;
-	
+
 	JComboBox size;
-	
-	public GhostPanel(DesktopPane father){
+
+	public GhostPanel(DesktopPane father) {
 		parent = father;
 		data = parent.data;
-		me = this;		
+		me = this;
 		setLayout(new MigLayout("insets 0", "[grow][grow][][]", "[][]"));
-		
-		
+
 		JSpinner ghostWeight = new JSpinner();
 		ghostWeight.setForeground(Color.BLACK);
 		ghostWeight.setBackground(Color.LIGHT_GRAY);
-		ghostWeight.setFont(new Font("Arial", Font.PLAIN, 9));		 
+		ghostWeight.setFont(new Font("Arial", Font.PLAIN, 9));
 		ghostWeight.setModel(new SpinnerNumberModel(1, 1, 100, 1));
 		ghostWeight.setToolTipText("");
 		ToolTipManager.sharedInstance().registerComponent(ghostWeight);
 		ghostWeight.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent evt) {
-				JSpinner spin = (JSpinner)evt.getSource();	   
+				JSpinner spin = (JSpinner) evt.getSource();
 				data.ghostWeight = (Integer) spin.getValue();
 			}
 		});
-		
-				JLabel lblLineColor = new JLabel("Weight");
-				lblLineColor.setForeground(Color.BLACK);
-				lblLineColor.setFont(new Font("Arial", Font.PLAIN, 8));
-				lblLineColor.setBackground(Color.LIGHT_GRAY);
-				this.add(lblLineColor, "cell 0 0,alignx left,aligny baseline");
-		
+
+		JLabel lblLineColor = new JLabel("Weight");
+		lblLineColor.setForeground(Color.BLACK);
+		lblLineColor.setFont(new Font("Arial", Font.PLAIN, 8));
+		lblLineColor.setBackground(Color.LIGHT_GRAY);
+		this.add(lblLineColor, "cell 0 0,alignx left,aligny baseline");
+
 		JLabel lblOpac = new JLabel("Opacity");
 		lblOpac.setForeground(Color.BLACK);
 		lblOpac.setFont(new Font("Arial", Font.PLAIN, 8));
 		lblOpac.setBackground(Color.LIGHT_GRAY);
 		this.add(lblOpac, "cell 1 0,alignx left,aligny baseline");
-		ghostWeight.setValue(2);		
-		this.add(ghostWeight,"flowx,cell 0 1");	
-		
+		ghostWeight.setValue(2);
+		this.add(ghostWeight, "flowx,cell 0 1");
+
 		JCheckBox check = new JCheckBox("");
 		check.setForeground(Color.BLACK);
 		check.setBackground(Color.LIGHT_GRAY);
@@ -114,58 +113,48 @@ public class GhostPanel extends JPanel {
 				}
 			}
 		});
-		
-		
 
 		final JButton colorButton = new JButton("");
 		add(colorButton, "cell 2 1,grow");
-		colorButton.setMinimumSize(new Dimension(15,15));
-		colorButton.setMaximumSize(new Dimension(15,15));
+		colorButton.setMinimumSize(new Dimension(15, 15));
+		colorButton.setMaximumSize(new Dimension(15, 15));
 		colorButton.setBackground(data.ghostColor);
 		colorButton.setMargin(new Insets(0, 0, 0, 0));
 		colorButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				final JColorChooser colorChooser = new JColorChooser();
-				JDialog maxDialog = JColorChooser.createDialog((Component) evt.getSource(),
-			                                        "Pick a Color",
-			                                        true,  //modal
-			                                        colorChooser,
-			                                        new ActionListener()
-			                                        {													
+				JDialog maxDialog = JColorChooser.createDialog((Component) evt.getSource(), "Pick a Color", true, // modal
+						colorChooser, new ActionListener() {
 
-														@Override
-														public void actionPerformed(
-																ActionEvent e) {															
-															data.ghostColor = colorChooser.getColor();
-															colorButton.setBackground(data.ghostColor);															
-														}					
-			                                        }, new ActionListener()
-			                                        {
-			                                            @Override
-			                                            public void actionPerformed(ActionEvent event)
-			                                            { 
-			                                            }
-			                                        }
-			                                       );
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								data.ghostColor = colorChooser.getColor();
+								colorButton.setBackground(data.ghostColor);
+							}
+						}, new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent event) {
+							}
+						});
 				maxDialog.setVisible(true);
 			}
 		});
-						
-						JSpinner AlphaValue = new JSpinner();
-						AlphaValue.setForeground(Color.BLACK);
-						AlphaValue.setBackground(Color.LIGHT_GRAY);
-						AlphaValue.setFont(new Font("Arial", Font.PLAIN, 9));		 
-						AlphaValue.setModel(new SpinnerNumberModel(1, 1, 255, 1));
-						AlphaValue.setToolTipText("");
-						ToolTipManager.sharedInstance().registerComponent(AlphaValue);
-						AlphaValue.addChangeListener(new ChangeListener() {
-							public void stateChanged(ChangeEvent evt) {
-								JSpinner spin = (JSpinner)evt.getSource();	   
-								data.ghostAlpha = (Integer) spin.getValue();
-							}
-						});
-						AlphaValue.setValue(15);
-						this.add(AlphaValue,"flowx,cell 1 1");
-		
+
+		JSpinner AlphaValue = new JSpinner();
+		AlphaValue.setForeground(Color.BLACK);
+		AlphaValue.setBackground(Color.LIGHT_GRAY);
+		AlphaValue.setFont(new Font("Arial", Font.PLAIN, 9));
+		AlphaValue.setModel(new SpinnerNumberModel(1, 1, 255, 1));
+		AlphaValue.setToolTipText("");
+		ToolTipManager.sharedInstance().registerComponent(AlphaValue);
+		AlphaValue.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent evt) {
+				JSpinner spin = (JSpinner) evt.getSource();
+				data.ghostAlpha = (Integer) spin.getValue();
+			}
+		});
+		AlphaValue.setValue(15);
+		this.add(AlphaValue, "flowx,cell 1 1");
+
 	}
 }

@@ -59,22 +59,20 @@ public class PointPanel extends JPanel {
 	GradientEditor ge;
 	JDialog geCtr;
 	PointPanel me;
-	
-	
-	
-	public PointPanel(DesktopPane father){
+
+	public PointPanel(DesktopPane father) {
 		parent = father;
 		data = parent.data;
 		me = this;
-		
+
 		setLayout(new MigLayout("insets 0", "[grow][]", "[][]"));
-		
+
 		JLabel lblPointColor = new JLabel("Point Color");
 		lblPointColor.setForeground(Color.BLACK);
 		lblPointColor.setFont(new Font("Arial", Font.PLAIN, 8));
 		lblPointColor.setBackground(Color.LIGHT_GRAY);
-		this.add(lblPointColor, "cell 0 0,alignx left,aligny baseline");	
-						
+		this.add(lblPointColor, "cell 0 0,alignx left,aligny baseline");
+
 		pointColor = new WideComboBox();
 		pointColor.setMaximumSize(new Dimension(120, 32767));
 		pointColor.setMaximumRowCount(100);
@@ -82,44 +80,43 @@ public class PointPanel extends JPanel {
 		pointColor.setBackground(UIManager.getColor("CheckBox.background"));
 		pointColor.setFont(new Font("Arial", Font.PLAIN, 9));
 		this.add(pointColor, "cell 0 1,growx");
-		pointColor.addActionListener(new ActionListener () {
-		    public void actionPerformed(ActionEvent e) {
-		        WideComboBox cb = (WideComboBox)e.getSource();
-		        String item = (String) cb.getSelectedItem();
-		        data.pointColorSelection = parent.attributes.getName(item);
-		    }
+		pointColor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				WideComboBox cb = (WideComboBox) e.getSource();
+				String item = (String) cb.getSelectedItem();
+				data.pointColorSelection = parent.attributes.getName(item);
+			}
 		});
-		
+
 		colorRampList = new WideComboBox(parent.colors.colorRampList.toArray());
 		colorRampList.setMaximumSize(new Dimension(120, 32767));
 		colorRampList.setMaximumRowCount(100);
 		colorRampList.setForeground(Color.BLACK);
 		colorRampList.setBackground(UIManager.getColor("CheckBox.background"));
 		colorRampList.setFont(new Font("Arial", Font.PLAIN, 9));
-		this.add(colorRampList, "cell 0 2,growx");		
-		colorRampList.addActionListener(new ActionListener () {
-		    public void actionPerformed(ActionEvent e) {
-	         WideComboBox comboBox = (WideComboBox) e.getSource();
-	         parent.data.selectedPointSwatch = (int) comboBox.getSelectedIndex();	         
-		    }
-		});		
-		
-		
+		this.add(colorRampList, "cell 0 2,growx");
+		colorRampList.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				WideComboBox comboBox = (WideComboBox) e.getSource();
+				parent.data.selectedPointSwatch = (int) comboBox.getSelectedIndex();
+			}
+		});
+
 		JButton editColor = new JButton("Edit");
 		editColor.setIconTextGap(0);
 		editColor.setHorizontalTextPosition(SwingConstants.LEFT);
 		editColor.setForeground(Color.BLACK);
-		editColor.setBackground(new Color(227,227,227));
+		editColor.setBackground(new Color(227, 227, 227));
 		editColor.setFont(new Font("Arial", Font.PLAIN, 9));
 		editColor.setMargin(new Insets(0, 0, 0, 0));
 		this.add(editColor, "cell 1 2,grow");
 		editColor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				if (geCtr == null){
+				if (geCtr == null) {
 					geCtr = new JDialog(parent);
 					geCtr.setTitle("Gradient Editor");
-					geCtr.setLocationRelativeTo(parent);					
-					ge = new GradientEditor(parent,geCtr,me);					
+					geCtr.setLocationRelativeTo(parent);
+					ge = new GradientEditor(parent, geCtr, me);
 					geCtr.setContentPane(ge);
 					geCtr.pack();
 					geCtr.setMinimumSize(geCtr.getSize());
@@ -130,13 +127,13 @@ public class PointPanel extends JPanel {
 				geCtr.setVisible(true);
 			}
 		});
-		
+
 		JLabel lblPointSize = new JLabel("Point Size");
 		lblPointSize.setForeground(Color.BLACK);
 		lblPointSize.setFont(new Font("Arial", Font.PLAIN, 8));
 		lblPointSize.setBackground(Color.LIGHT_GRAY);
-		this.add(lblPointSize, "cell 0 3,alignx left,aligny baseline");	
-		
+		this.add(lblPointSize, "cell 0 3,alignx left,aligny baseline");
+
 		pointSize = new WideComboBox();
 		pointSize.setMaximumSize(new Dimension(120, 32767));
 		pointSize.setMaximumRowCount(100);
@@ -144,14 +141,14 @@ public class PointPanel extends JPanel {
 		pointSize.setBackground(UIManager.getColor("CheckBox.background"));
 		pointSize.setFont(new Font("Arial", Font.PLAIN, 9));
 		this.add(pointSize, "cell 0 4,growx");
-		pointSize.addActionListener(new ActionListener () {
-		    public void actionPerformed(ActionEvent e) {
-		        WideComboBox cb = (WideComboBox)e.getSource();
-		        String item = (String) cb.getSelectedItem();
-		        data.pointSizeSelection = parent.attributes.getName(item);
-		    }
+		pointSize.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				WideComboBox cb = (WideComboBox) e.getSource();
+				String item = (String) cb.getSelectedItem();
+				data.pointSizeSelection = parent.attributes.getName(item);
+			}
 		});
-		
+
 		JCheckBox pointColorToggle = new JCheckBox("");
 		pointColorToggle.setForeground(Color.BLACK);
 		pointColorToggle.setBackground(Color.LIGHT_GRAY);
@@ -168,7 +165,7 @@ public class PointPanel extends JPanel {
 			}
 		});
 		pointColorToggle.setSelected(false);
-		
+
 		JCheckBox pointSizeToggle = new JCheckBox("");
 		pointSizeToggle.setForeground(Color.BLACK);
 		pointSizeToggle.setBackground(Color.LIGHT_GRAY);
@@ -194,26 +191,25 @@ public class PointPanel extends JPanel {
 		slider.setMaximumSize(new Dimension(120, 32767));
 		this.add(slider, "cell 0 5 2 1,growx");
 		slider.addChangeListener(new ChangeListener() {
-	        public void stateChanged(ChangeEvent evt) {
-	        	RangeSlider slider = (RangeSlider)evt.getSource();
-	        	data.pointSizeMin = slider.getValue();
-	        	data.pointSizeMax = slider.getUpperValue();
-	        }
-	    });
-		
+			public void stateChanged(ChangeEvent evt) {
+				RangeSlider slider = (RangeSlider) evt.getSource();
+				data.pointSizeMin = slider.getValue();
+				data.pointSizeMax = slider.getUpperValue();
+			}
+		});
+
 		ArrayList<String> fields = parent.attributes.getSelectedFieldNames();
-		for(String s : fields){
-			pointColor.addItem(s);	
+		for (String s : fields) {
+			pointColor.addItem(s);
 			pointSize.addItem(s);
 		}
 		pointSize.removeItem(parent.attributes.getIndexAlias());
-		
-		if (data.pointSizeSelection == null){
+
+		if (data.pointSizeSelection == null) {
 			pointSize.setEnabled(false);
 			pointSizeToggle.setSelected(false);
 			pointSizeToggle.setEnabled(false);
-		}		
-
+		}
 
 	}
 }

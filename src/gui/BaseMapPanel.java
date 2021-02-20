@@ -45,11 +45,11 @@ import de.fhpotsdam.unfolding.providers.Yahoo;
 public class BaseMapPanel extends JPanel {
 	DesktopPane parent;
 	public AbstractMapProvider chosenProvider;
-	
-	Map<String,AbstractMapProvider> providerList = new TreeMap<String,AbstractMapProvider>(){
+
+	Map<String, AbstractMapProvider> providerList = new TreeMap<String, AbstractMapProvider>() {
 		{
-			put("Google Maps",new Google.GoogleMapProvider());
-			put("Google Terrain",new Google.GoogleTerrainProvider());
+			put("Google Maps", new Google.GoogleMapProvider());
+			put("Google Terrain", new Google.GoogleTerrainProvider());
 			put("Google Maps Simple", new Google.GoogleSimplifiedProvider());
 			put("Microsoft Aerial", new Microsoft.AerialProvider());
 			put("MapBox World Light", new MapBox.WorldLightProvider());
@@ -62,32 +62,33 @@ public class BaseMapPanel extends JPanel {
 			put("ESRI World Topo", new EsriProvider.WorldTopoMap());
 			put("Yahoo Aerial", new Yahoo.AerialProvider());
 			put("MapQuest Aerial", new MapQuestProvider.Aerial());
-		}};
+		}
+	};
 
-	public BaseMapPanel(DesktopPane father){
+	public BaseMapPanel(DesktopPane father) {
 		parent = father;
-		
+
 		setLayout(new MigLayout("wrap 1"));
 		ButtonGroup group = new ButtonGroup();
-		
-		for (Entry<String,AbstractMapProvider> entry: providerList.entrySet()){
+
+		for (Entry<String, AbstractMapProvider> entry : providerList.entrySet()) {
 			String name = entry.getKey();
-			final AbstractMapProvider provider = entry.getValue();			
+			final AbstractMapProvider provider = entry.getValue();
 			JRadioButton button = new JRadioButton(name);
 			add(button);
 
 			group.add(button);
-			button.addActionListener(new ActionListener () {
-			    public void actionPerformed(ActionEvent e) {
-			    	chosenProvider = provider;
-			    	if (parent.sketch != null){
-			    		parent.sketch.map.mapDisplay.setProvider(provider);
-			    	}
+			button.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					chosenProvider = provider;
+					if (parent.sketch != null) {
+						parent.sketch.map.mapDisplay.setProvider(provider);
+					}
 				}
 			});
-			if (name.equals("Microsoft Aerial")){
+			if (name.equals("Microsoft Aerial")) {
 				button.doClick();
 			}
-		}		
-	}		
+		}
+	}
 }
