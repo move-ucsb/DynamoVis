@@ -28,11 +28,57 @@ import de.fhpotsdam.unfolding.geo.Location;
 
 public class PointRecord {
 
+	//public static final Comparator POLAR_ORDER = null;
 	private Location location;
+	private int sectorNum;
 	private String tag;
 	private DateTime timestamp;
+	private boolean buff;
 	private HashMap<String, Object> properties = new HashMap<String, Object>();
 	
+	/*
+	 * buffer_size_space takes in two points and the selected buffer value to calculate if the
+	 * distance between two points is within buffer
+	 */
+	public boolean buffer_size_space(Location pt_one, Location pt_two, double buffer){
+		double distance = Math.sqrt(Math.pow(pt_one.x - pt_two.x, 2)+Math.pow(pt_one.y-pt_two.y, 2));
+		if (distance <= buffer)
+			return true;
+		return false;
+	}
+	
+	public void calculateDistance(double radius, double x ,double y, double a, double b, double c){
+    	// Finding the distance of line from center.
+        double dist = (Math.abs(a * x + b * y + c)) / 
+                        Math.sqrt(a * a + b * b);   
+        // Checking if the distance is less than, 
+        // greater than or equal to radius.
+        this.buff= (radius > dist || radius == dist) ;
+    }
+	
+	public void setBuff(boolean b){
+		this.buff = b;
+	}
+	
+	public boolean getBuff(){
+		return this.buff;
+	}
+	
+	public void setSectorNum(int num){
+		this.sectorNum = num;
+	}
+	
+	public int getSectorNum(){
+		return this.sectorNum;
+	}
+	
+//	public boolean getBuffer(){
+//		return this.buff.b;
+//	}
+//	
+//	public void setBuffer(boolean b){
+//		this.buff.b = b;
+//	}
 	
 	public Location getLocation(){
 		return this.location;
@@ -56,6 +102,20 @@ public class PointRecord {
 	
 	public DateTime getTime(){
 		return this.timestamp;
+	}
+	
+	public int getYear() {
+		return this.timestamp.getYear();
+	}
+	
+	public int getMonth()
+	{
+		return this.timestamp.getMonthOfYear();
+	}
+	
+	public int getDay()
+	{
+		return this.timestamp.getDayOfMonth();
 	}
 	
 	public HashMap<String, Object> getProperties() {

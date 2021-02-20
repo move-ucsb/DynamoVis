@@ -20,6 +20,7 @@
 package gui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
@@ -29,6 +30,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,28 +45,20 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.gicentre.utils.colour.ColourRule;
 import org.gicentre.utils.colour.ColourTable;
 
 import main.DesktopPane;
 import net.miginfocom.swing.MigLayout;
-
-import java.awt.Dimension;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import javax.swing.JComboBox;
-import javax.swing.JTextField;
-import javax.swing.JLabel;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 @SuppressWarnings("serial")
@@ -97,9 +95,11 @@ public class GradientEditor extends JPanel {
 	LinePanel lp;
 	PointPanel pp;
 	VectorPanel vp;
+	BoundaryPanel bp;
 	static int LINE = 1;
 	static int POINT = 2;
 	static int VECTOR = 3;
+	static int BOUNDARY = 4;
 	int owner;
 
 	public GradientEditor(DesktopPane father, JDialog m, LinePanel l) {	
@@ -114,6 +114,10 @@ public class GradientEditor extends JPanel {
 		this(father, m, VECTOR);	
 	}
 
+	public GradientEditor(DesktopPane father, JDialog m, BoundaryPanel b) {		
+		this(father, m, BOUNDARY);	
+	}
+	
 	public GradientEditor(DesktopPane father, JDialog m, int o) {		
 		
 		owner = o;
@@ -289,7 +293,8 @@ public class GradientEditor extends JPanel {
 	public void setSelected() {
 		if (owner==LINE)	comboBox.setSelectedIndex(parent.data.selectedLineSwatch);
 		if (owner==POINT)	comboBox.setSelectedIndex(parent.data.selectedPointSwatch);
-		if (owner==VECTOR)	comboBox.setSelectedIndex(parent.data.selectedVectorSwatch);		
+		if (owner==VECTOR)	comboBox.setSelectedIndex(parent.data.selectedVectorSwatch);
+		if (owner==BOUNDARY)	comboBox.setSelectedIndex(parent.data.selectedVectorSwatch);		
 	}
 	
 	private void convertSwatch(ColourTable colourTable) {

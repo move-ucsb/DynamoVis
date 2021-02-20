@@ -19,22 +19,22 @@
 
 package main;
 
+import gui.TimeBoxPanel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.text.DecimalFormat;
 
-import javax.swing.JPanel;
-
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.JToggleButton;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 import javax.swing.Timer;
 
 import org.joda.time.DateTime;
-import javax.swing.JComboBox;
+
+import net.miginfocom.swing.MigLayout;
 
 
 public class Recorder extends JPanel {
@@ -52,14 +52,17 @@ public class Recorder extends JPanel {
 	JLabel timeLabel;
 	JButton btnSave;
 
-	public Recorder(DesktopPane father) {
+	public Recorder(DesktopPane father, TimeBoxPanel tb) {
 		parent = father;
 		data = father.data;
 		setLayout(new MigLayout("", "[grow][][]", "[][][]"));
-		// Mert: Changed to J8 lambda formatting
-		time = (ActionEvent evt) -> {
-	    	double frames = ((double) data.frameCounter) / 25d;
-	    	timeLabel.setText(new DecimalFormat("00.00").format(frames) + "s");
+		time = new ActionListener() {
+
+		    @Override
+		    public void actionPerformed(ActionEvent evt) {
+		    	double frames = ((double) data.frameCounter) / 25d;
+		    	timeLabel.setText(new DecimalFormat("00.00").format(frames) + "s");
+		    }
 		};
 		timer = new Timer(timeDelay, time);
 		
@@ -69,27 +72,31 @@ public class Recorder extends JPanel {
 		
 		final JToggleButton tglbtnRecord = new JToggleButton("Record");
 		add(tglbtnRecord, "cell 0 1");
-		// Mert: Changed to J8 lambda formatting
-		tglbtnRecord.addActionListener((ActionEvent evt) -> {
-			data.save = !data.save;
-			if (data.save){					
-				timer.start();
-				btnSave.setEnabled(false);
-			} else {
-				timer.stop();
-				btnSave.setEnabled(true);
+		tglbtnRecord.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {			
+				data.save = !data.save;
+				if (data.save){					
+					timer.start();
+					btnSave.setEnabled(false);
+				} else {
+					timer.stop();
+					btnSave.setEnabled(true);
+				}
 			}
-		});
+		});		
 		
 		JButton btnStop = new JButton("Stop");
 		add(btnStop, "cell 1 1");
-		// Mert: Changed to J8 lambda formatting
-		btnStop.addActionListener((ActionEvent evt) -> {if (data.save){
-			timer.stop();
-			data.save = !data.save;
-			tglbtnRecord.setSelected(false);
-			btnSave.setEnabled(true);
-		}});
+		btnStop.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				if (data.save){
+					timer.stop();
+					data.save = !data.save;
+					tglbtnRecord.setSelected(false);
+					btnSave.setEnabled(true);
+				}
+			}
+		});	
 		
 		btnSave = new JButton("Save");
 		btnSave.setEnabled(false);
@@ -107,12 +114,16 @@ public class Recorder extends JPanel {
 		
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-//				try {
-//					new SequenceEncoder(parent, parent.animationTitle + parent.exportCounter + ".mp4", 0, data.frameCounter);						
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+				try {
+					new SequenceEncoder(parent, parent.animationTitle + parent.exportCounter + ".mp4", 0, data.frameCounter);
+					if(tb.isVisible())
+					{
+						new BoxSequenceEncoder(tb,parent.animationTitle + "_3D_"+ parent.exportCounter+".mp4",0,data.frameCounter);
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 				data.frameCounter = 0;
 				timeLabel.setText("00.00s");

@@ -1,3 +1,6 @@
 # Files and folders in .gitignore are not tracked by Git
 
+.vs/ 
+
 /bin/*
+

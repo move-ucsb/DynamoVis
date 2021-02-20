@@ -22,11 +22,13 @@ package utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map.Entry;
 
 import org.apache.commons.math3.stat.Frequency;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
+import main.SketchData;
 
 public class Track {
 	
@@ -35,9 +37,12 @@ public class Track {
 	private DateTime startDate;
 	private DateTime endDate;
 	private boolean visible;
+	public SketchData data;
 	
 	private ArrayList<PointRecord> trackPoints = new ArrayList<PointRecord>();
 	private ArrayList<String> trackProperties = new ArrayList<String>();
+	
+	public ArrayList<DateTime> temp = new ArrayList<DateTime>();
 	
 	public void addPoint(PointRecord point){
 		this.trackPoints.add(point);
@@ -49,6 +54,8 @@ public class Track {
 			}
 		}
 	}
+	
+	
 	
 	public ArrayList<PointRecord> getPoints(){
 		return this.trackPoints;
@@ -98,6 +105,42 @@ public class Track {
 		return this.visible;
 	}
 	
+	// get_gilter_times by Kin (Nathan) Chan
+		public Hashtable<Integer, ArrayList<Integer>> get_filter_times()
+		{
+//			ArrayList<DateTime> temp_times = new ArrayList<DateTime>();
+			Hashtable<Integer, ArrayList<Integer>> temp_hash = new Hashtable<Integer, ArrayList<Integer>>();
+			for(PointRecord point1: trackPoints)
+			{
+				if(temp_hash.containsKey(point1.getYear()))
+				{
+					ArrayList<Integer> temp_times = temp_hash.get(point1.getYear());
+					int temp_month = point1.getMonth();
+					if(!temp_times.contains(temp_month)) {
+						temp_times.add(temp_month);
+						Collections.sort(temp_times);
+						temp_hash.replace(point1.getYear(), temp_times);
+					}
+							
+				}
+				else
+				{
+					temp_hash.put(point1.getYear(), new ArrayList<Integer>(point1.getMonth()));
+				}
+			}
+			return temp_hash;
+		}
+	
+	public ArrayList<DateTime> gettheTimes()
+	{
+		for (PointRecord point1: trackPoints ){
+			DateTime temptime = point1.getTime();
+			temp.add(temptime);
+		}
+		
+		return temp;
+		
+	}
 	public void calculateTimes(){
 		
 		ArrayList<DateTime> col = new ArrayList<DateTime>();
