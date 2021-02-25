@@ -1,6 +1,4 @@
 
-
-
 #### Things to do:
 - More legend options
 - Save animation state/configuration
@@ -11,7 +9,6 @@
 - Pending library upgrades
   - log4j 1.2.15 ( 2.14.0 available )
   - miglayout 4.2 ( 5.0 available )
-  - processing-core 2.2.1 ( 3.3.7 available -- will break unfoldingmaps )
   - jcodec 0.1.6 -> 0.2.5 ( broke the video encoder when upgraded, pending for later)
 
 
@@ -19,13 +16,18 @@
 
 #### Project Name: `DynamoVis`
 
+##### 0.4.1.1 - 2021/02/25
+- Processing 3 and JFrame does not work together. Rolling back the component integrations to start fixing barebones first. 
+- Updated to Processing 3.5.4 and Unfolding 0.9.9beta
+
 ##### 0.4.1.1 - 2021/02/20
 - EnvDATA-variables.csv in Config reformatted as UTF-8
 - Merged all components from Kate, Nathan, and Pinki
 
 ##### 0.4.1.0 - 2021/02/10
 - Mert started working on integration of all releases
-- Started running with Java 15
+- Project name changed to DynamoVis
+- Started running with Java 15.0.2.7
 - Upgraded libraries: commons-math3 3.3 to 3.6.1, joda-time 2.3 to 2.10.10, opencsv 2.3 to 5.3 (added commons-lang3 3.11 for opencsv 5.3)
 
 #### Project Name: `DYNAMO`

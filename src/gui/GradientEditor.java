@@ -95,7 +95,7 @@ public class GradientEditor extends JPanel {
 	LinePanel lp;
 	PointPanel pp;
 	VectorPanel vp;
-	BoundaryPanel bp;
+	// BoundaryPanel bp;
 	static int LINE = 1;
 	static int POINT = 2;
 	static int VECTOR = 3;
@@ -114,9 +114,9 @@ public class GradientEditor extends JPanel {
 		this(father, m, VECTOR);
 	}
 
-	public GradientEditor(DesktopPane father, JDialog m, BoundaryPanel b) {
-		this(father, m, BOUNDARY);
-	}
+	// public GradientEditor(DesktopPane father, JDialog m, BoundaryPanel b) {
+	// 	this(father, m, BOUNDARY);
+	// }
 
 	public GradientEditor(DesktopPane father, JDialog m, int o) {
 

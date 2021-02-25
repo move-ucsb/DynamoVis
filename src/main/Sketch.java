@@ -22,7 +22,6 @@
 package main;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map.Entry;
 
 import gui.ControlPanel;
@@ -35,29 +34,29 @@ import org.joda.time.Minutes;
 import org.joda.time.Seconds;
 
 import processing.core.PApplet;
-import processing.core.PImage;
 import processing.core.PShape;
 import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.events.EventDispatcher;
-import de.fhpotsdam.unfolding.geo.Location;
-import de.fhpotsdam.unfolding.marker.Marker;
-import de.fhpotsdam.unfolding.providers.Google;
+// import de.fhpotsdam.unfolding.geo.Location;
+// import de.fhpotsdam.unfolding.marker.Marker;
+// import de.fhpotsdam.unfolding.providers.Google;
 import de.fhpotsdam.unfolding.utils.MapUtils;
 import de.fhpotsdam.unfolding.utils.ScreenPosition;
 
 public class Sketch extends PApplet {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
+	// Connect processing sketch to the rest of the application
 	private DesktopPane parent;
 	private SketchData data;
 	private ControlPanel controlPanel;
 
-	public UnfoldingMap map;
+	//
+	public void setParent(DesktopPane father) {
+		parent = father;
+		data = parent.data;
+		controlPanel = parent.controlPanel;
+	}
 
+	public UnfoldingMap map;
 	public Legend legend;
 
 	int colorMin;
@@ -66,48 +65,32 @@ public class Sketch extends PApplet {
 
 	EventDispatcher eventDispatcher;
 
-	public void setParent(DesktopPane father) {
-		parent = father;
-		data = parent.data;
-		controlPanel = parent.controlPanel;
-	}
-
-	// add rasterimage
-	PImage visImg;
-	Location visNorthWest = new Location(15.1873, 99.1483);
-	Location visSouthEast = new Location(15.1107, 99.2069);
-	// end raster
-
-	public void setup() {
-
-		// add raster
-		// visImg =
-		// loadImage("./data/tiger7203_access_kde99ext_obsmexp2_threeClass1.png");
-		// end raster
-
-		// int containerWidth = (int)
-		// parent.sketchContainer.getContentPane().getSize().getWidth();
-		// int containerHeight = (int)
-		// parent.sketchContainer.getContentPane().getSize().getHeight();
+	// setup is replaced by settings in Processing 3
+	public void settings() {
 		int containerWidth = (int) parent.getContentPane().getSize().getWidth();
 		int containerHeight = (int) parent.getContentPane().getSize().getHeight();
-		size(containerWidth, containerHeight, OPENGL);
+		size(containerWidth, containerHeight, P2D);
+	}
+
+	public void setup() {
+		int containerWidth = (int) parent.getContentPane().getSize().getWidth();
+		int containerHeight = (int) parent.getContentPane().getSize().getHeight();
+
+		colorMode(HSB, 360, 100, 100);
+		frameRate(30);
 
 		parent.dataPoints = null;
 		println("Animation Dimensions: " + containerWidth + "x" + containerHeight);
 		println("Polling Interval: " + data.dataInterval + " " + data.timeUnit);
-		frameRate(25);
-		colorMode(HSB, 360, 100, 100);
 
+		//
 		map = new UnfoldingMap(this, 0, 0, containerWidth, containerHeight, data.provider);
 		map.zoomAndPanToFit(data.locations);
-
 		map.setTweening(true);
-
 		eventDispatcher = MapUtils.createDefaultEventDispatcher(this, map);
-
 		map.zoomAndPanToFit(data.locations); // sometimes the first attempt zooms too far and bugs out, so do it again
 
+		//
 		legend = new Legend(this, data, parent, map);
 		resetLegend();
 		println();
@@ -153,25 +136,14 @@ public class Sketch extends PApplet {
 
 	public void draw() {
 		background(0, 0, 35);
+
 		pushMatrix();
-		translate(0, 0, -5);
-
-		map.draw();
-
-		// add raster image
-		ScreenPosition topRight = map.getScreenPosition(visNorthWest);
-		ScreenPosition bottomLeft = map.getScreenPosition(visSouthEast);
-		float width = bottomLeft.x - topRight.x;
-		float height = bottomLeft.y - topRight.y;
-		tint(255, 175);
-		// image(visImg, topRight.x, topRight.y, width, height);
-		noTint();
-		// end add raster image
-
+			translate(0, 0, -5);
+			map.draw();
 		popMatrix();
 
 		for (Entry<String, Track> entry : parent.trackList.entrySet()) {
-
+			// 
 			String key = entry.getKey();
 			Track track = entry.getValue();
 
@@ -268,7 +240,6 @@ public class Sketch extends PApplet {
 								translate(0, 0, -1);
 								ellipse(pos.x, pos.y, size, size);
 								popMatrix();
-
 							}
 
 							if (data.strokeWeightToggle && data.strokeWeightSelection != null) {
@@ -333,23 +304,23 @@ public class Sketch extends PApplet {
 					}
 				}
 				pushMatrix();
-				translate(0, 0, -3);
-				if (brushed)
-					brush.endShape();
-				shape(brush);
+					translate(0, 0, -3);
+					if (brushed)
+						brush.endShape();
+					shape(brush);
 				popMatrix();
 
 				pushMatrix();
-				translate(0, 0, -4);
-				if (data.ghost)
-					ghost.endShape();
-				shape(ghost);
+					translate(0, 0, -4);
+					if (data.ghost)
+						ghost.endShape();
+					shape(ghost);
 				popMatrix();
 
 				pushMatrix();
-				translate(0, 0, -2);
-				path.endShape();
-				shape(path);
+					translate(0, 0, -2);
+					path.endShape();
+					shape(path);
 				popMatrix();
 			}
 		}
@@ -380,9 +351,9 @@ public class Sketch extends PApplet {
 		}
 
 		pushMatrix();
-		translate(0, 0, 0);
-		legend.display();
-		legend.drag(mouseX, mouseY);
+			translate(0, 0, 0);
+			legend.display();
+			legend.drag(mouseX, mouseY);
 		popMatrix();
 
 		if (data.save) {
@@ -394,4 +365,8 @@ public class Sketch extends PApplet {
 
 	}
 
+	public void run() {
+		String[] processingArgs = {"Sketch"};
+		PApplet.runSketch(processingArgs, this);
+	}
 }

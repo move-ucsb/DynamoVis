@@ -1,7 +1,8 @@
 # Files and folders in .gitignore are not tracked by Git
 
-# Visual Studio Code Files
+# Visual Studio/VS Code Files
 .vs/ 
+.vscode/ 
 *.code-workspace
 
 # Binaries
