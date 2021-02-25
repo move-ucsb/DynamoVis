@@ -22,18 +22,18 @@
 package data;
 
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import com.opencsv.CSVParser;
-import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
+
 
 public class LoadEnvFieldsFromCSV {
 
@@ -43,7 +43,7 @@ public class LoadEnvFieldsFromCSV {
 		CSVReader reader = null;
 		try {
 			Path path = Paths.get(fileName);
-			reader = new CSVReaderBuilder(Files.newBufferedReader(path)).withCSVParser(new CSVParser()).build();
+			reader = new CSVReaderBuilder(Files.newBufferedReader(path, StandardCharsets.UTF_8)).withCSVParser(new CSVParser()).build();
 		} catch (FileNotFoundException e2) {
 			e2.printStackTrace();
 		} catch (IOException e) {
@@ -64,9 +64,10 @@ public class LoadEnvFieldsFromCSV {
 		}
 
 		String[] row;
+		int i = 0;
 		try {
-
 			while ((row = reader.readNext()) != null) {
+				i++;
 
 				String fieldFull = row[0] + " ";
 				if (!row[1].equals("N/A")) {

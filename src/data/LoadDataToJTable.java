@@ -391,8 +391,7 @@ public class LoadDataToJTable implements PropertyChangeListener {
 					}
 				}
 
-				if (match != null || goodHeaders.get(i).contains("user:")
-						|| goodHeaders.get(i).equals(parent.headers[0])) {
+				if (match != null || goodHeaders.get(i).contains("user:") || goodHeaders.get(i).equals(parent.headers[0])) {
 					enabled = true;
 				}
 

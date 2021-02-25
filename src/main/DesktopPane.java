@@ -39,8 +39,6 @@ import gui.MoveParameterPanel;
 import gui.BoundaryVisualizationPanel;
 import gui.TimeBoxControlPanel;
 import gui.TimeBoxPanel;
-import gui.StaticTimeBoxPanel;
-import utils.PointRecord;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -57,8 +55,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -92,7 +88,13 @@ import org.joda.time.Seconds;
 import de.fhpotsdam.unfolding.data.Feature;
 
 public class DesktopPane extends JFrame implements ActionListener {
+	/*
+	 *
+	 * 
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
+	
 	JFrame desktop;
 	public Dimension animationSize = new Dimension(1280, 720);
 	public Colors colors;
@@ -105,17 +107,17 @@ public class DesktopPane extends JFrame implements ActionListener {
 	public LegendPanel legendPanel;
 	public DataPanel dataConfigPanel;
 	public ControlPanel controlPanel;
-	public ActivitySpacePanel activityPanel; // New Panel for Activity Space
-	public InteractionPanel interactionPanel; // New Panel for Interaction Analysis
-	public MoveParameterPanel moveparaPanel; // New Panel for Move Parameter
-	public BoundaryVisualizationPanel Bdy_Viz_Panel; // New Panel for boundary Visualization
-	public TimeBoxControlPanel timeBoxControlPanel; // New Panel for 3D Time Analysis control //KATE ADDED
+	public ActivitySpacePanel activityPanel; 			// New Panel for Activity Space
+	public InteractionPanel interactionPanel; 			// New Panel for Interaction Analysis
+	public MoveParameterPanel moveparaPanel; 			// New Panel for Move Parameter
+	public BoundaryVisualizationPanel Bdy_Viz_Panel; 	// New Panel for Boundary Visualization
+	public TimeBoxControlPanel timeBoxControlPanel; 	// New Panel for 3D Time Analysis control by Kate
 
-	public JDialog asContainer; // Activity Space Container
-	public JDialog iContainer; // Interaction Container
-	public JDialog mpContainer; // Move Parameter Container
+	public JDialog asContainer; 						// Activity Space Container
+	public JDialog iContainer; 						    // Interaction Container
+	public JDialog mpContainer; 						// Move Parameter Container
 	public JDialog tlContainer;
-	public JDialog tbcContainer;// for the time box control panel
+	public JDialog tbcContainer;	// for the time box control panel
 	public TimeBoxPanel bContainer; // for the time box
 
 	public TimeLine timeLine;
@@ -132,9 +134,9 @@ public class DesktopPane extends JFrame implements ActionListener {
 	JCheckBoxMenuItem cpCheck;
 	JCheckBoxMenuItem vpCheck;
 
-	JCheckBoxMenuItem activityCheck; // Check box for visibility of asContainer
-	JCheckBoxMenuItem setParaCheck; // Check box for visibility of mpContainer
-	JCheckBoxMenuItem interactionCheck; // Check box for visibility of iContainer
+	JCheckBoxMenuItem activityCheck; 		// Check box for visibility of asContainer
+	JCheckBoxMenuItem setParaCheck; 		// Check box for visibility of mpContainer
+	JCheckBoxMenuItem interactionCheck; 	// Check box for visibility of iContainer
 	JCheckBoxMenuItem timeBoxCheck;
 	JCheckBoxMenuItem Bdy_Viz_Check;
 
@@ -201,6 +203,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 	public DesktopPane() {
 		me = this;
 		DateTimeZone.setDefault(DateTimeZone.UTC);
+		
 		setMinimumSize(new Dimension(400, 200));
 		wl = new WindowLocations();
 		menuBar = createMenuBar();
@@ -224,12 +227,12 @@ public class DesktopPane extends JFrame implements ActionListener {
 		textOutput.setLocation(sWidth / 2, sHeight - (sHeight / 4));
 		wl.registerWindow(textOutput);
 
+		// Use status GUI element as system out
 		JTextArea textArea = new JTextArea();
 		textArea.setLineWrap(true);
 		textArea.setEditable(false);
 		PrintStream printStream = new PrintStream(new CustomOutputStream(textArea));
 		System.setOut(printStream);
-		// System.setErr(printStream);
 
 		JScrollPane textScrollPane = new JScrollPane(textArea);
 		textOutput.setContentPane(textScrollPane);
@@ -457,7 +460,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 			pack();
 		}
 
-		setTitle("DYNAMO Animation Tool   -   " + title + "   -   " + file);
+		setTitle("DynamoVis Animation Tool   -   " + title + "   -   " + file);
 		dataFilePath = path;
 
 		animationTitle = title;
@@ -526,8 +529,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		if (period.toStandardMinutes().getMinutes() > 0) {
 			data.alphaMaxHours = 120;
 			data.startTime = Collections.min(dateCollection).minusHours(1).hourOfDay().roundFloorCopy();
-			// data.endTime =
-			// Collections.max(dateCollection).plusHours(data.alphaMaxHours).dayOfMonth().roundCeilingCopy();
+			// data.endTime = Collections.max(dateCollection).plusHours(data.alphaMaxHours).dayOfMonth().roundCeilingCopy();
 			data.endTime = Collections.max(dateCollection);
 			dataInterval = period.toStandardMinutes().getMinutes();
 			timeUnit = "minutes";
@@ -612,6 +614,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		textOutput.setLocation(sWidth / 2, sHeight - (sHeight / 4));
 	}
 
+	// Menu Bar Items and Actions
 	protected JMenuBar createMenuBar() {
 		JMenuBar menuBar = new JMenuBar();
 

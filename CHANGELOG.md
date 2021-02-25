@@ -18,6 +18,11 @@
 ### CHANGES
 
 #### Project Name: `DynamoVis`
+
+##### 0.4.1.1 - 2021/02/20
+- EnvDATA-variables.csv in Config reformatted as UTF-8
+- Merged all components from Kate, Nathan, and Pinki
+
 ##### 0.4.1.0 - 2021/02/10
 - Mert started working on integration of all releases
 - Started running with Java 15
@@ -26,13 +31,6 @@
 #### Project Name: `DYNAMO`
 ##### 0.4.0.4 - 2020/11/22
 - Pushed date outlier filter from 2020 to 2040
-
-```
-
-
-Add the changes from 3 components here as v. 0.4.0.3
-
-```
 
 ##### 0.4.0.3 - 2015/04/30
 - Fixed bug where end points of scale wouldn't appear when fields have aliases
