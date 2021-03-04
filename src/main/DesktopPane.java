@@ -237,8 +237,8 @@ public class DesktopPane extends JFrame implements ActionListener {
 		textOutput = new JDialog(this);
 		textOutput.setTitle("Status");
 		textOutput.setResizable(true);
-		textOutput.setSize(410, (int) (sHeight*0.9));
-		textOutput.setLocation(sWidth - 420, (int) (sHeight * 0.05) );
+		textOutput.setSize(410, (int) (sHeight*0.3));
+		textOutput.setLocation(sWidth - 420, (int) (sHeight * 0.03) );
 		wl.registerWindow(textOutput);
 
 		// Use status GUI element as system out
@@ -294,19 +294,24 @@ public class DesktopPane extends JFrame implements ActionListener {
 	}
 
 	public void setupSketch() {
+		int sketch_loc_x = sWidth-(int)animationSize.getWidth()-430;
+		int sketch_loc_y = (int) (sHeight * 0.05);
+
 		sketch = new Sketch();
 		sketch.setParent(this);
 		sketch.setSize((int)animationSize.getWidth(), (int)animationSize.getHeight());
-		sketch.run();
+		sketch.run(sketch_loc_x, sketch_loc_y); // set location
 		sketch.getSurface().setTitle(dataConfigPanel.getSurfaceTitle());
-		// PImage icon = loadImage("icon.png");
-  		// sketch.getSurface().setIcon(icon);
-		this.pack();
+		// TODO: sketch icon
+		// PImage icon = loadImage("icon.png");  // sketch.getSurface().setIcon(icon);
+		// this.pack();
 
-		// timeline location and size 
-		timelineContainer.setLocation((int)this.getBounds().getX(), (int)(this.getBounds().getY() + this.getBounds().getHeight()));
+		// timeline and control panel location and size 
+		// TODO: Remove hardcoded offsets
+		controlContainer.setLocation(sketch_loc_x - (int) controlContainer.getBounds().getWidth(), sketch_loc_y-32);
+		timelineContainer.setLocation(sketch_loc_x-8, sketch_loc_y+sketch.height+5);
 		if (startup) {
-			timelineContainer.setSize((int)this.getBounds().getWidth(), 300);
+			timelineContainer.setSize(sketch.width+16, 250);
 		}
 	}
 
@@ -437,10 +442,12 @@ public class DesktopPane extends JFrame implements ActionListener {
 		recordContainer.pack();
 
 		if (startup) {
-			int locw = (int) controlContainer.getBounds().getWidth();
-			int thisx = (int) this.getBounds().getX();
-			int thisy = (int) this.getBounds().getY();
-			controlContainer.setLocation(thisx - locw, thisy);
+			// int locw = (int) controlContainer.getBounds().getWidth();
+			// int thisx = (int) this.getBounds().getX();
+			// int thisy = (int) this.getBounds().getY();
+			this.setLocation(textOutput.getLocation().x, textOutput.getLocation().y+textOutput.getBounds().height);
+			this.setSize(textOutput.getBounds().width, (int)(sHeight-(this.getLocation().y)*1.1));
+			// controlContainer.setLocation(thisx - locw, thisy);
 			// vpContainer.setLocation(thisx - locw, thisy + 250);
 			recordContainer.setLocationRelativeTo(this);
 			// asContainer.setLocationRelativeTo(this);

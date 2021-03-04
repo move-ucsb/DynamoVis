@@ -111,8 +111,8 @@ public class Sketch extends PApplet {
 	// shuts down the whole java environment
 	@Override
 	public void exitActual() {}
-	public void run() {
-		String[] processingArgs = {"--location=100,100", "DynamoVis Animation"};
+	public void run(int x, int y) {
+		String[] processingArgs = {"--location="+x+","+y, "DynamoVis Animation"};
 		PApplet.runSketch(processingArgs, this);
 	}
 	
