@@ -1,4 +1,3 @@
-
 #### Things to do:
 - More legend options
 - Save animation state/configuration
@@ -11,12 +10,26 @@
   - miglayout 4.2 ( 5.0 available )
   - jcodec 0.1.6 -> 0.2.5 ( broke the video encoder when upgraded, pending for later)
 
+#### Questions
+- where is the logo for this program?
+
 
 ### CHANGES
 
 #### Project Name: `DynamoVis`
+**TODO:**
+[ ] set location of the sketch window
+[ ] set location of timeline and CP around it.
+[ ] fix "create animation" bug
+[ ] look and feel of the windows (should obey the system theme settings?)
 
-##### 0.4.1.1 - 2021/02/25
+##### 0.4.1.3 - 2021/03/04
+- Closing Procesing sketch doesn't close Java Application.
+- PSketch title.
+
+
+##### 0.4.1.2 - 2021/02/25
+- Changed window hiearchy slightly. We are now running the main sketch as a separate window. Configure animation window stays open (its the main window now).
 - Processing 3 and JFrame does not work together. Rolling back the component integrations to start fixing barebones first. 
 - Updated to Processing 3.5.4 and Unfolding 0.9.9beta
 

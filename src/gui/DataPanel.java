@@ -385,6 +385,15 @@ public class DataPanel extends JPanel implements ActionListener {
 
 	}
 
+	// format psketch title 
+	// TODO: move somewhere better
+	public String getSurfaceTitle() {
+		if(titleField.getText() != null && path != null) {
+			return titleField.getText()+ "  -  "+ path; 
+		}
+		return "Visualization";
+	}
+
 	public void checkSpinners() {
 		if (((Integer) hoursSpinner.getValue() == 0) && ((Integer) minutesSpinner.getValue() == 0)
 				&& ((Integer) secondsSpinner.getValue() == 0)) {
@@ -429,10 +438,10 @@ public class DataPanel extends JPanel implements ActionListener {
 			}
 			openData();
 		} else if ("cancel".equals(e.getActionCommand())) {
-			parent.dataConfigContainer.setVisible(false);
+			// parent.dataConfigContainer.setVisible(false);
 		} else if ("ok".equals(e.getActionCommand())) {
 			doIt();
-			parent.dataConfigContainer.setVisible(false);
+			// parent.dataConfigContainer.setVisible(false);
 		} else if ("help".equals(e.getActionCommand())) {
 
 		}
@@ -514,7 +523,6 @@ public class DataPanel extends JPanel implements ActionListener {
 				(Integer) secondsSpinner.getValue(), 0);
 		Dimension dimension = (Dimension) animationSize.getSelectedItem();
 		parent.newData(path, file, title, period, dimension);
-
 	}
 
 	@SuppressWarnings("serial")

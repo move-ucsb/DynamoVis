@@ -117,14 +117,14 @@ public class DesktopPane extends JFrame implements ActionListener {
 	// public JDialog asContainer; 						// Activity Space Container
 	// public JDialog iContainer; 						    // Interaction Container
 	// public JDialog mpContainer; 						// Move Parameter Container
-	public JDialog tlContainer;
+	public JDialog timelineContainer;
 	// public JDialog tbcContainer;	// for the time box control panel
 	// public TimeBoxPanel bContainer; // for the time box
 
 	public TimeLine timeLine;
 	public JDialog textOutput;
 	public CombinedControlPanel cp;
-	public JDialog cpContainer;
+	public JDialog controlContainer;
 	// public JDialog vpContainer;
 	// public JDialog tbContainer;
 
@@ -143,8 +143,8 @@ public class DesktopPane extends JFrame implements ActionListener {
 
 	JMenuBar menuBar;
 	JMenu export;
-	JDialog recContainer;
-	JDialog baseMapCtr;
+	JDialog recordContainer;
+	JDialog baseMapContainer;
 	BaseMapPanel bm;
 	JDialog hc;
 
@@ -164,17 +164,18 @@ public class DesktopPane extends JFrame implements ActionListener {
 
 	public Attributes attributes;
 	public HashMap<String, Track> trackList;
-	private int sWidth;
-	private int sHeight;
+	private int sWidth;  // screen width
+	private int sHeight; // screen height
 
 	boolean color = false;
 	public boolean legend = false;
 	boolean vectors = false;
-	boolean startup = true;
+	boolean startup = true;  // is data loaded
 
 	public int exportCounter = 1;
 	DesktopPane me;
 
+	// Class that stores the locations of each window
 	class WindowLocations {
 		Map<Component, Point> windows;
 
@@ -201,36 +202,48 @@ public class DesktopPane extends JFrame implements ActionListener {
 		}
 	}
 
+	// 
 	public DesktopPane() {
-		me = this;
-		DateTimeZone.setDefault(DateTimeZone.UTC);
-		
-		setMinimumSize(new Dimension(400, 200));
-		wl = new WindowLocations();
-		menuBar = createMenuBar();
-		setJMenuBar(menuBar);
-		setResizable(false);
-		setTitle("DynamoVis Animation Tool");
-		colors = new Colors(this);
 
+		me = this;
+		wl = new WindowLocations();
+		DateTimeZone.setDefault(DateTimeZone.UTC);
+
+		// Graphics device
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice gd = ge.getDefaultScreenDevice();
 		sWidth = (int) gd.getDefaultConfiguration().getBounds().getWidth();
 		sHeight = (int) gd.getDefaultConfiguration().getBounds().getHeight();
-
 		fonts = ge.getAvailableFontFamilyNames();
 
-		getEnvFieldList();
+		// CONFIGURE DATA WINDOW ----------------------
+		setMinimumSize(new Dimension(400, 200));
+		menuBar = createMenuBar();
+		setJMenuBar(menuBar);
+
+		// dataConfigContainer = new JDialog(this);
+		setTitle("Configure Animation");
+		setResizable(true);
+		setSize(550, 700);
+		setLocation(sWidth / 5, sHeight / 5);
+		wl.registerWindow(this);
+		dataConfigPanel = new DataPanel(this);
+		setContentPane(dataConfigPanel);
+		// setVisible(true);		
+		pack();
+
+
+		// STATUS WINDOW -----------------------------
 		textOutput = new JDialog(this);
-		textOutput.setResizable(true);
 		textOutput.setTitle("Status");
-		textOutput.setSize(490, 180);
-		textOutput.setLocation(sWidth / 2, sHeight - (sHeight / 4));
+		textOutput.setResizable(true);
+		textOutput.setSize(410, (int) (sHeight*0.9));
+		textOutput.setLocation(sWidth - 420, (int) (sHeight * 0.05) );
 		wl.registerWindow(textOutput);
 
 		// Use status GUI element as system out
 		JTextArea textArea = new JTextArea();
-		textArea.setLineWrap(true);
+		textArea.setLineWrap(false);
 		textArea.setEditable(false);
 		PrintStream printStream = new PrintStream(new CustomOutputStream(textArea));
 		System.setOut(printStream);
@@ -244,69 +257,56 @@ public class DesktopPane extends JFrame implements ActionListener {
 			}
 		});
 
-		setLocation(200, 50);
-		pack();
+		colors = new Colors(this);
 
+		timelineContainer = new JDialog(this);
+		controlContainer = new JDialog(this);
+		recordContainer = new JDialog(this);
+		baseMapContainer = new JDialog(this);
 		// asContainer = new JDialog(this);
 		// iContainer = new JDialog(this);
 		// mpContainer = new JDialog(this);
-		tlContainer = new JDialog(this);
 		// tbcContainer = new JDialog(this);
 		// bContainer = new TimeBoxPanel();
-
-
-		cpContainer = new JDialog(this);
 		// vpContainer = new JDialog(this);
 		// tbContainer = new JDialog(this);
 
-		recContainer = new JDialog(this);
-		baseMapCtr = new JDialog(this);
+		// BASE MAP WINDOW -----------------------------
 		bm = new BaseMapPanel(this);
-		baseMapCtr.setContentPane(bm);
-		baseMapCtr.setTitle("Basemap Provider");
-		baseMapCtr.setResizable(false);
-		baseMapCtr.setLocationRelativeTo(this);
-		baseMapCtr.pack();
+		baseMapContainer.setTitle("Basemap Provider");
+		baseMapContainer.setContentPane(bm);
+		baseMapContainer.setResizable(false);
+		baseMapContainer.setLocationRelativeTo(this);
+		baseMapContainer.pack();
+
+		// Gets a list of all potential envData fields and their units
+		LoadEnvFieldsFromCSV envLoader = new LoadEnvFieldsFromCSV();
+		envFields = envLoader.loadData("./config/EnvDATA-variables.csv");
 
 		System.out.println("");
 		System.out.println("# DynamoVis Animation Tool");
 		System.out.println("# Copyright (C) 2016 Glenn Xavier");
 		System.out.println("#      Updated: 2021 Mert Toka");
-		System.out.println("# Build 0.4.1, Feb 10, 2021");
+		System.out.println("# Build 0.4.1.2-dev, Feb 25, 2021");
 		System.out.println("# This program comes with ABSOLUTELY NO WARRANTY");
-		System.out.println("# This is free software, and you are welcome to redistribute it under certain conditions");
-		System.out.println("");
-		setupDataPanel();
-	}
-
-	public void setupDataPanel() {
-		dataConfigContainer = new JDialog(this);
-		dataConfigContainer.setResizable(true);
-		dataConfigContainer.setTitle("Configure Animation");
-		dataConfigContainer.setSize(550, 700);
-		dataConfigContainer.setLocation(sWidth / 5, sHeight / 5);
-		wl.registerWindow(dataConfigContainer);
-		dataConfigPanel = new DataPanel(this);
-		dataConfigContainer.setContentPane(dataConfigPanel);
-		dataConfigContainer.setVisible(true);
+		System.out.println("# This is free software, and you are welcome to \nredistribute it under certain conditions.");
+		System.out.println("");		
 	}
 
 	public void setupSketch() {
-		sketch = null;
 		sketch = new Sketch();
 		sketch.setParent(this);
+		sketch.setSize((int)animationSize.getWidth(), (int)animationSize.getHeight());
 		sketch.run();
-		// animationSize.getWidth(), animationSize.getHeight()
-		// this.setContentPane(sketch.getJFrame());   // this.setContentPane(sketch);
-		// this.getContentPane().setPreferredSize(animationSize);
-		// this.pack();
-		// sketch.setup(); // sketch.init();
+		sketch.getSurface().setTitle(dataConfigPanel.getSurfaceTitle());
+		// PImage icon = loadImage("icon.png");
+  		// sketch.getSurface().setIcon(icon);
+		this.pack();
 
-
-		tlContainer.setLocation((int) this.getBounds().getX(),
-				(int) (this.getBounds().getY() + this.getBounds().getHeight()));
+		// timeline location and size 
+		timelineContainer.setLocation((int)this.getBounds().getX(), (int)(this.getBounds().getY() + this.getBounds().getHeight()));
 		if (startup) {
-			tlContainer.setSize((int) this.getBounds().getWidth(), 250);
+			timelineContainer.setSize((int)this.getBounds().getWidth(), 300);
 		}
 	}
 
@@ -314,10 +314,10 @@ public class DesktopPane extends JFrame implements ActionListener {
 		controlPanel = new ControlPanel(this);
 
 		timeLine = new TimeLine(this);
-		tlContainer.setResizable(true);
-		tlContainer.setTitle("Timeline");
-		tlContainer.setContentPane(timeLine);
-		tlContainer.addComponentListener(new ComponentAdapter() {
+		timelineContainer.setResizable(true);
+		timelineContainer.setTitle("Timeline");
+		timelineContainer.setContentPane(timeLine);
+		timelineContainer.addComponentListener(new ComponentAdapter() {
 			public void componentHidden(ComponentEvent e) {
 				timeline.setSelected(false);
 			}
@@ -419,43 +419,38 @@ public class DesktopPane extends JFrame implements ActionListener {
 		cp = new CombinedControlPanel(this);
 		// vp = new VisPanel(this);
 
-		cpContainer.setContentPane(cp);
-		cpContainer.pack();
-		cpContainer.setResizable(false);
-		cpContainer.setVisible(true);
-		cpContainer.addComponentListener(new ComponentAdapter() {
+		controlContainer.setTitle("Control Panel");	
+		controlContainer.setContentPane(cp);
+		controlContainer.pack();
+		controlContainer.setResizable(false);
+		controlContainer.setVisible(true);
+		controlContainer.addComponentListener(new ComponentAdapter() {
 			public void componentHidden(ComponentEvent e) {
 				cpCheck.setSelected(false);
 			}
 		});
 
-		recContainer.setTitle("Video Recorder");
+		recordContainer.setTitle("Video Recorder");
     	Recorder recorder = new Recorder(this);
 		// Recorder recorder = new Recorder(this, bContainer);// kate added passing in bContainer
-		recContainer.setContentPane(recorder);
-		recContainer.pack();
+		recordContainer.setContentPane(recorder);
+		recordContainer.pack();
 
 		if (startup) {
-			int locw = (int) cpContainer.getBounds().getWidth();
+			int locw = (int) controlContainer.getBounds().getWidth();
 			int thisx = (int) this.getBounds().getX();
 			int thisy = (int) this.getBounds().getY();
-			cpContainer.setLocation(thisx - locw, thisy);
+			controlContainer.setLocation(thisx - locw, thisy);
 			// vpContainer.setLocation(thisx - locw, thisy + 250);
-			recContainer.setLocationRelativeTo(this);
+			recordContainer.setLocationRelativeTo(this);
 			// asContainer.setLocationRelativeTo(this);
 			// mpContainer.setLocationRelativeTo(this);
 			// iContainer.setLocationRelativeTo(this);
-			wl.registerWindow(tlContainer);
-			wl.registerWindow(cpContainer);
-			wl.registerWindow(recContainer);
+			wl.registerWindow(timelineContainer);
+			wl.registerWindow(controlContainer);
+			wl.registerWindow(recordContainer);
 		}
 
-	}
-
-	public void getEnvFieldList() {
-		// gets a list of all potential envData fields and their units
-		LoadEnvFieldsFromCSV envLoader = new LoadEnvFieldsFromCSV();
-		envFields = envLoader.loadData("./config/EnvDATA-variables.csv");
 	}
 
 	public void newData(String path, String file, String title, Period period, Dimension dimension) {
@@ -463,17 +458,18 @@ public class DesktopPane extends JFrame implements ActionListener {
 		if (!startup) {
 			wl.saveLocations();
 			getContentPane().removeAll();
-			cpContainer.getContentPane().removeAll();
-			tlContainer.getContentPane().removeAll();
+			controlContainer.getContentPane().removeAll();
+			timelineContainer.getContentPane().removeAll();
 			// asContainer.getContentPane().removeAll();
 			// mpContainer.getContentPane().removeAll();
 			// iContainer.getContentPane().removeAll();
 			// tbcContainer.getContentPane().removeAll();// KATE ADDED
-			recContainer.getContentPane().removeAll();
+			recordContainer.getContentPane().removeAll();
 			pack();
 		}
 
-		setTitle("DynamoVis Animation Tool   -   " + title + "   -   " + file);
+		setTitle("DynamoVis Animation Tool");
+
 		dataFilePath = path;
 
 		animationTitle = title;
@@ -586,7 +582,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		}
 
 		if (timeline.isSelected()) {
-			tlContainer.setVisible(true);
+			timelineContainer.setVisible(true);
 		}
 
 		// if (Bdy_Viz_Check.isSelected()) {
@@ -615,15 +611,15 @@ public class DesktopPane extends JFrame implements ActionListener {
 	}
 
 	public void resetWindowLocs() {
-		int locw = (int) cpContainer.getBounds().getWidth();
+		int locw = (int) controlContainer.getBounds().getWidth();
 		int thisx = (int) this.getBounds().getX();
 		int thisy = (int) this.getBounds().getY();
-		tlContainer.setLocation(thisx, (int) (thisy + this.getBounds().getHeight()));
-		tlContainer.setSize((int) this.getBounds().getWidth(), 250);
+		timelineContainer.setLocation(thisx, (int) (thisy + this.getBounds().getHeight()));
+		timelineContainer.setSize((int) this.getBounds().getWidth(), 250);
 		// asContainer.setLocationRelativeTo(this);
-		cpContainer.setLocation(thisx - locw, thisy);
-		recContainer.setLocationRelativeTo(this);
-		baseMapCtr.setLocationRelativeTo(this);
+		controlContainer.setLocation(thisx - locw, thisy);
+		recordContainer.setLocationRelativeTo(this);
+		baseMapContainer.setLocationRelativeTo(this);
 		textOutput.setLocation(sWidth / 2, sHeight - (sHeight / 4));
 	}
 
@@ -714,9 +710,9 @@ public class DesktopPane extends JFrame implements ActionListener {
 			public void itemStateChanged(ItemEvent evt) {
 				JCheckBoxMenuItem cb = (JCheckBoxMenuItem) evt.getSource();
 				if (cb.isSelected()) {
-					cpContainer.setVisible(true);
+					controlContainer.setVisible(true);
 				} else {
-					cpContainer.setVisible(false);
+					controlContainer.setVisible(false);
 				}
 			}
 		});
@@ -732,9 +728,9 @@ public class DesktopPane extends JFrame implements ActionListener {
 			public void itemStateChanged(ItemEvent evt) {
 				JCheckBoxMenuItem cb = (JCheckBoxMenuItem) evt.getSource();
 				if (cb.isSelected()) {
-					tlContainer.setVisible(true);
+					timelineContainer.setVisible(true);
 				} else {
-					tlContainer.setVisible(false);
+					timelineContainer.setVisible(false);
 				}
 			}
 		});
@@ -944,9 +940,9 @@ public class DesktopPane extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if ("new".equals(e.getActionCommand())) {
-			dataConfigContainer.setVisible(true);
+			// dataConfigContainer.setVisible(true);
 		} else if ("edit".equals(e.getActionCommand())) {
-			dataConfigContainer.setVisible(true);
+			// dataConfigContainer.setVisible(true);
 		} else if ("colors".equals(e.getActionCommand())) {
 
 		} else if ("legend".equals(e.getActionCommand())) {
@@ -954,9 +950,9 @@ public class DesktopPane extends JFrame implements ActionListener {
 		} else if ("quit".equals(e.getActionCommand())) {
 			quit();
 		} else if ("record".equals(e.getActionCommand())) {
-			recContainer.setVisible(true);
+			recordContainer.setVisible(true);
 		} else if ("basemap".equals(e.getActionCommand())) {
-			baseMapCtr.setVisible(true);
+			baseMapContainer.setVisible(true);
 		} else if ("reset".equals(e.getActionCommand())) {
 			resetWindowLocs();
 		} else if ("histo".equals(e.getActionCommand())) {

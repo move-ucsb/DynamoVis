@@ -73,15 +73,15 @@ public class CombinedControlPanel extends JPanel {
 			public void mousePressed(MouseEvent e) {
 				if (line) {
 					remove(linePanel);
-					revalidate();
-					parent.cpContainer.pack();
-					((JLabel) e.getSource()).setText("Tracks   \u25BC");
+					// revalidate();
+					// parent.pack();
+					// ((JLabel) e.getSource()).setText("Tracks   \u25BC");
 				} else {
 					add(linePanel, "cell 0 3,growx");
-					revalidate();
-					parent.cpContainer.pack();
-					((JLabel) e.getSource()).setText("Tracks   \u25B2");
 				}
+				revalidate();
+				parent.pack();
+				((JLabel) e.getSource()).setText("Tracks   \u25B2");
 				line = !line;
 			}
 		});
@@ -99,15 +99,12 @@ public class CombinedControlPanel extends JPanel {
 			public void mousePressed(MouseEvent e) {
 				if (point) {
 					remove(pointPanel);
-					revalidate();
-					parent.cpContainer.pack();
-					((JLabel) e.getSource()).setText("Points   \u25BC");
 				} else {
 					add(pointPanel, "cell 0 6,growx");
-					revalidate();
-					parent.cpContainer.pack();
-					((JLabel) e.getSource()).setText("Points   \u25B2");
 				}
+				revalidate();
+				parent.pack();
+				((JLabel) e.getSource()).setText("Points   \u25BC");
 				point = !point;
 			}
 		});
@@ -125,15 +122,12 @@ public class CombinedControlPanel extends JPanel {
 			public void mousePressed(MouseEvent e) {
 				if (vector) {
 					remove(vectorPanel);
-					revalidate();
-					parent.cpContainer.pack();
-					((JLabel) e.getSource()).setText("Vectors   \u25BC");
 				} else {
 					add(vectorPanel, "cell 0 9,growx");
-					revalidate();
-					parent.cpContainer.pack();
-					((JLabel) e.getSource()).setText("Vectors   \u25B2");
 				}
+				revalidate();
+				parent.pack();
+				((JLabel) e.getSource()).setText("Vectors   \u25B2");
 				vector = !vector;
 			}
 		});
@@ -151,15 +145,12 @@ public class CombinedControlPanel extends JPanel {
 			public void mousePressed(MouseEvent e) {
 				if (parent.legend) {
 					remove(parent.legendPanel);
-					revalidate();
-					parent.cpContainer.pack();
-					((JLabel) e.getSource()).setText("Legend   \u25BC");
 				} else {
 					add(parent.legendPanel, "cell 0 12,growx");
-					revalidate();
-					parent.cpContainer.pack();
-					((JLabel) e.getSource()).setText("Legend   \u25B2");
 				}
+				revalidate();
+				parent.pack();
+				((JLabel) e.getSource()).setText("Legend   \u25B2");
 				parent.legend = !parent.legend;
 			}
 		});
@@ -177,15 +168,12 @@ public class CombinedControlPanel extends JPanel {
 			public void mousePressed(MouseEvent e) {
 				if (ghost) {
 					remove(ghostPanel);
-					revalidate();
-					parent.cpContainer.pack();
-					((JLabel) e.getSource()).setText("Underlay   \u25BC");
 				} else {
 					add(ghostPanel, "cell 0 15,growx");
-					revalidate();
-					parent.cpContainer.pack();
-					((JLabel) e.getSource()).setText("Underlay   \u25B2");
 				}
+				revalidate();
+				parent.pack();
+				((JLabel) e.getSource()).setText("Underlay   \u25B2");
 				ghost = !ghost;
 			}
 		});
@@ -201,7 +189,6 @@ public class CombinedControlPanel extends JPanel {
 		}
 
 		revalidate();
-		parent.cpContainer.pack();
-
+		parent.pack();
 	}
 }

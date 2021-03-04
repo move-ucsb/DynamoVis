@@ -24,6 +24,8 @@ package main;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 
+import com.jogamp.nativewindow.WindowClosingProtocol.WindowClosingMode;
+
 import gui.ControlPanel;
 import utils.PointRecord;
 import utils.Track;
@@ -65,26 +67,34 @@ public class Sketch extends PApplet {
 
 	EventDispatcher eventDispatcher;
 
+	int w, h;
+	public void setSize(int w, int h) {
+		this.w = w;
+		this.h = h; 
+	}
 	// setup is replaced by settings in Processing 3
 	public void settings() {
-		int containerWidth = (int) parent.getContentPane().getSize().getWidth();
-		int containerHeight = (int) parent.getContentPane().getSize().getHeight();
-		size(containerWidth, containerHeight, P2D);
+		// int w = (int) parent.getContentPane().getSize().getWidth();
+		// int h = (int) parent.getContentPane().getSize().getHeight();
+		size(w, h, P2D);
 	}
 
 	public void setup() {
-		int containerWidth = (int) parent.getContentPane().getSize().getWidth();
-		int containerHeight = (int) parent.getContentPane().getSize().getHeight();
-
 		colorMode(HSB, 360, 100, 100);
 		frameRate(30);
 
+		// Closes the sketch on exit
+		if (getGraphics().isGL()) {
+			final com.jogamp.newt.Window w = (com.jogamp.newt.Window) getSurface().getNative();
+			w.setDefaultCloseOperation(WindowClosingMode.DISPOSE_ON_CLOSE);
+		}
+
 		parent.dataPoints = null;
-		println("Animation Dimensions: " + containerWidth + "x" + containerHeight);
+		println("Animation Dimensions: " + w + "x" + h);
 		println("Polling Interval: " + data.dataInterval + " " + data.timeUnit);
 
 		//
-		map = new UnfoldingMap(this, 0, 0, containerWidth, containerHeight, data.provider);
+		map = new UnfoldingMap(this, 0, 0, w, h, data.provider);
 		map.zoomAndPanToFit(data.locations);
 		map.setTweening(true);
 		eventDispatcher = MapUtils.createDefaultEventDispatcher(this, map);
@@ -95,6 +105,17 @@ public class Sketch extends PApplet {
 		resetLegend();
 		println();
 	}
+
+	// RUN/EXIT BEHAVIOURS -----------------
+	// Overriden to prevent System.exit(0) command, that 
+	// shuts down the whole java environment
+	@Override
+	public void exitActual() {}
+	public void run() {
+		String[] processingArgs = {"--location=100,100", "DynamoVis Animation"};
+		PApplet.runSketch(processingArgs, this);
+	}
+	
 
 	public void resetLegend() {
 		legend.setLocation(0, height - 40);
@@ -363,10 +384,5 @@ public class Sketch extends PApplet {
 			data.frameCounter++;
 		}
 
-	}
-
-	public void run() {
-		String[] processingArgs = {"Sketch"};
-		PApplet.runSketch(processingArgs, this);
 	}
 }
