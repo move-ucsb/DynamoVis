@@ -29,7 +29,6 @@ import gui.ControlPanel;
 import gui.LegendPanel;
 import gui.DataPanel;
 import gui.TimeLine;
-import processing.core.PApplet;
 import utils.Attributes;
 import utils.Track;
 
@@ -54,20 +53,17 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
+
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -112,11 +108,11 @@ public class DesktopPane extends JFrame implements ActionListener {
 	// public InteractionPanel interactionPanel; 			// New Panel for Interaction Analysis
 	// public MoveParameterPanel moveparaPanel; 			// New Panel for Move Parameter
 	// public BoundaryVisualizationPanel Bdy_Viz_Panel; 	// New Panel for Boundary Visualization
-	// public TimeBoxControlPanel timeBoxControlPanel; 	// New Panel for 3D Time Analysis control by Kate
+	// public TimeBoxControlPanel timeBoxControlPanel; 	    // New Panel for 3D Time Analysis control by Kate
 
-	// public JDialog asContainer; 						// Activity Space Container
+	// public JDialog asContainer; 						    // Activity Space Container
 	// public JDialog iContainer; 						    // Interaction Container
-	// public JDialog mpContainer; 						// Move Parameter Container
+	// public JDialog mpContainer; 						    // Move Parameter Container
 	public JDialog timelineContainer;
 	// public JDialog tbcContainer;	// for the time box control panel
 	// public TimeBoxPanel bContainer; // for the time box
@@ -231,11 +227,14 @@ public class DesktopPane extends JFrame implements ActionListener {
 		setContentPane(dataConfigPanel);
 		// setVisible(true);		
 		pack();
+		// app icon
+		setIconImage(new ImageIcon(this.getClass().getResource("logo32_empty.png")).getImage());
 
 
 		// STATUS WINDOW -----------------------------
 		textOutput = new JDialog(this);
 		textOutput.setTitle("Status");
+		// textOutput.setIconImage(logo.getImage());
 		textOutput.setResizable(true);
 		textOutput.setSize(410, (int) (sHeight*0.3));
 		textOutput.setLocation(sWidth - 420, (int) (sHeight * 0.03) );
@@ -260,9 +259,13 @@ public class DesktopPane extends JFrame implements ActionListener {
 		colors = new Colors(this);
 
 		timelineContainer = new JDialog(this);
+		// timelineContainer.setIconImage(logo.getImage());
 		controlContainer = new JDialog(this);
+		// controlContainer.setIconImage(logo.getImage());
 		recordContainer = new JDialog(this);
+		// recordContainer.setIconImage(logo.getImage());
 		baseMapContainer = new JDialog(this);
+		// baseMapContainer.setIconImage(logo.getImage());
 		// asContainer = new JDialog(this);
 		// iContainer = new JDialog(this);
 		// mpContainer = new JDialog(this);
@@ -287,7 +290,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		System.out.println("# DynamoVis Animation Tool");
 		System.out.println("# Copyright (C) 2016 Glenn Xavier");
 		System.out.println("#      Updated: 2021 Mert Toka");
-		System.out.println("# Build 0.4.1.2-dev, Feb 25, 2021");
+		System.out.println("# Build 0.4.1.4-dev, Mar 11, 2021");
 		System.out.println("# This program comes with ABSOLUTELY NO WARRANTY");
 		System.out.println("# This is free software, and you are welcome to \nredistribute it under certain conditions.");
 		System.out.println("");		
@@ -302,9 +305,6 @@ public class DesktopPane extends JFrame implements ActionListener {
 		sketch.setSize((int)animationSize.getWidth(), (int)animationSize.getHeight());
 		sketch.run(sketch_loc_x, sketch_loc_y); // set location
 		sketch.getSurface().setTitle(dataConfigPanel.getSurfaceTitle());
-		// TODO: sketch icon
-		// PImage icon = loadImage("icon.png");  // sketch.getSurface().setIcon(icon);
-		// this.pack();
 
 		// timeline and control panel location and size 
 		// TODO: Remove hardcoded offsets
@@ -923,6 +923,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 	}
 
 	protected void quit() {
+		sketch.exit();
 		System.exit(0);
 	}
 

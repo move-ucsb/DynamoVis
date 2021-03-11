@@ -37,6 +37,8 @@ import org.joda.time.Seconds;
 
 import processing.core.PApplet;
 import processing.core.PShape;
+import processing.opengl.PJOGL;
+import processing.core.PImage;
 import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.events.EventDispatcher;
 // import de.fhpotsdam.unfolding.geo.Location;
@@ -77,17 +79,24 @@ public class Sketch extends PApplet {
 		// int w = (int) parent.getContentPane().getSize().getWidth();
 		// int h = (int) parent.getContentPane().getSize().getHeight();
 		size(w, h, P2D);
-	}
 
+		// set icon
+		PJOGL.setIcon(parent.getClass().getResource("logo32.png").getPath());
+	}
+	
 	public void setup() {
 		colorMode(HSB, 360, 100, 100);
-		frameRate(30);
+		// frameRate(60);
 
 		// Closes the sketch on exit
 		if (getGraphics().isGL()) {
 			final com.jogamp.newt.Window w = (com.jogamp.newt.Window) getSurface().getNative();
 			w.setDefaultCloseOperation(WindowClosingMode.DISPOSE_ON_CLOSE);
 		}
+
+		// NONOPENGL ICON SETUP
+		// PImage icon = loadImage(parent.getClass().getResource("logo32.png").getPath()); 
+		// surface.setIcon(icon);
 
 		parent.dataPoints = null;
 		println("Animation Dimensions: " + w + "x" + h);
@@ -114,6 +123,16 @@ public class Sketch extends PApplet {
 	public void run(int x, int y) {
 		String[] processingArgs = {"--location="+x+","+y, "DynamoVis Animation"};
 		PApplet.runSketch(processingArgs, this);
+	}
+	@Override
+	public void exit() {
+		parent.controlContainer.setVisible(false);
+		parent.timelineContainer.setVisible(false);
+		
+		noLoop();
+		super.exit();
+		
+		exitCalled = true;
 	}
 	
 
@@ -378,6 +397,12 @@ public class Sketch extends PApplet {
 		popMatrix();
 
 		if (data.save) {
+			// textFont(legend.headers);
+			String copyrightText = "Created by DYNAMOVIS";
+			text(copyrightText, width-textWidth(copyrightText)-20, 20);
+			copyrightText = "MoveLab@UCSB, 2021";
+			text(copyrightText, width-textWidth(copyrightText)-20, 40);
+
 			String file = String.format("temp/" + parent.animationTitle + parent.exportCounter + "/temp%08d.jpeg",
 					data.frameCounter);
 			saveFrame(file);

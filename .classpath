@@ -26,7 +26,6 @@
 	<classpathentry kind="lib" path="lib/jogl-all-natives-solaris-i586.jar"/>
 	<classpathentry kind="lib" path="lib/jogl-all-natives-windows-amd64.jar"/>
 	<classpathentry kind="lib" path="lib/jogl-all-natives-windows-i586.jar"/>
-
 	<classpathentry kind="lib" path="lib/GLGraphics.jar"/>
 	<classpathentry kind="lib" path="lib/gicentreUtils.jar"/>
 	<classpathentry kind="lib" path="lib/joda-time-2.10.10.jar"/>
@@ -40,5 +39,6 @@
 	<classpathentry kind="lib" path="lib/timebars-1.49.jar" sourcepath="/timebars-1.49/src"/>
 	<classpathentry kind="lib" path="lib/jcodec-0.1.6.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="resources"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

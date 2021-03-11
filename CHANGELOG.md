@@ -1,7 +1,6 @@
 #### Things to do:
 - More legend options
 - Save animation state/configuration
-- // Home range calculation and visualization
 - Layers (maybe for advanced layout?)
 - Vector EPS outputs for publications
 - Plot and corr modules
@@ -9,24 +8,59 @@
   - log4j 1.2.15 ( 2.14.0 available )
   - miglayout 4.2 ( 5.0 available )
   - jcodec 0.1.6 -> 0.2.5 ( broke the video encoder when upgraded, pending for later)
-
-#### Questions
-- where is the logo for this program?
+- data loading improvements 
+  - header for common data fields
+  - time formatting needs to be more flexible
+- unfolding maps wrapping at the edge of the map
+  - if data contains +/- longtitudes, handle it separately 
+- order
+  - 1) processing3 integration 
+    -> publish as a new release
+  - 2) spacetime cube
+  - 3) timeline improvements
 
 
 ### CHANGES
 
 #### Project Name: `DynamoVis`
+
 **TODO:**
-[ ] set location of the sketch window
-[ ] set location of timeline and CP around it.
-[ ] fix "create animation" bug
+
+[ ] unfolding maps, data longitude, 
+[ ] -- dummy data set, shift already existing dataset
+
+[ ] shutdown behaviour, opengl thread is lingering
+
+[ ] data loading window, enable/disable "create animation" based on sketch
+
+[ ] "new" button / fix "create animation" bug (after two times)
+
 [ ] look and feel of the windows (should obey the system theme settings?)
+
+[ ] close status window after loading the sketch
+
+[ ] open timeline after the second animation created
+
+[ ] remove unused map base
+
+[ ] external "tiger" data variables should be read
+[ ] -- shouldn't ignore any variables
+
+[+] logo for windows
+
+[+] add copyright remark "Created by DynamoVis, MoveLab@UCSB, 2021" on the sketch when exporting
+
+[+] connect sketch window closing with timeline and control panel
+
+##### 0.4.1.4 - 2021/03/11
+- Closing Processing sketch hides timeline and control panel
+- Exported videos now holds "Created by DynamoVis, MoveLab@UCSB, 2021" embedded in the upper right corner
+- Changed software icons to MOVELAB icon
 
 ##### 0.4.1.3 - 2021/03/04
 - Closing Procesing sketch doesn't close Java Application.
-- PSketch title.
-
+- Fixed PSketch title and location. Timeline and control panel positions around the map sketch.
+- Export video is fixed.
 
 ##### 0.4.1.2 - 2021/02/25
 - Changed window hiearchy slightly. We are now running the main sketch as a separate window. Configure animation window stays open (its the main window now).
