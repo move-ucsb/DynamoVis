@@ -189,6 +189,6 @@ public class CombinedControlPanel extends JPanel {
 		}
 
 		revalidate();
-		parent.pack();
+		// parent.pack();
 	}
 }

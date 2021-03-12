@@ -26,36 +26,60 @@
 
 **TODO:**
 
+[ ] "new and edit" does not close sketch window
+
+[ ] remove cancel button
+[ ] Help is empty?
+
+
+
 [ ] unfolding maps, data longitude, 
 [ ] -- dummy data set, shift already existing dataset
 
 [ ] shutdown behaviour, opengl thread is lingering
 
-[ ] data loading window, enable/disable "create animation" based on sketch
-
-[ ] "new" button / fix "create animation" bug (after two times)
-
-[ ] look and feel of the windows (should obey the system theme settings?)
-
 [ ] close status window after loading the sketch
-
-[ ] open timeline after the second animation created
 
 [ ] remove unused map base
 
 [ ] external "tiger" data variables should be read
-[ ] -- shouldn't ignore any variables
+[ ] -- shouldn't ignore any variables, let users to select those as well 
 
+[ ] change export location and remove temp files after
+
+[ ] change logos to resources folder 
+ 
+[ ] look and feel of the windows (should obey the system theme settings?)
+
+[ ] timeline shift-click, disable this interaction
+
+[+] default window locations / sizes
+[+] -- make sure that it runs with any resolution
+[+] data loading pane minimum size has changed
+[+] data loading window, enable/disable "create animation" based on sketch
+[+] open timeline after the second animation created
+[+] "new" button / fix "create animation" bug (after two times)
+[+] 3D translate warning?? 
 [+] logo for windows
-
 [+] add copyright remark "Created by DynamoVis, MoveLab@UCSB, 2021" on the sketch when exporting
-
 [+] connect sketch window closing with timeline and control panel
+
+##### 0.4.1.5 - 2021/03/12
+- Data config pane has smaller minimum width
+- Removed 3D translate commands in 2D Processing sketch
+- "Create Animation" button is disabled when a sketch is running
+- Data configuration panel does not crash after animation is created multiple times 
+- Timeline is visible again after the second animation is created
+- Resolved a bug where the data config panel was scaling right before creating an animation
+- Default window locations and sizes adjusted (reset locations)
+- No windows are spawned outside the screen
 
 ##### 0.4.1.4 - 2021/03/11
 - Closing Processing sketch hides timeline and control panel
-- Exported videos now holds "Created by DynamoVis, MoveLab@UCSB, 2021" embedded in the upper right corner
+- Exported videos now holds "Created by DynamoVis, MoveLab@UCSB, 2021" embedded in the upper right corner.
+- Removed month name from the legend and made copyright statement bigger. 
 - Changed software icons to MOVELAB icon
+- Sketch runs with 60fps, rather than 30fps
 
 ##### 0.4.1.3 - 2021/03/04
 - Closing Procesing sketch doesn't close Java Application.

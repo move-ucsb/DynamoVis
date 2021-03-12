@@ -38,16 +38,12 @@ import org.joda.time.Seconds;
 import processing.core.PApplet;
 import processing.core.PShape;
 import processing.opengl.PJOGL;
-import processing.core.PImage;
 import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.events.EventDispatcher;
-// import de.fhpotsdam.unfolding.geo.Location;
-// import de.fhpotsdam.unfolding.marker.Marker;
-// import de.fhpotsdam.unfolding.providers.Google;
 import de.fhpotsdam.unfolding.utils.MapUtils;
 import de.fhpotsdam.unfolding.utils.ScreenPosition;
 
-public class Sketch extends PApplet {
+public class Sketch extends PApplet  {
 	// Connect processing sketch to the rest of the application
 	private DesktopPane parent;
 	private SketchData data;
@@ -76,8 +72,6 @@ public class Sketch extends PApplet {
 	}
 	// setup is replaced by settings in Processing 3
 	public void settings() {
-		// int w = (int) parent.getContentPane().getSize().getWidth();
-		// int h = (int) parent.getContentPane().getSize().getHeight();
 		size(w, h, P2D);
 
 		// set icon
@@ -86,12 +80,13 @@ public class Sketch extends PApplet {
 	
 	public void setup() {
 		colorMode(HSB, 360, 100, 100);
-		// frameRate(60);
+		frameRate(60);
 
-		// Closes the sketch on exit
+		// Closes only the sketch on exit
 		if (getGraphics().isGL()) {
 			final com.jogamp.newt.Window w = (com.jogamp.newt.Window) getSurface().getNative();
 			w.setDefaultCloseOperation(WindowClosingMode.DISPOSE_ON_CLOSE);
+			// w.setAlwaysOnTop(true);
 		}
 
 		// NONOPENGL ICON SETUP
@@ -116,25 +111,27 @@ public class Sketch extends PApplet {
 	}
 
 	// RUN/EXIT BEHAVIOURS -----------------
-	// Overriden to prevent System.exit(0) command, that 
-	// shuts down the whole java environment
-	@Override
-	public void exitActual() {}
 	public void run(int x, int y) {
 		String[] processingArgs = {"--location="+x+","+y, "DynamoVis Animation"};
 		PApplet.runSketch(processingArgs, this);
 	}
+	// Overriden to prevent System.exit(0) command, that 
+	// shuts down the whole java environment
 	@Override
-	public void exit() {
+	public void exitActual() {
+		// hide timeline and control panel
 		parent.controlContainer.setVisible(false);
 		parent.timelineContainer.setVisible(false);
 		
-		noLoop();
-		super.exit();
-		
-		exitCalled = true;
+		// get ready for another animation
+		parent.sketch = null;
+		parent.startup = true;
+		parent.dataConfigPanel.okButton.setEnabled(true);
+
+		// this.stop();
+		// com.jogamp.newt.Window w = (com.jogamp.newt.Window) getSurface().getNative();
+		// w.sendWindowEvent(WindowEvent.EVENT_WINDOW_DESTROYED);
 	}
-	
 
 	public void resetLegend() {
 		legend.setLocation(0, height - 40);
@@ -178,7 +175,7 @@ public class Sketch extends PApplet {
 		background(0, 0, 35);
 
 		pushMatrix();
-			translate(0, 0, -5);
+			// translate(0, 0, -5);
 			map.draw();
 		popMatrix();
 
@@ -277,7 +274,7 @@ public class Sketch extends PApplet {
 									size = pointSize;
 								}
 								pushMatrix();
-								translate(0, 0, -1);
+								// translate(0, 0, -1);
 								ellipse(pos.x, pos.y, size, size);
 								popMatrix();
 							}
@@ -344,21 +341,21 @@ public class Sketch extends PApplet {
 					}
 				}
 				pushMatrix();
-					translate(0, 0, -3);
+					// translate(0, 0, -3);
 					if (brushed)
 						brush.endShape();
 					shape(brush);
 				popMatrix();
 
 				pushMatrix();
-					translate(0, 0, -4);
+					// translate(0, 0, -4);
 					if (data.ghost)
 						ghost.endShape();
 					shape(ghost);
 				popMatrix();
 
 				pushMatrix();
-					translate(0, 0, -2);
+					// translate(0, 0, -2);
 					path.endShape();
 					shape(path);
 				popMatrix();
@@ -391,23 +388,16 @@ public class Sketch extends PApplet {
 		}
 
 		pushMatrix();
-			translate(0, 0, 0);
+			// translate(0, 0, 0);
 			legend.display();
 			legend.drag(mouseX, mouseY);
 		popMatrix();
 
 		if (data.save) {
-			// textFont(legend.headers);
-			String copyrightText = "Created by DYNAMOVIS";
-			text(copyrightText, width-textWidth(copyrightText)-20, 20);
-			copyrightText = "MoveLab@UCSB, 2021";
-			text(copyrightText, width-textWidth(copyrightText)-20, 40);
-
 			String file = String.format("temp/" + parent.animationTitle + parent.exportCounter + "/temp%08d.jpeg",
 					data.frameCounter);
 			saveFrame(file);
 			data.frameCounter++;
 		}
-
 	}
 }

@@ -85,7 +85,7 @@ public class DataPanel extends JPanel implements ActionListener {
 	private JTable tagsTable;
 	private JTextField titleField;
 	private JComboBox animationSize;
-	private JButton okButton;
+	public JButton okButton;
 	private JButton cancelButton;
 	private JButton helpButton;
 	public DesktopPane parent;
@@ -110,7 +110,7 @@ public class DataPanel extends JPanel implements ActionListener {
 	@SuppressWarnings("serial")
 	public DataPanel(DesktopPane father) {
 		parent = father;
-		setLayout(new MigLayout("", "[433.00:n,grow][][]",
+		setLayout(new MigLayout("", "[233.00:n,grow][][]",
 				"[][][200px:n,grow][20px:n][][200px:n,grow][20px:n][][][][][grow][grow]"));
 
 		dataPathField = new JTextField();
@@ -372,6 +372,7 @@ public class DataPanel extends JPanel implements ActionListener {
 		add(okButton, "cell 0 12 3 1,alignx right,aligny bottom");
 		okButton.setActionCommand("ok");
 		okButton.addActionListener(this);
+
 
 		cancelButton = new JButton("Cancel");
 		add(cancelButton, "cell 0 12 3 1,alignx right,aligny bottom");

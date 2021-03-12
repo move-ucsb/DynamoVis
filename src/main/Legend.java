@@ -613,10 +613,20 @@ public class Legend {
 		drawBarScale(304 + titleX, 26 + titleY);
 		p.popMatrix();
 
-		p.textFont(font2);
-		p.text(data.currentTime.toString("MMMM"), 20, 45);
-		p.textFont(font);
+		// p.textFont(font2);
+		// p.text(data.currentTime.toString("MMMM"), 20, 45);
 
+		if (data.save) {
+			// Copyright statement
+			p.textFont(temp);
+			
+			String copyrightText = "Created by DYNAMOVIS";
+			p.text(copyrightText, parent.sketch.width-p.textWidth(copyrightText)-20, 35);
+			
+			copyrightText = "MoveLab@UCSB, 2021";
+			p.text(copyrightText, parent.sketch.width-p.textWidth(copyrightText)-20, 65);
+		}
+		p.textFont(font);
 	}
 
 	private void drawLock() {

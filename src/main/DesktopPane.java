@@ -62,7 +62,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
@@ -75,6 +74,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -91,30 +92,30 @@ public class DesktopPane extends JFrame implements ActionListener {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	JFrame desktop;
 	public Dimension animationSize = new Dimension(1280, 720);
 	public Colors colors;
 	public Sketch sketch;
 	public WindowLocations wl;
 
-	public JPanel sketchContainer;
-	public JDialog dataConfigContainer;
-
 	public LegendPanel legendPanel;
 	public DataPanel dataConfigPanel;
 	public ControlPanel controlPanel;
-	// public ActivitySpacePanel activityPanel; 			// New Panel for Activity Space
-	// public InteractionPanel interactionPanel; 			// New Panel for Interaction Analysis
-	// public MoveParameterPanel moveparaPanel; 			// New Panel for Move Parameter
-	// public BoundaryVisualizationPanel Bdy_Viz_Panel; 	// New Panel for Boundary Visualization
-	// public TimeBoxControlPanel timeBoxControlPanel; 	    // New Panel for 3D Time Analysis control by Kate
+	// public ActivitySpacePanel activityPanel; // New Panel for Activity Space
+	// public InteractionPanel interactionPanel; // New Panel for Interaction
+	// Analysis
+	// public MoveParameterPanel moveparaPanel; // New Panel for Move Parameter
+	// public BoundaryVisualizationPanel Bdy_Viz_Panel; // New Panel for Boundary
+	// Visualization
+	// public TimeBoxControlPanel timeBoxControlPanel; // New Panel for 3D Time
+	// Analysis control by Kate
 
-	// public JDialog asContainer; 						    // Activity Space Container
-	// public JDialog iContainer; 						    // Interaction Container
-	// public JDialog mpContainer; 						    // Move Parameter Container
+	// public JDialog asContainer; // Activity Space Container
+	// public JDialog iContainer; // Interaction Container
+	// public JDialog mpContainer; // Move Parameter Container
 	public JDialog timelineContainer;
-	// public JDialog tbcContainer;	// for the time box control panel
+	// public JDialog tbcContainer; // for the time box control panel
 	// public TimeBoxPanel bContainer; // for the time box
 
 	public TimeLine timeLine;
@@ -131,9 +132,9 @@ public class DesktopPane extends JFrame implements ActionListener {
 	JCheckBoxMenuItem cpCheck;
 	// JCheckBoxMenuItem vpCheck;
 
-	// JCheckBoxMenuItem activityCheck; 		// Check box for visibility of asContainer
-	// JCheckBoxMenuItem setParaCheck; 		// Check box for visibility of mpContainer
-	// JCheckBoxMenuItem interactionCheck; 	// Check box for visibility of iContainer
+	// JCheckBoxMenuItem activityCheck; // Check box for visibility of asContainer
+	// JCheckBoxMenuItem setParaCheck; // Check box for visibility of mpContainer
+	// JCheckBoxMenuItem interactionCheck; // Check box for visibility of iContainer
 	// JCheckBoxMenuItem timeBoxCheck;
 	// JCheckBoxMenuItem Bdy_Viz_Check;
 
@@ -160,13 +161,13 @@ public class DesktopPane extends JFrame implements ActionListener {
 
 	public Attributes attributes;
 	public HashMap<String, Track> trackList;
-	private int sWidth;  // screen width
+	private int sWidth; // screen width
 	private int sHeight; // screen height
 
 	boolean color = false;
 	public boolean legend = false;
 	boolean vectors = false;
-	boolean startup = true;  // is data loaded
+	boolean startup = true; // is data loaded
 
 	public int exportCounter = 1;
 	DesktopPane me;
@@ -198,7 +199,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		}
 	}
 
-	// 
+	//
 	public DesktopPane() {
 
 		me = this;
@@ -213,31 +214,26 @@ public class DesktopPane extends JFrame implements ActionListener {
 		fonts = ge.getAvailableFontFamilyNames();
 
 		// CONFIGURE DATA WINDOW ----------------------
-		setMinimumSize(new Dimension(400, 200));
+		setMinimumSize(new Dimension(200, 200));
 		menuBar = createMenuBar();
 		setJMenuBar(menuBar);
 
-		// dataConfigContainer = new JDialog(this);
 		setTitle("Configure Animation");
 		setResizable(true);
-		setSize(550, 700);
+		setSize(250, 700);
 		setLocation(sWidth / 5, sHeight / 5);
-		wl.registerWindow(this);
 		dataConfigPanel = new DataPanel(this);
 		setContentPane(dataConfigPanel);
-		// setVisible(true);		
+		setIconImage(new ImageIcon(this.getClass().getResource("logo32_empty.png")).getImage());  // app icon
 		pack();
-		// app icon
-		setIconImage(new ImageIcon(this.getClass().getResource("logo32_empty.png")).getImage());
-
+		wl.registerWindow(this);
 
 		// STATUS WINDOW -----------------------------
 		textOutput = new JDialog(this);
 		textOutput.setTitle("Status");
-		// textOutput.setIconImage(logo.getImage());
 		textOutput.setResizable(true);
-		textOutput.setSize(410, (int) (sHeight*0.3));
-		textOutput.setLocation(sWidth - 420, (int) (sHeight * 0.03) );
+		textOutput.setSize(410, (int) (sHeight * 0.3));
+		textOutput.setLocation(sWidth - 420, (int) (sHeight * 0.03));
 		wl.registerWindow(textOutput);
 
 		// Use status GUI element as system out
@@ -257,15 +253,10 @@ public class DesktopPane extends JFrame implements ActionListener {
 		});
 
 		colors = new Colors(this);
-
 		timelineContainer = new JDialog(this);
-		// timelineContainer.setIconImage(logo.getImage());
 		controlContainer = new JDialog(this);
-		// controlContainer.setIconImage(logo.getImage());
 		recordContainer = new JDialog(this);
-		// recordContainer.setIconImage(logo.getImage());
 		baseMapContainer = new JDialog(this);
-		// baseMapContainer.setIconImage(logo.getImage());
 		// asContainer = new JDialog(this);
 		// iContainer = new JDialog(this);
 		// mpContainer = new JDialog(this);
@@ -290,29 +281,44 @@ public class DesktopPane extends JFrame implements ActionListener {
 		System.out.println("# DynamoVis Animation Tool");
 		System.out.println("# Copyright (C) 2016 Glenn Xavier");
 		System.out.println("#      Updated: 2021 Mert Toka");
-		System.out.println("# Build 0.4.1.4-dev, Mar 11, 2021");
+		System.out.println("# Build 0.4.1.4-dev, Mar 12, 2021");
 		System.out.println("# This program comes with ABSOLUTELY NO WARRANTY");
 		System.out.println("# This is free software, and you are welcome to \nredistribute it under certain conditions.");
-		System.out.println("");		
+		System.out.println("");
 	}
 
 	public void setupSketch() {
-		int sketch_loc_x = sWidth-(int)animationSize.getWidth()-430;
-		int sketch_loc_y = (int) (sHeight * 0.05);
+
+		// Hardcoded position values
+		// int sketchW = (int) animationSize.getWidth();
+		// int sketchH = (int) animationSize.getHeight();
+		// int sketchX = sWidth - sketchW - 430;
+		// sketchX = sketchX < 0 ? 0 : sketchX%sWidth;
+		// int sketchY = (int) (sHeight * 0.05);
+		// sketchY = sketchY < 0 ? 0 : sketchY%sHeight;
+		// int timelineX = sketchX - 8;
+		// timelineX = timelineX < 0 ? 0 : timelineX%sWidth;
+		// int timelineY = sketchY + sketchH + 5;
+		// timelineY = timelineY < 0 ? 0 : timelineY%sHeight;
+		// int timelineW = sketchW + 16;
+		// int timelineH = 250;
+		// int cpX = sketchX - (int) controlContainer.getBounds().getWidth();
+		// cpX = cpX < 0 ? 0 : cpX%sWidth;
+		// int cpY = sketchY - 32;
+		// cpY = cpY < 0 ? 0 : cpY%sHeight;
 
 		sketch = new Sketch();
 		sketch.setParent(this);
-		sketch.setSize((int)animationSize.getWidth(), (int)animationSize.getHeight());
-		sketch.run(sketch_loc_x, sketch_loc_y); // set location
+		sketch.setSize((int) animationSize.getWidth(), (int) animationSize.getHeight());
+		sketch.run(0, 0);
 		sketch.getSurface().setTitle(dataConfigPanel.getSurfaceTitle());
 
-		// timeline and control panel location and size 
-		// TODO: Remove hardcoded offsets
-		controlContainer.setLocation(sketch_loc_x - (int) controlContainer.getBounds().getWidth(), sketch_loc_y-32);
-		timelineContainer.setLocation(sketch_loc_x-8, sketch_loc_y+sketch.height+5);
-		if (startup) {
-			timelineContainer.setSize(sketch.width+16, 250);
-		}
+		// timeline and control panel location and size
+		// controlContainer.setLocation(cpX, cpY);
+		// timelineContainer.setLocation(timelineX, timelineY);
+		// if (startup) {
+		// 	timelineContainer.setSize(timelineW, timelineH);
+		// }
 	}
 
 	private void setupGUI() {
@@ -335,9 +341,9 @@ public class DesktopPane extends JFrame implements ActionListener {
 		// asContainer.setContentPane(activityPanel);
 		// asContainer.setSize(500, 200);
 		// asContainer.addComponentListener(new ComponentAdapter() {
-		// 	public void componentHidden(ComponentEvent e) {
-		// 		activityCheck.setSelected(false);
-		// 	}
+		// public void componentHidden(ComponentEvent e) {
+		// activityCheck.setSelected(false);
+		// }
 		// });
 
 		// // Set up GUI for Move Parameter Panel // ADDED
@@ -347,9 +353,9 @@ public class DesktopPane extends JFrame implements ActionListener {
 		// mpContainer.setContentPane(moveparaPanel);
 		// mpContainer.setSize(500, 100);
 		// mpContainer.addComponentListener(new ComponentAdapter() {
-		// 	public void componentHidden(ComponentEvent e) {
-		// 		setParaCheck.setSelected(false);
-		// 	}
+		// public void componentHidden(ComponentEvent e) {
+		// setParaCheck.setSelected(false);
+		// }
 		// });
 
 		// // Set up GUI for Boundary Visualization Panel // MAY NEED TO REMOVE
@@ -360,24 +366,24 @@ public class DesktopPane extends JFrame implements ActionListener {
 		// tbContainer.setSize(500, 200);
 		// tbContainer.setLocation(100, 100);
 		// tbContainer.addComponentListener(new ComponentAdapter() {
-		// 	public void componentHidden(ComponentEvent e) {
-		// 		setParaCheck.setSelected(false);
-		// 	}
+		// public void componentHidden(ComponentEvent e) {
+		// setParaCheck.setSelected(false);
+		// }
 		// });
 		// tbContainer.addWindowListener(new WindowAdapter() {
-		// 	public void windowClosed(WindowEvent e) {
-		// 		// data.Bdy_Viz_Panel_Close = true;
-		// 		// data.Bdy_Viz_Enable = false;
-		// 		Bdy_Viz_Check.setSelected(false);
+		// public void windowClosed(WindowEvent e) {
+		// // data.Bdy_Viz_Panel_Close = true;
+		// // data.Bdy_Viz_Enable = false;
+		// Bdy_Viz_Check.setSelected(false);
 
-		// 	}
+		// }
 
-		// 	public void windowClosing(WindowEvent e) {
-		// 		// data.Bdy_Viz_Panel_Close = true;
-		// 		// data.Bdy_Viz_Enable = false;
-		// 		Bdy_Viz_Check.setSelected(false);
+		// public void windowClosing(WindowEvent e) {
+		// // data.Bdy_Viz_Panel_Close = true;
+		// // data.Bdy_Viz_Enable = false;
+		// Bdy_Viz_Check.setSelected(false);
 
-		// 	}
+		// }
 		// });
 
 		// // Set up GUI for Interaction Panel
@@ -387,16 +393,16 @@ public class DesktopPane extends JFrame implements ActionListener {
 		// iContainer.setContentPane(interactionPanel);
 		// iContainer.setSize(500, 270);
 		// iContainer.addComponentListener(new ComponentAdapter() {
-		// 	public void componentHidden(ComponentEvent e) {
-		// 		interactionCheck.setSelected(false);
-		// 	}
+		// public void componentHidden(ComponentEvent e) {
+		// interactionCheck.setSelected(false);
+		// }
 		// });
 
 		// iContainer.addWindowListener(new WindowAdapter() // KATE just addded
 		// {
-		// 	public void windowClosed(WindowEvent e) {
-		// 		data.highlight_interaction_boundary = false;
-		// 	}
+		// public void windowClosed(WindowEvent e) {
+		// data.highlight_interaction_boundary = false;
+		// }
 		// });
 		// // Set up GUI for 3D Time analysis
 
@@ -407,24 +413,24 @@ public class DesktopPane extends JFrame implements ActionListener {
 		// tbcContainer.setSize(400, 170);
 		// tbcContainer.setLocation((int) (this.getBounds().getX()), 100);
 		// tbcContainer.addComponentListener(new ComponentAdapter() {
-		// 	public void componentHidden(ComponentEvent e) {
-		// 		timeBoxCheck.setSelected(false);
-		// 	}
+		// public void componentHidden(ComponentEvent e) {
+		// timeBoxCheck.setSelected(false);
+		// }
 		// });
 
 		// // for the dynamic time box
 		// bContainer.setupBox(this);
 		// bContainer.addComponentListener(new ComponentAdapter() {
-		// 	public void componentHidden(ComponentEvent e) {
-		// 		timeBoxCheck.setSelected(false);
-		// 	}
+		// public void componentHidden(ComponentEvent e) {
+		// timeBoxCheck.setSelected(false);
+		// }
 		// });
 
 		legendPanel = new LegendPanel(this);
 		cp = new CombinedControlPanel(this);
 		// vp = new VisPanel(this);
 
-		controlContainer.setTitle("Control Panel");	
+		controlContainer.setTitle("Control Panel");
 		controlContainer.setContentPane(cp);
 		controlContainer.pack();
 		controlContainer.setResizable(false);
@@ -436,8 +442,8 @@ public class DesktopPane extends JFrame implements ActionListener {
 		});
 
 		recordContainer.setTitle("Video Recorder");
-    	Recorder recorder = new Recorder(this);
-		// Recorder recorder = new Recorder(this, bContainer);// kate added passing in bContainer
+		Recorder recorder = new Recorder(this);
+		// Recorder recorder = new Recorder(this, bContainer);// kate added passing in
 		recordContainer.setContentPane(recorder);
 		recordContainer.pack();
 
@@ -445,14 +451,14 @@ public class DesktopPane extends JFrame implements ActionListener {
 			// int locw = (int) controlContainer.getBounds().getWidth();
 			// int thisx = (int) this.getBounds().getX();
 			// int thisy = (int) this.getBounds().getY();
-			this.setLocation(textOutput.getLocation().x, textOutput.getLocation().y+textOutput.getBounds().height);
-			this.setSize(textOutput.getBounds().width, (int)(sHeight-(this.getLocation().y)*1.1));
+			this.setLocation(textOutput.getLocation().x, textOutput.getLocation().y + textOutput.getBounds().height);
+			this.setSize(textOutput.getBounds().width, (int) (sHeight - (this.getLocation().y) * 1.1));
 			// controlContainer.setLocation(thisx - locw, thisy);
 			// vpContainer.setLocation(thisx - locw, thisy + 250);
-			recordContainer.setLocationRelativeTo(this);
 			// asContainer.setLocationRelativeTo(this);
 			// mpContainer.setLocationRelativeTo(this);
 			// iContainer.setLocationRelativeTo(this);
+			recordContainer.setLocationRelativeTo(this);
 			wl.registerWindow(timelineContainer);
 			wl.registerWindow(controlContainer);
 			wl.registerWindow(recordContainer);
@@ -500,54 +506,55 @@ public class DesktopPane extends JFrame implements ActionListener {
 		data = new SketchData();
 
 		// for (Entry<String, Track> entry : trackList.entrySet()) {
-		// 	Track track = entry.getValue();
-		// 	if (track.getVisibility()) {
-		// 		if (data.Times_hash != null) {
-		// 			// System.out.println("the times arraylist is adding other times!");
-		// 			Hashtable<Integer, ArrayList<Integer>> temp_Times_hash = track.get_filter_times();
-		// 			data.Times_hash.forEach((Year, Months) -> {
-		// 				if (temp_Times_hash.containsKey(Year)) {
-		// 					Months.addAll(temp_Times_hash.get(Year));
-		// 					Set<Integer> NoDuplicates = new LinkedHashSet<Integer>(Months);
-		// 					Months.clear();
-		// 					Months.addAll(NoDuplicates);
-		// 					Collections.sort(Months);
-		// 				} else {
-		// 					data.Times_hash.put(Year, Months);
-		// 				}
-		// 			});
+		// Track track = entry.getValue();
+		// if (track.getVisibility()) {
+		// if (data.Times_hash != null) {
+		// // System.out.println("the times arraylist is adding other times!");
+		// Hashtable<Integer, ArrayList<Integer>> temp_Times_hash =
+		// track.get_filter_times();
+		// data.Times_hash.forEach((Year, Months) -> {
+		// if (temp_Times_hash.containsKey(Year)) {
+		// Months.addAll(temp_Times_hash.get(Year));
+		// Set<Integer> NoDuplicates = new LinkedHashSet<Integer>(Months);
+		// Months.clear();
+		// Months.addAll(NoDuplicates);
+		// Collections.sort(Months);
+		// } else {
+		// data.Times_hash.put(Year, Months);
+		// }
+		// });
 
-		// 		} else {
-		// 			// System.out.println("the times arraylist is EMpty!");
-		// 			data.Times_hash = track.get_filter_times();
-		// 		}
+		// } else {
+		// // System.out.println("the times arraylist is EMpty!");
+		// data.Times_hash = track.get_filter_times();
+		// }
 
-		// 		data.All_the_Times.addAll(track.gettheTimes());
-		// 	}
+		// data.All_the_Times.addAll(track.gettheTimes());
+		// }
 
 		// }
 		// Collections.sort(data.All_the_Times);
 		// // System.out.println(data.All_the_Times);
 		// data.Times_hash.forEach((Year, Months) -> {
-		// 	int min = Collections.min(Months);
-		// 	int max = Collections.max(Months);
-		// 	Months.clear();
-		// 	if (min == max) {
-		// 		Months.add(min);
-		// 	} else {
-		// 		Months.add(min);
-		// 		Months.add(max);
-		// 	}
+		// int min = Collections.min(Months);
+		// int max = Collections.max(Months);
+		// Months.clear();
+		// if (min == max) {
+		// Months.add(min);
+		// } else {
+		// Months.add(min);
+		// Months.add(max);
+		// }
 		// });
 		// // System.out.println(data.Times_hash);
-		
-		
+
 		data.provider = bm.chosenProvider;
 
 		if (period.toStandardMinutes().getMinutes() > 0) {
 			data.alphaMaxHours = 120;
 			data.startTime = Collections.min(dateCollection).minusHours(1).hourOfDay().roundFloorCopy();
-			data.endTime = Collections.max(dateCollection).plusHours(data.alphaMaxHours).dayOfMonth().roundCeilingCopy();
+			data.endTime = Collections.max(dateCollection).plusHours(data.alphaMaxHours).dayOfMonth()
+					.roundCeilingCopy();
 			// data.endTime = Collections.max(dateCollection);
 			dataInterval = period.toStandardMinutes().getMinutes();
 			timeUnit = "minutes";
@@ -555,7 +562,8 @@ public class DesktopPane extends JFrame implements ActionListener {
 		} else {
 			data.alphaMaxHours = 10;
 			data.startTime = Collections.min(dateCollection).minuteOfHour().roundFloorCopy();
-			data.endTime = Collections.max(dateCollection).plusMinutes(data.alphaMaxHours).minuteOfHour().roundCeilingCopy();
+			data.endTime = Collections.max(dateCollection).plusMinutes(data.alphaMaxHours).minuteOfHour()
+					.roundCeilingCopy();
 			// data.endTime = Collections.max(dateCollection);
 			dataInterval = period.toStandardSeconds().getSeconds();
 			timeUnit = "seconds";
@@ -588,46 +596,86 @@ public class DesktopPane extends JFrame implements ActionListener {
 			wl.restoreLocations();
 		}
 
-		if (timeline.isSelected()) {
+		if (startup || timeline.isSelected()) {
 			timelineContainer.setVisible(true);
 		}
 
 		// if (Bdy_Viz_Check.isSelected()) {
-		// 	tbContainer.setVisible(true);
+		// tbContainer.setVisible(true);
 		// }
 
 		// if (activityCheck.isSelected()) {
-		// 	asContainer.setVisible(true);
+		// asContainer.setVisible(true);
 		// }
 
 		// if (setParaCheck.isSelected()) {
-		// 	mpContainer.setVisible(true);
+		// mpContainer.setVisible(true);
 		// }
 
 		// if (interactionCheck.isSelected()) {
-		// 	iContainer.setVisible(true);
+		// iContainer.setVisible(true);
 		// }
 		// if (timeBoxCheck.isSelected()) {
-		// 	tbcContainer.setVisible(true);
-		// 	bContainer.setVisible(true);
-		// 	data.boxvisible = true;
+		// tbcContainer.setVisible(true);
+		// bContainer.setVisible(true);
+		// data.boxvisible = true;
 		// }
 
 		startup = false;
+
+		// prevent creating new animation when sketch is running
+		dataConfigPanel.okButton.setEnabled(false);
+		resetWindowLocs();
+
 		System.gc();
 	}
 
 	public void resetWindowLocs() {
-		int locw = (int) controlContainer.getBounds().getWidth();
-		int thisx = (int) this.getBounds().getX();
-		int thisy = (int) this.getBounds().getY();
-		timelineContainer.setLocation(thisx, (int) (thisy + this.getBounds().getHeight()));
-		timelineContainer.setSize((int) this.getBounds().getWidth(), 250);
+		// Hardcoded position values
+		int sketchW = (int) animationSize.getWidth();
+		int sketchH = (int) animationSize.getHeight();
+		int sketchX = (int) controlContainer.getBounds().getWidth() + 10;
+		sketchX = sketchX < 0 ? 0 : sketchX%sWidth;
+		int sketchY = 20;
+		sketchY = sketchY < 0 ? 0 : sketchY%sHeight;
+
+		int timelineX = sketchX;
+		timelineX = timelineX < 0 ? 0 : timelineX%sWidth;
+		int timelineY = sketchY + sketchH + 40;
+		timelineY = timelineY < 0 ? 0 : timelineY%sHeight;
+		int timelineW = sketchW;
+		int timelineH = 250;
+		
+		int cpX = sketchX - (int) controlContainer.getBounds().getWidth();
+		cpX = cpX < 0 ? 0 : cpX%sWidth;
+		int cpY = sketchY;
+		cpY = cpY < 0 ? 0 : cpY%sHeight;
+		
+		int statusW = 410;
+		int statusH = (int) (sHeight * 0.3);
+		int statusX = sWidth - statusW - 10;
+		int statusY = sketchY;
+
+		int dataW = statusW;
+		int dataH = (int) (sHeight - (this.getLocation().y) * 1.1);
+		int dataX = statusX;
+		int dataY = statusY + statusH;
+
+		setLocation(dataX, dataY);
+		setSize(dataW, dataH);
+		if(sketch != null) {
+			sketch.getSurface().setLocation(sketchX, sketchY);
+			sketch.getSurface().setSize(sketchW, sketchH);
+		}
+		
+		timelineContainer.setLocation(timelineX, timelineY);
+		timelineContainer.setSize(timelineW, timelineH);
 		// asContainer.setLocationRelativeTo(this);
-		controlContainer.setLocation(thisx - locw, thisy);
+		controlContainer.setLocation(cpX, cpY);
 		recordContainer.setLocationRelativeTo(this);
 		baseMapContainer.setLocationRelativeTo(this);
-		textOutput.setLocation(sWidth / 2, sHeight - (sHeight / 4));
+		textOutput.setLocation(statusX, statusY);
+		textOutput.setSize(statusW, statusH);
 	}
 
 	// Menu Bar Items and Actions
@@ -660,7 +708,8 @@ public class DesktopPane extends JFrame implements ActionListener {
 		// for displaying shape file - Nathan
 		// shapeFile = new JMenuItem("Import Shape File");
 		// shapeFile.setMnemonic(KeyEvent.VK_S);
-		// shapeFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.ALT_MASK));
+		// shapeFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
+		// ActionEvent.ALT_MASK));
 		// shapeFile.setActionCommand("shapeFile");
 		// shapeFile.addActionListener(this);
 		// shapeFile.setEnabled(false);
@@ -725,7 +774,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		});
 
 		timeline = new JCheckBoxMenuItem("Timeline");
-		timeline.setSelected(true);
+		timeline.setSelected(false);
 		timeline.setEnabled(false);
 		timeline.setMnemonic(KeyEvent.VK_T);
 		timeline.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.ALT_MASK));
@@ -779,96 +828,107 @@ public class DesktopPane extends JFrame implements ActionListener {
 		// Bdy_Viz_Check.setSelected(false);
 		// Bdy_Viz_Check.setEnabled(false);
 		// Bdy_Viz_Check.setMnemonic(KeyEvent.VK_R);
-		// Bdy_Viz_Check.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.ALT_MASK));
+		// Bdy_Viz_Check.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T,
+		// ActionEvent.ALT_MASK));
 		// Bdy_Viz_Check.addActionListener(this);
 		// vAnalytics.add(Bdy_Viz_Check);
 		// Bdy_Viz_Check.addItemListener(new ItemListener() {
-		// 	public void itemStateChanged(ItemEvent evt) {
-		// 		JCheckBoxMenuItem cb = (JCheckBoxMenuItem) evt.getSource();
-		// 		if (cb.isSelected()) {
-		// 			tbContainer.setVisible(true);// if check box is checked, open up move parameter window
-		// 			// data.Bdy_Viz_Enable = true;
-		// 		} else {
-		// 			tbContainer.setVisible(false);
-		// 			// data.Bdy_Viz_Enable = false;
-		// 		}
-		// 	}
+		// public void itemStateChanged(ItemEvent evt) {
+		// JCheckBoxMenuItem cb = (JCheckBoxMenuItem) evt.getSource();
+		// if (cb.isSelected()) {
+		// tbContainer.setVisible(true);// if check box is checked, open up move
+		// parameter window
+		// // data.Bdy_Viz_Enable = true;
+		// } else {
+		// tbContainer.setVisible(false);
+		// // data.Bdy_Viz_Enable = false;
+		// }
+		// }
 		// });
 
 		// setParaCheck = new JCheckBoxMenuItem("Move Parameter");
 		// setParaCheck.setSelected(false);
 		// setParaCheck.setEnabled(false);
 		// setParaCheck.setMnemonic(KeyEvent.VK_P);
-		// setParaCheck.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.ALT_MASK));
+		// setParaCheck.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
+		// ActionEvent.ALT_MASK));
 		// setParaCheck.addActionListener(this);
 		// vAnalytics.add(setParaCheck);
 		// setParaCheck.addItemListener(new ItemListener() {
-		// 	public void itemStateChanged(ItemEvent evt) {
-		// 		JCheckBoxMenuItem cb = (JCheckBoxMenuItem) evt.getSource();
-		// 		if (cb.isSelected()) {
-		// 			mpContainer.setVisible(true); // if check box is checked, open up move parameter window
-		// 		} else {
-		// 			mpContainer.setVisible(false);
-		// 		}
-		// 	}
+		// public void itemStateChanged(ItemEvent evt) {
+		// JCheckBoxMenuItem cb = (JCheckBoxMenuItem) evt.getSource();
+		// if (cb.isSelected()) {
+		// mpContainer.setVisible(true); // if check box is checked, open up move
+		// parameter window
+		// } else {
+		// mpContainer.setVisible(false);
+		// }
+		// }
 		// });
 
 		// interactionCheck = new JCheckBoxMenuItem("Interaction Analysis");
 		// interactionCheck.setSelected(false);
 		// interactionCheck.setEnabled(false);
 		// interactionCheck.setMnemonic(KeyEvent.VK_I);
-		// interactionCheck.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.ALT_MASK));
+		// interactionCheck.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
+		// ActionEvent.ALT_MASK));
 		// interactionCheck.addActionListener(this);
 		// vAnalytics.add(interactionCheck);
 		// interactionCheck.addItemListener(new ItemListener() {
-		// 	public void itemStateChanged(ItemEvent evt) {
-		// 		JCheckBoxMenuItem cb = (JCheckBoxMenuItem) evt.getSource();
-		// 		if (cb.isSelected()) {
-		// 			iContainer.setVisible(true); // if check box is checked, open up interaction analysis window
-		// 		} else {
-		// 			iContainer.setVisible(false);
-		// 		}
-		// 	}
+		// public void itemStateChanged(ItemEvent evt) {
+		// JCheckBoxMenuItem cb = (JCheckBoxMenuItem) evt.getSource();
+		// if (cb.isSelected()) {
+		// iContainer.setVisible(true); // if check box is checked, open up interaction
+		// analysis window
+		// } else {
+		// iContainer.setVisible(false);
+		// }
+		// }
 		// });
 
 		// timeBoxCheck = new JCheckBoxMenuItem("3D Space-Time Analysis");
 		// timeBoxCheck.setSelected(false);
 		// timeBoxCheck.setEnabled(false);
 		// timeBoxCheck.setMnemonic(KeyEvent.VK_3);
-		// timeBoxCheck.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.ALT_MASK));
+		// timeBoxCheck.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
+		// ActionEvent.ALT_MASK));
 		// timeBoxCheck.addActionListener(this);
 		// vAnalytics.add(timeBoxCheck);
 		// timeBoxCheck.addItemListener(new ItemListener() {
-		// 	public void itemStateChanged(ItemEvent evt) {
-		// 		JCheckBoxMenuItem cb = (JCheckBoxMenuItem) evt.getSource();
-		// 		if (cb.isSelected()) {
-		// 			tbcContainer.setVisible(true); // if check box is checked, open up interaction analysis window
-		// 			bContainer.setVisible(true); // if checked, open up the time box panel
-		// 			data.boxvisible = true;
-		// 		} else {
-		// 			tbcContainer.setVisible(false);
-		// 			bContainer.setVisible(false);
-		// 			data.boxvisible = false;
-		// 		}
-		// 	}
+		// public void itemStateChanged(ItemEvent evt) {
+		// JCheckBoxMenuItem cb = (JCheckBoxMenuItem) evt.getSource();
+		// if (cb.isSelected()) {
+		// tbcContainer.setVisible(true); // if check box is checked, open up
+		// interaction analysis window
+		// bContainer.setVisible(true); // if checked, open up the time box panel
+		// data.boxvisible = true;
+		// } else {
+		// tbcContainer.setVisible(false);
+		// bContainer.setVisible(false);
+		// data.boxvisible = false;
+		// }
+		// }
 		// });
 
 		// activityCheck = new JCheckBoxMenuItem("Activity Space Analysis");
 		// activityCheck.setSelected(false);
 		// activityCheck.setEnabled(false);
 		// activityCheck.setMnemonic(KeyEvent.VK_Y);
-		// activityCheck.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.ALT_MASK));
+		// activityCheck.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
+		// ActionEvent.ALT_MASK));
 		// activityCheck.addActionListener(this);
 		// vAnalytics.add(activityCheck);
 		// activityCheck.addItemListener(new ItemListener() {
-		// 	public void itemStateChanged(ItemEvent evt) {
-		// 		JCheckBoxMenuItem cb = (JCheckBoxMenuItem) evt.getSource();
-		// 		if (cb.isSelected()) {
-		// 			asContainer.setVisible(true); // if check box is checked, open up activity space analysis window
-		// 		} else {
-		// 			asContainer.setVisible(false); // if check box is not checked, nothing happenss
-		// 		}
-		// 	}
+		// public void itemStateChanged(ItemEvent evt) {
+		// JCheckBoxMenuItem cb = (JCheckBoxMenuItem) evt.getSource();
+		// if (cb.isSelected()) {
+		// asContainer.setVisible(true); // if check box is checked, open up activity
+		// space analysis window
+		// } else {
+		// asContainer.setVisible(false); // if check box is not checked, nothing
+		// happenss
+		// }
+		// }
 		// });
 
 		export = new JMenu("Export");
@@ -923,7 +983,8 @@ public class DesktopPane extends JFrame implements ActionListener {
 	}
 
 	protected void quit() {
-		sketch.exit();
+		if (sketch != null)
+			sketch.exit();
 		System.exit(0);
 	}
 
@@ -947,33 +1008,33 @@ public class DesktopPane extends JFrame implements ActionListener {
 	// ACTION LISTENER OVERRIDE ----------------------
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if ("new".equals(e.getActionCommand())) {
-			// dataConfigContainer.setVisible(true);
-		} else if ("edit".equals(e.getActionCommand())) {
-			// dataConfigContainer.setVisible(true);
-		} else if ("colors".equals(e.getActionCommand())) {
-
-		} else if ("legend".equals(e.getActionCommand())) {
-
-		} else if ("quit".equals(e.getActionCommand())) {
-			quit();
-		} else if ("record".equals(e.getActionCommand())) {
-			recordContainer.setVisible(true);
-		} else if ("basemap".equals(e.getActionCommand())) {
-			baseMapContainer.setVisible(true);
-		} else if ("reset".equals(e.getActionCommand())) {
-			resetWindowLocs();
-		} else if ("histo".equals(e.getActionCommand())) {
-			if (hc == null) {
-				hc = new JDialog(this);
-				hc.setTitle("HISTO TEST");
-				Histo histo = new Histo();
-				hc.setContentPane(histo);
-				hc.setLocationRelativeTo(this);
-				hc.pack();
+		switch (e.getActionCommand()) {
+			case "new" -> {
+				if (sketch != null) 	sketch.exit();
 			}
-			hc.setVisible(true);
-		}
+			case "edit" -> {
+				if (sketch != null)	    sketch.exit();
+			}
+			case "color" -> {
+			}
+			case "legend" -> {
+			}
+			case "quit" -> quit();
+			case "record" -> recordContainer.setVisible(true);
+			case "basemap" -> baseMapContainer.setVisible(true);
+			case "reset" -> resetWindowLocs();
+			case "histo" -> {
+				if (hc == null) {
+					hc = new JDialog(this);
+					hc.setTitle("HISTO TEST");
+					Histo histo = new Histo();
+					hc.setContentPane(histo);
+					hc.setLocationRelativeTo(this);
+					hc.pack();
+				}
+				hc.setVisible(true);
+			}
+		};
 	}
 
 	// MAIN ------------------------------
