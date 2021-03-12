@@ -38,10 +38,10 @@ import javax.swing.JRadioButton;
 import de.fhpotsdam.unfolding.providers.AbstractMapProvider;
 import de.fhpotsdam.unfolding.providers.EsriProvider;
 import de.fhpotsdam.unfolding.providers.Google;
-import de.fhpotsdam.unfolding.providers.MapBox;
-import de.fhpotsdam.unfolding.providers.MapQuestProvider;
+// import de.fhpotsdam.unfolding.providers.MapBox;
+// import de.fhpotsdam.unfolding.providers.MapQuestProvider;
 import de.fhpotsdam.unfolding.providers.Microsoft;
-import de.fhpotsdam.unfolding.providers.Yahoo;
+// import de.fhpotsdam.unfolding.providers.Yahoo;
 
 @SuppressWarnings("serial")
 public class BaseMapPanel extends JPanel {
@@ -54,7 +54,7 @@ public class BaseMapPanel extends JPanel {
 			put("Google Terrain", new Google.GoogleTerrainProvider());
 			put("Google Maps Simple", new Google.GoogleSimplifiedProvider());
 			put("Microsoft Aerial", new Microsoft.AerialProvider());
-			put("MapBox World Light", new MapBox.WorldLightProvider());
+			// put("MapBox World Light", new MapBox.WorldLightProvider());
 			put("ESRI World Terrain", new EsriProvider.WorldTerrain());
 			put("ESRI NatGeo", new EsriProvider.NatGeoWorldMap());
 			put("ESRI Ocean Basemap", new EsriProvider.OceanBasemap());
@@ -62,8 +62,8 @@ public class BaseMapPanel extends JPanel {
 			put("ESRI World Physical", new EsriProvider.WorldPhysical());
 			put("ESRI World Shaded Relief", new EsriProvider.WorldShadedRelief());
 			put("ESRI World Topo", new EsriProvider.WorldTopoMap());
-			put("Yahoo Aerial", new Yahoo.AerialProvider());
-			put("MapQuest Aerial", new MapQuestProvider.Aerial());
+			// put("Yahoo Aerial", new Yahoo.AerialProvider());
+			// put("MapQuest Aerial", new MapQuestProvider.Aerial());
 		}
 	};
 

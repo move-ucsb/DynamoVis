@@ -529,21 +529,24 @@ public class Legend {
 
 		if (data.strokeColorToggle) {
 			if (data.strokeColorSelection.equals(parent.attributes.getIndex())) {
-
+				// 
 				int li = 0;
 				int itr = 0;
 				int y = 0;
 				for (String i : parent.tagList) {
-
+					int _w = 35;
+					int _h = y * 25;
 					int color = parent.colors.getTagColor(i).getRGB();
 					p.strokeWeight(0);
 					p.fill(color);
-					p.rect(li - 27, -20 + (y * 25), 35, 10);
+					p.rect(li - 27, -20 + _h, _w, 10);
 					p.fill(fontColor);
-					p.text(i, li - 27, -22 + (y * 25));
-					li = li + 45;
+					p.text((p.textWidth(i) > _w ? i.substring(0, 5)+".." : i), 
+						   li - 27, 
+						   _h - 22);
+					li = li + _w + 10;
 					itr++;
-					if (itr % 10 == 0) {
+					if (itr % 7 == 0) {
 						li = 0;
 						y++;
 					}
@@ -598,11 +601,12 @@ public class Legend {
 		}
 
 		p.noStroke();
-		p.fill(0);
-		p.rect(10 + titleX, 10 + titleY, 390, 40);
+		p.fill(0,50);
+		p.rect(titleX, 5 + titleY, 280, 40);
+		p.rect(titleX, -10 + titleY, p.textWidth(parent.animationTitle)+30, 15);
 
 		p.fill(fontColor);
-		p.text(parent.animationTitle, 13 + titleX, 6 + titleY);
+		p.text(parent.animationTitle, 13 + titleX, 4 + titleY);
 		p.textFont(temp);
 		String time = fmt.print(data.currentTime);
 		// String time = data.currentTime.toString();
@@ -610,7 +614,7 @@ public class Legend {
 		// p.text("Time: " + time + " UTC+3", 13+titleX, 29+titleY);
 		p.text("Time: " + time, 13 + titleX, 29 + titleY);
 		p.textFont(font);
-		drawBarScale(304 + titleX, 26 + titleY);
+		drawBarScale(240 + titleX, 26 + titleY);
 		p.popMatrix();
 
 		// p.textFont(font2);
@@ -662,7 +666,8 @@ public class Legend {
 		p.line(x, y, x + dx, y);
 		p.line(x + dx, y - 3, x + dx, y + 3);
 		p.fill(0, 0, 100);
-		p.text(PApplet.nfs(distance, 0, 0) + " km", x + dx + 3, y + 4);
+		// p.text(PApplet.nfs(distance, 0, 0) + " km", x + dx + 3, y + 4);
+		p.text(PApplet.nfs(distance, 0, 0) + " km", x - 3, y - 8);
 	}
 
 	public float getClosestDistance(float distance) {

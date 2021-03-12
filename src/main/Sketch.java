@@ -97,8 +97,9 @@ public class Sketch extends PApplet  {
 		println("Animation Dimensions: " + w + "x" + h);
 		println("Polling Interval: " + data.dataInterval + " " + data.timeUnit);
 
-		//
-		map = new UnfoldingMap(this, 0, 0, w, h, data.provider);
+		// 
+		map = new UnfoldingMap(this, "0", 0, 0, w, h, false, false, data.provider);
+
 		map.zoomAndPanToFit(data.locations);
 		map.setTweening(true);
 		eventDispatcher = MapUtils.createDefaultEventDispatcher(this, map);

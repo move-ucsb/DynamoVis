@@ -374,15 +374,15 @@ public class DataPanel extends JPanel implements ActionListener {
 		okButton.addActionListener(this);
 
 
-		cancelButton = new JButton("Cancel");
-		add(cancelButton, "cell 0 12 3 1,alignx right,aligny bottom");
-		cancelButton.setActionCommand("cancel");
-		cancelButton.addActionListener(this);
+		// cancelButton = new JButton("Cancel");
+		// add(cancelButton, "cell 0 12 3 1,alignx right,aligny bottom");
+		// cancelButton.setActionCommand("cancel");
+		// cancelButton.addActionListener(this);
 
-		helpButton = new JButton("Help");
-		add(helpButton, "cell 0 12 3 1,alignx right,aligny bottom");
-		helpButton.setActionCommand("help");
-		helpButton.addActionListener(this);
+		// helpButton = new JButton("Help");
+		// add(helpButton, "cell 0 12 3 1,alignx right,aligny bottom");
+		// helpButton.setActionCommand("help");
+		// helpButton.addActionListener(this);
 
 	}
 

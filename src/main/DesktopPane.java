@@ -281,44 +281,18 @@ public class DesktopPane extends JFrame implements ActionListener {
 		System.out.println("# DynamoVis Animation Tool");
 		System.out.println("# Copyright (C) 2016 Glenn Xavier");
 		System.out.println("#      Updated: 2021 Mert Toka");
-		System.out.println("# Build 0.4.1.4-dev, Mar 12, 2021");
+		System.out.println("# Build 0.4.1.5-dev, Mar 12, 2021");
 		System.out.println("# This program comes with ABSOLUTELY NO WARRANTY");
 		System.out.println("# This is free software, and you are welcome to \nredistribute it under certain conditions.");
 		System.out.println("");
 	}
 
 	public void setupSketch() {
-
-		// Hardcoded position values
-		// int sketchW = (int) animationSize.getWidth();
-		// int sketchH = (int) animationSize.getHeight();
-		// int sketchX = sWidth - sketchW - 430;
-		// sketchX = sketchX < 0 ? 0 : sketchX%sWidth;
-		// int sketchY = (int) (sHeight * 0.05);
-		// sketchY = sketchY < 0 ? 0 : sketchY%sHeight;
-		// int timelineX = sketchX - 8;
-		// timelineX = timelineX < 0 ? 0 : timelineX%sWidth;
-		// int timelineY = sketchY + sketchH + 5;
-		// timelineY = timelineY < 0 ? 0 : timelineY%sHeight;
-		// int timelineW = sketchW + 16;
-		// int timelineH = 250;
-		// int cpX = sketchX - (int) controlContainer.getBounds().getWidth();
-		// cpX = cpX < 0 ? 0 : cpX%sWidth;
-		// int cpY = sketchY - 32;
-		// cpY = cpY < 0 ? 0 : cpY%sHeight;
-
 		sketch = new Sketch();
 		sketch.setParent(this);
 		sketch.setSize((int) animationSize.getWidth(), (int) animationSize.getHeight());
-		sketch.run(0, 0);
+		sketch.run(0, 0); // temp location
 		sketch.getSurface().setTitle(dataConfigPanel.getSurfaceTitle());
-
-		// timeline and control panel location and size
-		// controlContainer.setLocation(cpX, cpY);
-		// timelineContainer.setLocation(timelineX, timelineY);
-		// if (startup) {
-		// 	timelineContainer.setSize(timelineW, timelineH);
-		// }
 	}
 
 	private void setupGUI() {
@@ -596,7 +570,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 			wl.restoreLocations();
 		}
 
-		if (startup || timeline.isSelected()) {
+		if (startup) {
 			timelineContainer.setVisible(true);
 		}
 
@@ -631,12 +605,19 @@ public class DesktopPane extends JFrame implements ActionListener {
 	}
 
 	public void resetWindowLocs() {
-		// Hardcoded position values
 		int sketchW = (int) animationSize.getWidth();
 		int sketchH = (int) animationSize.getHeight();
-		int sketchX = (int) controlContainer.getBounds().getWidth() + 10;
+
+		int cpW = (int) controlContainer.getBounds().getWidth();
+		int cpH = sketchH + 40;
+		int cpX = 10;
+		cpX = cpX < 0 ? 0 : cpX%sWidth;
+		int cpY = 20;
+		cpY = cpY < 0 ? 0 : cpY%sHeight;
+
+		int sketchX = cpW + 10;
 		sketchX = sketchX < 0 ? 0 : sketchX%sWidth;
-		int sketchY = 20;
+		int sketchY = cpY;
 		sketchY = sketchY < 0 ? 0 : sketchY%sHeight;
 
 		int timelineX = sketchX;
@@ -646,20 +627,15 @@ public class DesktopPane extends JFrame implements ActionListener {
 		int timelineW = sketchW;
 		int timelineH = 250;
 		
-		int cpX = sketchX - (int) controlContainer.getBounds().getWidth();
-		cpX = cpX < 0 ? 0 : cpX%sWidth;
-		int cpY = sketchY;
-		cpY = cpY < 0 ? 0 : cpY%sHeight;
-		
 		int statusW = 410;
 		int statusH = (int) (sHeight * 0.3);
 		int statusX = sWidth - statusW - 10;
 		int statusY = sketchY;
 
-		int dataW = statusW;
-		int dataH = (int) (sHeight - (this.getLocation().y) * 1.1);
 		int dataX = statusX;
 		int dataY = statusY + statusH;
+		int dataW = statusW;
+		int dataH = sHeight - statusH - 80;
 
 		setLocation(dataX, dataY);
 		setSize(dataW, dataH);
@@ -672,6 +648,8 @@ public class DesktopPane extends JFrame implements ActionListener {
 		timelineContainer.setSize(timelineW, timelineH);
 		// asContainer.setLocationRelativeTo(this);
 		controlContainer.setLocation(cpX, cpY);
+		controlContainer.setSize(cpW, cpH);
+		controlContainer.setResizable(true);
 		recordContainer.setLocationRelativeTo(this);
 		baseMapContainer.setLocationRelativeTo(this);
 		textOutput.setLocation(statusX, statusY);
@@ -720,12 +698,12 @@ public class DesktopPane extends JFrame implements ActionListener {
 		editMenu.setEnabled(false);
 		menuBar.add(editMenu);
 
-		JMenuItem editData = new JMenuItem("Data Configuration");
-		editData.setMnemonic(KeyEvent.VK_D);
-		editData.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.ALT_MASK));
-		editData.setActionCommand("edit");
-		editData.addActionListener(this);
-		editMenu.add(editData);
+		// JMenuItem editData = new JMenuItem("Data Configuration");
+		// editData.setMnemonic(KeyEvent.VK_D);
+		// editData.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.ALT_MASK));
+		// editData.setActionCommand("edit");
+		// editData.addActionListener(this);
+		// editMenu.add(editData);
 
 		JMenuItem baseMap = new JMenuItem("Basemap Provider");
 		baseMap.setEnabled(true);
@@ -942,42 +920,42 @@ public class DesktopPane extends JFrame implements ActionListener {
 		record.addActionListener(this);
 		export.add(record);
 
-		JMenu help = new JMenu("Help");
-		help.setMnemonic(KeyEvent.VK_H);
-		menuBar.add(help);
+		// JMenu help = new JMenu("Help");
+		// help.setMnemonic(KeyEvent.VK_H);
+		// menuBar.add(help);
 
-		JMenu dev = new JMenu("Dev");
-		menuBar.add(dev);
+		// JMenuItem about = new JMenuItem("About");
+		// about.setActionCommand("about");
+		// about.addActionListener(this);
+		// about.setEnabled(false);
+		// help.add(about);
 
-		JMenuItem histo = new JMenuItem("HISTO");
-		histo.setActionCommand("histo");
-		histo.addActionListener(this);
-		histo.setEnabled(false);
-		dev.add(histo);
+		// JMenu dev = new JMenu("Dev");
+		// menuBar.add(dev);
 
-		JMenuItem plot = new JMenuItem("PLOT");
-		plot.setActionCommand("plot");
-		plot.addActionListener(this);
-		plot.setEnabled(false);
-		dev.add(plot);
+		// JMenuItem histo = new JMenuItem("HISTO");
+		// histo.setActionCommand("histo");
+		// histo.addActionListener(this);
+		// histo.setEnabled(false);
+		// dev.add(histo);
 
-		JMenuItem corr = new JMenuItem("CORR");
-		corr.setActionCommand("corr");
-		corr.addActionListener(this);
-		corr.setEnabled(false);
-		dev.add(corr);
+		// JMenuItem plot = new JMenuItem("PLOT");
+		// plot.setActionCommand("plot");
+		// plot.addActionListener(this);
+		// plot.setEnabled(false);
+		// dev.add(plot);
 
-		JMenuItem fps = new JMenuItem("FPS");
-		fps.setActionCommand("fps");
-		fps.addActionListener(this);
-		fps.setEnabled(false);
-		dev.add(fps);
+		// JMenuItem corr = new JMenuItem("CORR");
+		// corr.setActionCommand("corr");
+		// corr.addActionListener(this);
+		// corr.setEnabled(false);
+		// dev.add(corr);
 
-		JMenuItem about = new JMenuItem("About");
-		about.setActionCommand("about");
-		about.addActionListener(this);
-		about.setEnabled(false);
-		help.add(about);
+		// JMenuItem fps = new JMenuItem("FPS");
+		// fps.setActionCommand("fps");
+		// fps.addActionListener(this);
+		// fps.setEnabled(false);
+		// dev.add(fps);
 
 		return menuBar;
 	}
@@ -1012,13 +990,9 @@ public class DesktopPane extends JFrame implements ActionListener {
 			case "new" -> {
 				if (sketch != null) 	sketch.exit();
 			}
-			case "edit" -> {
-				if (sketch != null)	    sketch.exit();
-			}
-			case "color" -> {
-			}
-			case "legend" -> {
-			}
+			case "edit" -> {}
+			case "color" -> {}
+			case "legend" -> {}
 			case "quit" -> quit();
 			case "record" -> recordContainer.setVisible(true);
 			case "basemap" -> baseMapContainer.setVisible(true);
