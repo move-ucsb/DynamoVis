@@ -224,7 +224,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		setLocation(sWidth / 5, sHeight / 5);
 		dataConfigPanel = new DataPanel(this);
 		setContentPane(dataConfigPanel);
-		setIconImage(new ImageIcon(this.getClass().getResource("logo32_empty.png")).getImage());  // app icon
+		setIconImage(new ImageIcon(this.getClass().getClassLoader().getResource("logo32_empty.png")).getImage());  // app icon
 		pack();
 		wl.registerWindow(this);
 
@@ -281,7 +281,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		System.out.println("# DynamoVis Animation Tool");
 		System.out.println("# Copyright (C) 2016 Glenn Xavier");
 		System.out.println("#      Updated: 2021 Mert Toka");
-		System.out.println("# Build 0.4.1.5-dev, Mar 12, 2021");
+		System.out.println("# Build 0.4.1.6-dev, Mar 19, 2021");
 		System.out.println("# This program comes with ABSOLUTELY NO WARRANTY");
 		System.out.println("# This is free software, and you are welcome to \nredistribute it under certain conditions.");
 		System.out.println("");
@@ -557,6 +557,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		editMenu.setEnabled(true);
 		// shapeFile.setEnabled(true);
 		timeline.setEnabled(true);
+		timeline.setSelected(true);
 		// activityCheck.setEnabled(true);
 		// setParaCheck.setEnabled(true);
 		// Bdy_Viz_Check.setEnabled(true);

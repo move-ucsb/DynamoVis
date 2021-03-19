@@ -59,7 +59,7 @@ public class BaseMapPanel extends JPanel {
 			put("ESRI NatGeo", new EsriProvider.NatGeoWorldMap());
 			put("ESRI Ocean Basemap", new EsriProvider.OceanBasemap());
 			put("ESRI World Gray Canvas", new EsriProvider.WorldGrayCanvas());
-			put("ESRI World Physical", new EsriProvider.WorldPhysical());
+			// put("ESRI World Physical", new EsriProvider.WorldPhysical());
 			put("ESRI World Shaded Relief", new EsriProvider.WorldShadedRelief());
 			put("ESRI World Topo", new EsriProvider.WorldTopoMap());
 			// put("Yahoo Aerial", new Yahoo.AerialProvider());

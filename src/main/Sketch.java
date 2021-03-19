@@ -24,7 +24,12 @@ package main;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 
+
 import com.jogamp.nativewindow.WindowClosingProtocol.WindowClosingMode;
+
+
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
 import gui.ControlPanel;
 import utils.PointRecord;
@@ -72,10 +77,10 @@ public class Sketch extends PApplet  {
 	}
 	// setup is replaced by settings in Processing 3
 	public void settings() {
-		size(w, h, P2D);
+		size(w, h, P3D);
 
 		// set icon
-		PJOGL.setIcon(parent.getClass().getResource("logo32.png").getPath());
+		PJOGL.setIcon(parent.getClass().getClassLoader().getResource("logo32.png").getPath());
 	}
 	
 	public void setup() {
@@ -87,6 +92,11 @@ public class Sketch extends PApplet  {
 			final com.jogamp.newt.Window w = (com.jogamp.newt.Window) getSurface().getNative();
 			w.setDefaultCloseOperation(WindowClosingMode.DISPOSE_ON_CLOSE);
 			// w.setAlwaysOnTop(true);
+		}
+		else {
+			// Not Tested
+			final JFrame w = (JFrame) getSurface().getNative();
+			w.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		}
 
 		// NONOPENGL ICON SETUP
@@ -105,6 +115,7 @@ public class Sketch extends PApplet  {
 		eventDispatcher = MapUtils.createDefaultEventDispatcher(this, map);
 		map.zoomAndPanToFit(data.locations); // sometimes the first attempt zooms too far and bugs out, so do it again
 
+
 		//
 		legend = new Legend(this, data, parent, map);
 		resetLegend();
@@ -120,6 +131,9 @@ public class Sketch extends PApplet  {
 	// shuts down the whole java environment
 	@Override
 	public void exitActual() {
+		// minimize the window if it doesn't get disposed
+		getSurface().setVisible(false);
+
 		// hide timeline and control panel
 		parent.controlContainer.setVisible(false);
 		parent.timelineContainer.setVisible(false);
@@ -129,9 +143,7 @@ public class Sketch extends PApplet  {
 		parent.startup = true;
 		parent.dataConfigPanel.okButton.setEnabled(true);
 
-		// this.stop();
-		// com.jogamp.newt.Window w = (com.jogamp.newt.Window) getSurface().getNative();
-		// w.sendWindowEvent(WindowEvent.EVENT_WINDOW_DESTROYED);
+		noLoop();
 	}
 
 	public void resetLegend() {
@@ -176,8 +188,8 @@ public class Sketch extends PApplet  {
 		background(0, 0, 35);
 
 		pushMatrix();
-			// translate(0, 0, -5);
-			map.draw();
+		translate(0, 0, -5);
+		map.draw();
 		popMatrix();
 
 		for (Entry<String, Track> entry : parent.trackList.entrySet()) {
@@ -190,6 +202,8 @@ public class Sketch extends PApplet  {
 				path.beginShape();
 				path.noFill();
 				path.strokeWeight(4);
+				path.strokeJoin(ROUND);  // make line connections rounded
+				// path.strokeCap(PROJECT); // make start and end of lines square
 
 				PShape brush = createShape();
 				boolean brushed = false;
@@ -275,11 +289,12 @@ public class Sketch extends PApplet  {
 									size = pointSize;
 								}
 								pushMatrix();
-								// translate(0, 0, -1);
+								translate(0, 0, -1);
 								ellipse(pos.x, pos.y, size, size);
 								popMatrix();
 							}
 
+							
 							if (data.strokeWeightToggle && data.strokeWeightSelection != null) {
 								String strokeWeightVar = data.strokeWeightSelection;
 								float strokeWeightValue = (Float) marker.getProperty(strokeWeightVar);
@@ -342,21 +357,21 @@ public class Sketch extends PApplet  {
 					}
 				}
 				pushMatrix();
-					// translate(0, 0, -3);
+					translate(0, 0, -3);
 					if (brushed)
 						brush.endShape();
 					shape(brush);
 				popMatrix();
 
 				pushMatrix();
-					// translate(0, 0, -4);
+					translate(0, 0, -4);
 					if (data.ghost)
 						ghost.endShape();
 					shape(ghost);
 				popMatrix();
 
 				pushMatrix();
-					// translate(0, 0, -2);
+					translate(0, 0, -2);
 					path.endShape();
 					shape(path);
 				popMatrix();
@@ -389,13 +404,13 @@ public class Sketch extends PApplet  {
 		}
 
 		pushMatrix();
-			// translate(0, 0, 0);
+			translate(0, 0, 0);
 			legend.display();
 			legend.drag(mouseX, mouseY);
 		popMatrix();
 
 		if (data.save) {
-			String file = String.format("temp/" + parent.animationTitle + parent.exportCounter + "/temp%08d.jpeg",
+			String file = String.format("export/temp/" + parent.animationTitle + parent.exportCounter + "/temp%08d.jpeg",
 					data.frameCounter);
 			saveFrame(file);
 			data.frameCounter++;

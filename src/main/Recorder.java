@@ -21,6 +21,7 @@ package main;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
 import java.io.IOException;
 import java.text.DecimalFormat;
 
@@ -30,6 +31,7 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.JToggleButton;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.Timer;
 
@@ -50,6 +52,7 @@ public class Recorder extends JPanel {
 	Timer timer;
 	DateTime dateTime;
 	JLabel timeLabel;
+	JCheckBox chkTemp;
 	JButton btnSave;
 
 	public Recorder(DesktopPane father) {
@@ -65,10 +68,23 @@ public class Recorder extends JPanel {
 		    }
 		};
 		timer = new Timer(timeDelay, time);
-		
-		timeLabel = new JLabel("00.00s");
-		add(timeLabel, "cell 0 0 3 1,alignx right");		
 
+		// checkbox to store frames
+		chkTemp = new JCheckBox("Store frames");
+		add(chkTemp, "cell 0 0 2,alignx left");
+		// chkTemp.addItemListener(new ItemListener() {
+		// 	public void itemStateChanged(ItemEvent evt) {
+		// 		JCheckBox cb = (JCheckBox) evt.getSource();
+		// 		if (cb.isSelected()) {
+
+		// 		} else {
+
+		// 		}
+		// 	}
+		// });
+
+		timeLabel = new JLabel("00.00s");
+		add(timeLabel, "cell 1 0 2,alignx right");
 		
 		final JToggleButton tglbtnRecord = new JToggleButton("Record");
 		add(tglbtnRecord, "cell 0 1");
@@ -115,16 +131,15 @@ public class Recorder extends JPanel {
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				try {
-					new SequenceEncoder(parent, parent.animationTitle + parent.exportCounter + ".mp4", 0, data.frameCounter);						
+					new SequenceEncoder(parent, parent.animationTitle + parent.exportCounter + ".mp4", 
+						0, data.frameCounter, 
+						!chkTemp.isSelected());						
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
 				data.frameCounter = 0;
-				timeLabel.setText("00.00s");
-				
-				
+				timeLabel.setText("00.00s");	
 			}
 		});	
 		

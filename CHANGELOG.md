@@ -1,25 +1,22 @@
 #### Things to do:
-- More legend options
-- Save animation state/configuration
-- Layers (maybe for advanced layout?)
-- Vector EPS outputs for publications
-- Plot and corr modules
-- Pending library upgrades
-  - log4j 1.2.15 ( 2.14.0 available )
-  - miglayout 4.2 ( 5.0 available )
-  - jcodec 0.1.6 -> 0.2.5 ( broke the video encoder when upgraded, pending for later)
-- data loading improvements 
+[ ] Unfolding maps wrapping at the edge of the map
+  - if data contains +/- longtitudes, handle it separately 
+[ ] Pending library upgrades
+  - log4j 1.2.15 (2.14.1 available) 
+    - Unfolding Maps uses 1.2.15
+  - miglayout 4.2 (5.0 available)
+  - jcodec 0.1.6 (0.2.5 available) 
+    - Drastically changes the encoding method
+[ ] Data loading improvements 
   - header for common data fields
   - time formatting needs to be more flexible
-- unfolding maps wrapping at the edge of the map
-  - if data contains +/- longtitudes, handle it separately 
-- order
-  - 1) processing3 integration 
-    -> publish as a new release
-  - 2) spacetime cube
-  - 3) timeline improvements
-- Add contents to the help box (link to publication?)
+  - should use all fields
+[ ] Add contents to the help box
 
+#### Roadmap:
+[ ] Publish updated release
+[ ] Incorporate spacetime cube
+[ ] Timeline improvements
 
 ### CHANGES
 
@@ -32,15 +29,21 @@
 [ ] unfolding maps, data longitude, [??] 
 [ ] -- dummy data set, shift already existing dataset
 
-[ ] shutdown behaviour, opengl thread is lingering
-
 [ ] external "tiger" data variables should be read
 [ ] -- shouldn't ignore any variables, let users to select those as well 
 
-[ ] change export location and remove temp files after
-[ ] change logos to resources folder 
-[ ] look and feel of the windows (should obey the system theme settings?)
 [ ] timeline shift-click, disable this interaction
+
+[ ] go over the whole system to see if anything is broken
+
+##### 0.4.1.6 - 2021/03/19
+- "New" from task bar minimizes sketch window only (still TODO)
+- OpenGl thread does not linger on exit
+- Moved icons to "resources" folder
+- Export location changed to "export" in the root folder
+- "Store frames" checkbox in the Record view to either keep or delete temporary frame data
+- Fixed the glitchy line rendering when two consecutive locations are too close
+- Fixed line thickness not applying to individual vertices
 
 ##### 0.4.1.5 - 2021/03/12
 - Data config pane has smaller minimum width
@@ -50,7 +53,7 @@
 - Timeline is visible again after the second animation is created
 - Resolved a bug where the data config panel was scaling right before creating an animation
 - Default window locations and sizes adjusted (reset locations)
-- No windows are spawned outside the screen
+- No windows are spawned outside the screen with different animation resolutions
 - Disabled Cancel and Help windows for now.
 - Legend edits (scale, tag text cropping and wrapping).
 - Removed "Edit/Data Config" menubar subitem.
@@ -81,7 +84,7 @@
 ##### 0.4.1.0 - 2021/02/10
 - Mert started working on integration of all releases
 - Project name changed to DynamoVis
-- Started running with Java 15.0.2.7
+- Started running with **Java 15.0.2.7**
 - Upgraded libraries: commons-math3 3.3 to 3.6.1, joda-time 2.3 to 2.10.10, opencsv 2.3 to 5.3 (added commons-lang3 3.11 for opencsv 5.3)
 
 #### Project Name: `DYNAMO`

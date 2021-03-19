@@ -27,8 +27,11 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
@@ -66,12 +69,14 @@ public class SequenceEncoder implements PropertyChangeListener {
     Task operation;
     int start;
     int end;
+    boolean deleteTemp;
 
-    public SequenceEncoder(DesktopPane father, String name, int s, int e) throws IOException {
+    public SequenceEncoder(DesktopPane father, String name, int s, int e, boolean del) throws IOException {
         parent = father;
-        File file = new File(name);
+        File file = new File("export/"+name);
         start = s;
         end = e;
+        deleteTemp = del;
         this.ch = NIOUtils.writableFileChannel(file);
 
         // Transform to convert between RGB and YUV
@@ -114,7 +119,7 @@ public class SequenceEncoder implements PropertyChangeListener {
         protected Void doInBackground() throws Exception {
             for (int i = start; i < end; i++) {
                 BufferedImage bi = ImageIO.read(new File(
-                        String.format("temp/" + parent.animationTitle + parent.exportCounter + "/temp%08d.jpeg", i)));
+                        String.format("export/temp/" + parent.animationTitle + parent.exportCounter + "/temp%08d.jpeg", i)));
                 encoder.encodeImage(bi);
                 setProgress((int) (100 * i) / end);
             }
@@ -129,12 +134,23 @@ public class SequenceEncoder implements PropertyChangeListener {
                 @SuppressWarnings("unused")
                 Void result = get();
                 System.out.println("Video Encoding Completed");
+                
+                if(deleteTemp) {
+                    // Delete temp folder
+                    Files.walk(Path.of("export/temp"))
+                        .sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+                }
             } catch (InterruptedException e) {
 
             } catch (CancellationException e) {
                 System.out.println("Encoding Cancelled...\n");
             } catch (ExecutionException e) {
                 System.out.println("Encoding Failed: " + e.getCause());
+            } catch (IOException e) {
+                System.out.println("Failed to clear \"temp\" folder...\n");
+                e.printStackTrace();
             }
         }
     }
@@ -171,6 +187,8 @@ public class SequenceEncoder implements PropertyChangeListener {
         // Write MP4 header and finalize recording
         muxer.writeHeader();
         NIOUtils.closeQuietly(ch);
+
+        
     }
 
     @Override
