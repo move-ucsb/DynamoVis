@@ -47,7 +47,6 @@ import utils.Field;
 import utils.PointRecord;
 import utils.Track;
 
-import org.apache.commons.math3.analysis.function.Abs;
 import org.apache.commons.math3.stat.Frequency;
 import org.joda.time.DateTime;
 import org.joda.time.Period;

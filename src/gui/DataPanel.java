@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import javax.swing.JButton;
@@ -406,7 +405,8 @@ public class DataPanel extends JPanel implements ActionListener {
 
 	public void checkTags() {
 		int count = 0;
-		for (int i = 0; i < tagsTable.getRowCount(); i++) {
+		// for (int i = 0; i < tagsTable.getRowCount(); i++) {
+		for (int i = 0; i < tagModel.getRowCount(); i++) {
 			boolean check = (Boolean) tagsTable.getValueAt(i, 4);
 			if (check) {
 				count++;

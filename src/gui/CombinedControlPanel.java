@@ -80,7 +80,7 @@ public class CombinedControlPanel extends JPanel {
 					add(linePanel, "cell 0 3,growx");
 				}
 				revalidate();
-				parent.pack();
+				// parent.pack();
 				((JLabel) e.getSource()).setText("Tracks   \u25B2");
 				line = !line;
 			}
@@ -103,7 +103,7 @@ public class CombinedControlPanel extends JPanel {
 					add(pointPanel, "cell 0 6,growx");
 				}
 				revalidate();
-				parent.pack();
+				// parent.pack();
 				((JLabel) e.getSource()).setText("Points   \u25BC");
 				point = !point;
 			}
@@ -126,7 +126,7 @@ public class CombinedControlPanel extends JPanel {
 					add(vectorPanel, "cell 0 9,growx");
 				}
 				revalidate();
-				parent.pack();
+				// parent.pack();
 				((JLabel) e.getSource()).setText("Vectors   \u25B2");
 				vector = !vector;
 			}
@@ -149,7 +149,7 @@ public class CombinedControlPanel extends JPanel {
 					add(parent.legendPanel, "cell 0 12,growx");
 				}
 				revalidate();
-				parent.pack();
+				// parent.pack();
 				((JLabel) e.getSource()).setText("Legend   \u25B2");
 				parent.legend = !parent.legend;
 			}
@@ -172,7 +172,7 @@ public class CombinedControlPanel extends JPanel {
 					add(ghostPanel, "cell 0 15,growx");
 				}
 				revalidate();
-				parent.pack();
+				// parent.pack();
 				((JLabel) e.getSource()).setText("Underlay   \u25B2");
 				ghost = !ghost;
 			}

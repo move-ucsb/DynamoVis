@@ -31,10 +31,16 @@
 
 [ ] external "tiger" data variables should be read
 [ ] -- shouldn't ignore any variables, let users to select those as well 
+[ ] -- ignored ones are strings, do we want these? 
 
 [ ] timeline shift-click, disable this interaction
 
 [ ] go over the whole system to see if anything is broken
+
+
+##### 0.4.1.7 - 2021/03/25
+- Control panel toggles won't resize the data config window.
+- Loading another file does not cause a crash now. 
 
 ##### 0.4.1.6 - 2021/03/19
 - "New" from task bar minimizes sketch window only (still TODO)
