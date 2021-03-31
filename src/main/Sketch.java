@@ -154,7 +154,6 @@ public class Sketch extends PApplet  {
 		if(leftMapNeeded) leftMap = createWrappedMap(map, eventDispatcher, 1);
 		if(rightMapNeeded) rightMap = createWrappedMap(map, eventDispatcher, 2);
 
-
 		//
 		legend = new Legend(this, data, parent, map);
 		resetLegend();

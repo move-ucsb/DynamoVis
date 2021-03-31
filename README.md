@@ -3,4 +3,4 @@
 - *TODO*: 
 	- Add README
 
-- Add compiled version as release
+- Add compiled versions as release

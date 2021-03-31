@@ -1,7 +1,0 @@
-test10.csv,individual_local_identifier,Longitude,Latitude,TimeUTC,MM/dd/yy HH:mm:ss.SSS
-Females20083-20080-formatted-valid-sync.csv,individual_local_identifier,Longitude,Latitude,TimeUTC,MM/dd/yy HH:mm
-tigers_19_withFlaggedOutliers.csv,individual-local-identifier,location-long,location-lat,study.local.timestamp,yyyy-MM-dd HH:mm:ss
-albatross-normal-tracks-9track-tailcrosswind.csv,individual.local.identifier,location-long,location-lat,study.local.timestamp,yyyy-MM-dd HH:mm:ss.SSS
-albatross-normal-tracks-9track-tailcrosswind-2020.csv,individual.local.identifier,location-long,location-lat,study.local.timestamp,yyyy-MM-dd HH:mm:ss.SSS
-test10_wrappingWorld.csv,individual.local.identifier,location-long,location-lat,study.local.timestamp,yyyy-MM-dd HH:mm:ss
-test10_wrappingWorld_negative180Lon.csv,individual.local.identifier,location-long,location-lat,study.local.timestamp,yyyy-MM-dd HH:mm:ss

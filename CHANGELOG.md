@@ -1,17 +1,14 @@
 #### Things to do:
-[ ] Unfolding maps wrapping at the edge of the map
-  - if data contains +/- longtitudes, handle it separately 
 [ ] Pending library upgrades
-  - log4j 1.2.15 (2.14.1 available) 
-    - Unfolding Maps uses 1.2.15
+  - log4j 1.2.15 (2.14.1 available but Unfolding Maps uses 1.2.15)
   - miglayout 4.2 (5.0 available)
   - jcodec 0.1.6 (0.2.5 available) 
     - Drastically changes the encoding method
-[ ] Data loading improvements 
-  - header for common data fields
-  - time formatting needs to be more flexible
-  - should use all fields
 [ ] Add contents to the help box
+
+[ ] Animation window loads too slowly if both left and right maps are needed
+[ ] Legend bar scale is off while panned to the extra map
+[ ] Occasional line between the edges of main map and peripheral maps
 
 #### Roadmap:
 [ ] Publish updated release
@@ -22,13 +19,11 @@
 
 #### Project Name: `DynamoVis`
 
-[ ] Loads too slowly if both left and right maps are needed
-[ ] Legend bar scale is off while panned to the extra map
-
 ##### 0.4.1.8 - 2021/03/31
 - "New" menu item displays an appropriate text in the animation window.
-- Map repeats for dataset at the edge of the map
-  - Smooth pan and zoom are off when repeated
+- Map repeats for dataset at the edge of the map.
+- Smooth pan and zoom are off when repeated.
+- 
 
 ##### 0.4.1.7 - 2021/03/25
 - Control panel toggles won't resize the data config window.
@@ -61,8 +56,6 @@
 - Removed "Edit/Data Config" menubar subitem.
 - Removed "Help" and "Dev" menubar items
 - Removed disfunctional base maps 
-
-=======
 
 ##### 0.4.1.4 - 2021/03/11
 - Closing Processing sketch hides timeline and control panel

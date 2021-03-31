@@ -69,13 +69,10 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;

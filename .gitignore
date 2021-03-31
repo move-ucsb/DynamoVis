@@ -1,4 +1,4 @@
-# Files and folders in .gitignore are not tracked by Git
+## Files and folders in .gitignore are not tracked by Git
 
 # Visual Studio/VS Code Files
 .vs/ 
@@ -10,3 +10,6 @@
 
 # Export location
 /export
+
+# Data directory
+/data
