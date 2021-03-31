@@ -44,6 +44,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
@@ -106,6 +107,37 @@ public class DataPanel extends JPanel implements ActionListener {
 	boolean noSelectedSpinners = false;
 	boolean noSelectedTags = false;
 
+	// enables/disables all components in the view
+	public void SetComponentsEnabled(boolean enabled) {
+		// misc
+		dataChooser.setEnabled(enabled);
+		animationSize.setEnabled(enabled);
+
+		// fields
+		dataPathField.setEnabled(enabled);
+		titleField.setEnabled(enabled);
+
+		// tables
+		fieldsTable.setEnabled(enabled);
+		tagsTable.setEnabled(enabled);
+
+		// buttons
+		openFile.setEnabled(enabled);
+		helpButton.setEnabled(enabled);
+		cancelButton.setEnabled(enabled);
+		okButton.setEnabled(enabled);
+		btnDeselect1.setEnabled(enabled);
+		btnSelectAll1.setEnabled(enabled);
+		btnDeselect.setEnabled(enabled);
+		btnSelectAll.setEnabled(enabled);
+		btnRoundRange.setEnabled(enabled);
+
+		// spinner
+		secondsSpinner.setEnabled(enabled);
+		minutesSpinner.setEnabled(enabled);
+		hoursSpinner.setEnabled(enabled);
+	}
+
 	@SuppressWarnings("serial")
 	public DataPanel(DesktopPane father) {
 		parent = father;
@@ -136,14 +168,21 @@ public class DataPanel extends JPanel implements ActionListener {
 			public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
 				Component c = super.prepareRenderer(renderer, row, column);
 
-				if (!isRowSelected(row)) {
-					c.setBackground(getBackground());
-					int modelRow = convertRowIndexToModel(row);
-					boolean type = (Boolean) getModel().getValueAt(modelRow, 5);
-					if (type) {
-						c.setBackground(Color.LIGHT_GRAY);
-					} else {
-						c.setBackground(Color.WHITE);
+				if(!fieldsTable.isEnabled()) {
+					c.setEnabled(false);
+					c.setBackground(Color.WHITE);
+				}
+				else {
+					c.setEnabled(true);
+					if (!isRowSelected(row)) {
+						c.setBackground(getBackground());
+						int modelRow = convertRowIndexToModel(row);
+						boolean type = (Boolean) getModel().getValueAt(modelRow, 5);
+						if (type) {
+							c.setBackground(Color.LIGHT_GRAY);
+						} else {
+							c.setBackground(Color.WHITE);
+						}
 					}
 				}
 
@@ -236,14 +275,21 @@ public class DataPanel extends JPanel implements ActionListener {
 			public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
 				Component c = super.prepareRenderer(renderer, row, column);
 
-				if (!isRowSelected(row)) {
-					c.setBackground(getBackground());
-					int modelRow = convertRowIndexToModel(row);
-					boolean type = (Boolean) getModel().getValueAt(modelRow, 4);
-					if (type) {
-						c.setBackground(Color.LIGHT_GRAY);
-					} else {
-						c.setBackground(Color.WHITE);
+				if(!tagsTable.isEnabled()) {
+					c.setEnabled(false);
+					c.setBackground(Color.WHITE);
+				}
+				else {
+					c.setEnabled(true);
+					if (!isRowSelected(row)) {
+						c.setBackground(getBackground());
+						int modelRow = convertRowIndexToModel(row);
+						boolean type = (Boolean) getModel().getValueAt(modelRow, 4);
+						if (type) {
+							c.setBackground(Color.LIGHT_GRAY);
+						} else {
+							c.setBackground(Color.WHITE);
+						}
 					}
 				}
 
@@ -373,12 +419,12 @@ public class DataPanel extends JPanel implements ActionListener {
 		okButton.addActionListener(this);
 
 
-		// cancelButton = new JButton("Cancel");
+		cancelButton = new JButton("Cancel");
 		// add(cancelButton, "cell 0 12 3 1,alignx right,aligny bottom");
 		// cancelButton.setActionCommand("cancel");
 		// cancelButton.addActionListener(this);
 
-		// helpButton = new JButton("Help");
+		helpButton = new JButton("Help");
 		// add(helpButton, "cell 0 12 3 1,alignx right,aligny bottom");
 		// helpButton.setActionCommand("help");
 		// helpButton.addActionListener(this);
@@ -460,7 +506,7 @@ public class DataPanel extends JPanel implements ActionListener {
 			path = dataChooser.getSelectedFile().getAbsolutePath();
 			dataPathField.setText(path);
 			LoadDataToJTable processor = new LoadDataToJTable(parent);
-			processor.loadData(path);
+			processor.loadData(path, file);
 		}
 	}
 

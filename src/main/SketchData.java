@@ -35,17 +35,12 @@ import java.util.Map.Entry;
 
 import javax.swing.JCheckBox;
 
-import org.joda.time.format.DateTimeFormatter;
-
-//import org.jfree.data.category.DefaultCategoryDataset;
 import org.joda.time.DateTime;
 
 import de.fhpotsdam.unfolding.geo.Location;
 import de.fhpotsdam.unfolding.providers.AbstractMapProvider;
 import de.fhpotsdam.unfolding.utils.GeoUtils;
 import de.fhpotsdam.unfolding.utils.ScreenPosition;
-
-//import org.geotools.map.Layer;
 
 public class SketchData {
 
@@ -84,6 +79,9 @@ public class SketchData {
 	public int totalTime;
 	public int dataInterval;
 	public String timeUnit;
+	public boolean needRightMap = false;
+	public boolean needLeftMap = false;
+	
 
 	// setting for enable the time selection of the time line with boundary
 	// visualization
@@ -244,11 +242,13 @@ public class SketchData {
 		for (Entry<String, Track> entry : data.entrySet()) {
 			Track track = entry.getValue();
 
+			if(track.requiresLeftMap) needLeftMap = true; 
+			if(track.requiresRightMap) needRightMap = true;
+
 			for (PointRecord point : track.getPoints()) {
 				locations.add(point.getLocation());
 			}
 		}
-
 		mapExtent = GeoUtils.getBoundingBox(locations);
 		System.out.println("Setting Map Extent to: " + mapExtent[0] + " " + mapExtent[1]);
 

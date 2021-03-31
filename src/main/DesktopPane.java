@@ -281,7 +281,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		System.out.println("# DynamoVis Animation Tool");
 		System.out.println("# Copyright (C) 2016 Glenn Xavier");
 		System.out.println("#      Updated: 2021 Mert Toka");
-		System.out.println("# Build 0.4.1.7-dev, Mar 25, 2021");
+		System.out.println("# Build 0.4.1.8-dev, Mar 31, 2021");
 		System.out.println("# This program comes with ABSOLUTELY NO WARRANTY");
 		System.out.println("# This is free software, and you are welcome to \nredistribute it under certain conditions.");
 		System.out.println("");
@@ -599,7 +599,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		startup = false;
 
 		// prevent creating new animation when sketch is running
-		dataConfigPanel.okButton.setEnabled(false);
+		dataConfigPanel.SetComponentsEnabled(false);
 		resetWindowLocs();
 
 		System.gc();
@@ -989,7 +989,10 @@ public class DesktopPane extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
 			case "new" -> {
-				if (sketch != null) 	sketch.exit();
+				if (sketch != null) 	{
+					sketch.isExiting = true;
+					// sketch.exit();
+				}
 			}
 			case "edit" -> {}
 			case "color" -> {}

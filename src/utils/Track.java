@@ -41,12 +41,15 @@ public class Track {
 	private boolean visible;
 	public SketchData data;
 
+	public boolean requiresLeftMap = false;
+	public boolean requiresRightMap = false;
+
 	private ArrayList<PointRecord> trackPoints = new ArrayList<PointRecord>();
 	private ArrayList<String> trackProperties = new ArrayList<String>();
 
 	public ArrayList<DateTime> temp = new ArrayList<DateTime>();
 
-	public void addPoint(PointRecord point) {
+	public void addPoint(PointRecord point) {	
 		this.trackPoints.add(point);
 		HashMap<String, Object> props = point.getProperties();
 		for (Entry<String, Object> entry : props.entrySet()) {
@@ -162,6 +165,48 @@ public class Track {
 		Integer interval = intervalLong != null ? intervalLong.intValue() : null;
 
 		this.setInterval(interval);
+	}
+
+	public void checkEdgeOfMap() {
+		boolean closeToRightEdge = false;
+		boolean pastRightEdge = false;
+		boolean closeToLeftEdge = false;
+		boolean pastLeftEdge = false;
+		float lonCentroid = 0;
+		
+		// check if close to edge
+		for (PointRecord point : trackPoints) {
+			float y = point.getLocation().y;
+			
+			if(y > 175)  closeToRightEdge = true; 
+			if(y > 180)  pastRightEdge = true; 
+			if(y < -175) closeToLeftEdge = true;
+			if(y < -180) pastLeftEdge = true;
+		
+			lonCentroid += y;
+		}
+		lonCentroid /= trackPoints.size();
+
+		// if close to edge
+		if((closeToLeftEdge && closeToRightEdge) || pastLeftEdge || pastRightEdge) {
+			if(lonCentroid > 0) {
+				requiresRightMap = true;
+			} 
+			else {
+				requiresLeftMap = true;
+			}
+			
+			// adjust points
+			if(closeToLeftEdge && closeToRightEdge)
+				for (PointRecord point : trackPoints) {
+					if(lonCentroid > 0) {
+						point.adjustNegativeLongitudes();
+					} 
+					else {
+						point.adjustPositiveLongitudes();
+					}
+				}
+		}
 	}
 
 }

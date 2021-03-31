@@ -22,6 +22,7 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map.Entry;
 
 
@@ -45,6 +46,7 @@ import processing.core.PShape;
 import processing.opengl.PJOGL;
 import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.events.EventDispatcher;
+import de.fhpotsdam.unfolding.geo.Location;
 import de.fhpotsdam.unfolding.utils.MapUtils;
 import de.fhpotsdam.unfolding.utils.ScreenPosition;
 
@@ -61,8 +63,13 @@ public class Sketch extends PApplet  {
 		controlPanel = parent.controlPanel;
 	}
 
-	public UnfoldingMap map;
 	public Legend legend;
+	public UnfoldingMap map;
+	// 
+	public boolean leftMapNeeded = false;
+	public boolean rightMapNeeded = false;
+	UnfoldingMap leftMap;
+	UnfoldingMap rightMap;
 
 	int colorMin;
 	int colorMax;
@@ -70,7 +77,33 @@ public class Sketch extends PApplet  {
 
 	EventDispatcher eventDispatcher;
 
+	// RUN/EXIT BEHAVIOURS -----------------
+	public void run(int x, int y) {
+		String[] processingArgs = {"--location="+x+","+y, "DynamoVis Animation"};
+		PApplet.runSketch(processingArgs, this);
+	}
+	// Overriden to prevent System.exit(0) command, that 
+	// shuts down the whole java environment
+	@Override
+	public void exitActual() {
+		// minimize the window if it doesn't get disposed
+		getSurface().setVisible(false);
+
+		// hide timeline and control panel
+		parent.controlContainer.setVisible(false);
+		parent.timelineContainer.setVisible(false);
+		
+		// get ready for another animation
+		parent.sketch = null;
+		parent.startup = true;
+		parent.dataConfigPanel.SetComponentsEnabled(true);
+
+		noLoop();
+	}
+	//// 
+
 	int w, h;
+	public boolean isExiting = false;
 	public void setSize(int w, int h) {
 		this.w = w;
 		this.h = h; 
@@ -108,12 +141,18 @@ public class Sketch extends PApplet  {
 		println("Polling Interval: " + data.dataInterval + " " + data.timeUnit);
 
 		// 
+		leftMapNeeded = data.needLeftMap;
+		rightMapNeeded = data.needRightMap;
 		map = new UnfoldingMap(this, "0", 0, 0, w, h, false, false, data.provider);
 
 		map.zoomAndPanToFit(data.locations);
-		map.setTweening(true);
+		if(!leftMapNeeded && !rightMapNeeded) map.setTweening(true);
 		eventDispatcher = MapUtils.createDefaultEventDispatcher(this, map);
 		map.zoomAndPanToFit(data.locations); // sometimes the first attempt zooms too far and bugs out, so do it again
+
+		// extra maps
+		if(leftMapNeeded) leftMap = createWrappedMap(map, eventDispatcher, 1);
+		if(rightMapNeeded) rightMap = createWrappedMap(map, eventDispatcher, 2);
 
 
 		//
@@ -121,76 +160,52 @@ public class Sketch extends PApplet  {
 		resetLegend();
 		println();
 	}
-
-	// RUN/EXIT BEHAVIOURS -----------------
-	public void run(int x, int y) {
-		String[] processingArgs = {"--location="+x+","+y, "DynamoVis Animation"};
-		PApplet.runSketch(processingArgs, this);
+	/// extra map functions
+	// https://github.com/tillnagel/unfolding/commit/46d03cf6ebc6e01a35dc0aede0a02b428b9cf68d
+	public UnfoldingMap createWrappedMap(UnfoldingMap mainMap, EventDispatcher eventDispatcher, int id) {
+		float x = id==1 ? -w : w;
+		UnfoldingMap wrappedMap = new UnfoldingMap(this, Integer.toString(id), x, 0, w, h, false, false, data.provider);
+		wrappedMap.zoomToLevel(mainMap.getZoomLevel());
+		eventDispatcher.register(wrappedMap, "zoom", mainMap.getId());
+		return wrappedMap;
 	}
-	// Overriden to prevent System.exit(0) command, that 
-	// shuts down the whole java environment
-	@Override
-	public void exitActual() {
-		// minimize the window if it doesn't get disposed
-		getSurface().setVisible(false);
+	public void updateMap(UnfoldingMap mainMap, UnfoldingMap nextMap, boolean left) {
+		float degree = (left) ? -180 : 180;
 
-		// hide timeline and control panel
-		parent.controlContainer.setVisible(false);
-		parent.timelineContainer.setVisible(false);
-		
-		// get ready for another animation
-		parent.sketch = null;
-		parent.startup = true;
-		parent.dataConfigPanel.okButton.setEnabled(true);
-
-		noLoop();
-	}
-
-	public void resetLegend() {
-		legend.setLocation(0, height - 40);
-	}
-
-	public void keyPressed() {
-		switch (key) {
-			case 'z':
-				map.zoomIn();
-				break;
-			case 'x':
-				map.zoomOut();
-				break;
-			case 'c':
-				map.zoomAndPanToFit(data.locations);
-				break;
+		// Move next map
+		ScreenPosition pos = mainMap.getScreenPosition(new Location(0, degree));
+		nextMap.move(pos.x, 0);
+		if (left) {
+			nextMap.moveBy(-800, 0);
 		}
+
+		// Pan next map
+		nextMap.panTo(new Location(0, 0));
+		ScreenPosition map1RightPos = mainMap.getScreenPosition(new Location(0, degree));
+		Location map1RightLocation = nextMap.getLocation(map1RightPos);
+		float lonDiff = (-map1RightLocation.getLon()) - degree;
+		nextMap.panTo(new Location(-map1RightLocation.getLat(), lonDiff));
+
+		// Ensure next map is always over main map (push 1px)
+		float fixLastPixel = (left) ? 1 : -1;
+		nextMap.panBy(fixLastPixel, 0);
 	}
+	////
 
-	public void register() {
-		eventDispatcher.register(map, "pan", map.getId());
-	}
-
-	public void unregister() {
-		eventDispatcher.unregister(map, "pan", map.getId());
-	}
-
-	public void mousePressed() {
-		legend.clicked(mouseX, mouseY);
-	}
-
-	public void mouseReleased() {
-		legend.stopDragging();
-	}
-
-	public void mouseMoved() {
-
-	}
-
+	//
 	public void draw() {
 		background(0, 0, 35);
 
-		pushMatrix();
-		translate(0, 0, -5);
-		map.draw();
-		popMatrix();
+		if(leftMapNeeded) updateMap(map, leftMap, true);
+		if(rightMapNeeded) updateMap(map, rightMap, false);
+		if(!isExiting) {
+			// pushMatrix();
+			// translate(0, 0, -5);
+			map.draw();
+			if(leftMapNeeded) leftMap.draw();
+			if(rightMapNeeded) rightMap.draw();
+			// popMatrix();
+		}
 
 		for (Entry<String, Track> entry : parent.trackList.entrySet()) {
 			// 
@@ -288,10 +303,10 @@ public class Sketch extends PApplet  {
 											data.pointSizeMax);
 									size = pointSize;
 								}
-								pushMatrix();
-								translate(0, 0, -1);
+								// pushMatrix();
+								// translate(0, 0, -1);
 								ellipse(pos.x, pos.y, size, size);
-								popMatrix();
+								// popMatrix();
 							}
 
 							
@@ -356,25 +371,27 @@ public class Sketch extends PApplet  {
 						}
 					}
 				}
-				pushMatrix();
-					translate(0, 0, -3);
-					if (brushed)
-						brush.endShape();
-					shape(brush);
-				popMatrix();
-
-				pushMatrix();
-					translate(0, 0, -4);
-					if (data.ghost)
-						ghost.endShape();
-					shape(ghost);
-				popMatrix();
-
-				pushMatrix();
-					translate(0, 0, -2);
-					path.endShape();
-					shape(path);
-				popMatrix();
+				if(!isExiting) {
+					// pushMatrix();
+						// translate(0, 0, -3);
+						if (brushed)
+							brush.endShape();
+						shape(brush);
+					// popMatrix();
+	
+					// pushMatrix();
+					// 	translate(0, 0, -4);
+						if (data.ghost)
+							ghost.endShape();
+						shape(ghost);
+					// popMatrix();
+	
+					// pushMatrix();
+					// 	translate(0, 0, -2);
+						path.endShape();
+						shape(path);
+					// popMatrix();
+				}
 			}
 		}
 
@@ -403,11 +420,13 @@ public class Sketch extends PApplet  {
 			}
 		}
 
-		pushMatrix();
-			translate(0, 0, 0);
-			legend.display();
-			legend.drag(mouseX, mouseY);
-		popMatrix();
+		if(!isExiting) {
+			// pushMatrix();
+			// 	translate(0, 0, 0);
+				legend.display();
+				legend.drag(mouseX, mouseY);
+			// popMatrix();
+		}
 
 		if (data.save) {
 			String file = String.format("export/temp/" + parent.animationTitle + parent.exportCounter + "/temp%08d.jpeg",
@@ -415,5 +434,73 @@ public class Sketch extends PApplet  {
 			saveFrame(file);
 			data.frameCounter++;
 		}
+
+		if (isExiting) {
+			textFont(legend.font2);
+			background(20);
+			fill(245);
+			textAlign(CENTER, CENTER);
+			text("\"" + parent.animationTitle + "\" animation was terminated.\nFeel free to close this window.", width/2, height/2);
+
+			exitActual();
+		}
 	}
+
+	// 
+	public void resetLegend() {
+		legend.setLocation(0, height - 40);
+	}
+
+	public void keyPressed() {
+		switch (key) {
+			case 'z':
+				zoomIn();
+				break;
+			case 'x':
+				zoomOut();
+				break;
+			case 'c':
+				zoomAndPan(data.locations);
+				break;
+		}
+	}
+
+	// 
+	public void zoomIn() {
+		map.zoomIn();
+		if(leftMap != null) leftMap.zoomIn();
+		if(rightMap != null) rightMap.zoomIn();
+	}
+	public void zoomOut() {
+		map.zoomOut();
+		if(leftMap != null) leftMap.zoomOut();
+		if(rightMap != null) rightMap.zoomOut();
+	}
+	public void zoomAndPan(List<Location> locations) {
+		map.zoomAndPanToFit(locations);
+		if(leftMap != null) leftMap.zoomAndPanToFit(locations);
+		if(rightMap != null) rightMap.zoomAndPanToFit(locations);
+	}
+
+	public void register() {
+		eventDispatcher.register(map, "pan", map.getId());
+	}
+
+	public void unregister() {
+		eventDispatcher.unregister(map, "pan", map.getId());
+	}
+
+	public void mousePressed() {
+		legend.clicked(mouseX, mouseY);
+	}
+
+	public void mouseReleased() {
+		legend.stopDragging();
+	}
+
+	public void mouseMoved() {
+
+	}
+
+
 }

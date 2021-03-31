@@ -193,7 +193,7 @@ public class ControlPanel extends JPanel {
 		this.add(zoomIn, "flowy,cell 4 4 2 1,alignx right");
 		zoomIn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				parent.sketch.map.zoomLevelIn();
+				parent.sketch.zoomIn();
 			}
 		});
 
@@ -209,8 +209,7 @@ public class ControlPanel extends JPanel {
 		this.add(center, "cell 4 4 2 1,alignx right");
 		center.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				parent.sketch.map.zoomAndPanToFit(data.locations);
-				;
+				parent.sketch.zoomAndPan(data.locations);
 			}
 		});
 
@@ -226,7 +225,7 @@ public class ControlPanel extends JPanel {
 		this.add(zoomOut, "cell 4 4 2 1,alignx right");
 		zoomOut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				parent.sketch.map.zoomLevelOut();
+				parent.sketch.zoomOut();
 			}
 		});
 

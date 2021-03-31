@@ -37,6 +37,9 @@ public class PointRecord {
 	private boolean buff;
 	private HashMap<String, Object> properties = new HashMap<String, Object>();
 
+	// a flag for the edge of map condition
+	private boolean altered = false;
+
 	/*
 	 * buffer_size_space takes in two points and the selected buffer value to
 	 * calculate if the distance between two points is within buffer
@@ -86,6 +89,13 @@ public class PointRecord {
 
 	public void setLocation(float x, float y) {
 		this.location = new Location(x, y);
+	}
+	// wrapping around the edge of map
+	public void adjustNegativeLongitudes() {
+		if(this.location.y < 0) { this.location.y += 360; altered = true; }
+	}
+	public void adjustPositiveLongitudes() {
+		if(this.location.y > 0) { this.location.y -= 360; altered = true; }
 	}
 
 	public void setID(String id) {

@@ -177,7 +177,7 @@ public class TimeLine extends JPanel implements ComponentListener {
 			if (!isEmpty()) {
 				_selectedIntervals.clear();
 				parent.data.brushedTag = null;
-				// _selectedRows.clear();
+				_selectedRows.clear();
 				// _selectedRelations.clear();
 				fireSelectionChanged();
 			}

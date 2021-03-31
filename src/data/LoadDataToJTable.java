@@ -78,21 +78,23 @@ public class LoadDataToJTable implements PropertyChangeListener {
 	int countLate = 0;
 	int countWayLate = 0;
 
-	public void loadData(String fileName) {
+	public void loadData(String absolutePath, String filename) {
 		parent.attributes = new Attributes();
 		progressMonitor = new ProgressMonitor(parent.dataConfigPanel, "Loading Movement Data...", "", 0, 100);
 		progressMonitor.setProgress(0);
-		operation = new Task(fileName);
+		operation = new Task(absolutePath, filename);
 		operation.addPropertyChangeListener(this);
 		operation.execute();
 		override = parent.dataConfigPanel.override;
 	}
 
 	class Task extends SwingWorker<ArrayList<ArrayList<Object[]>>, Void> {
-		private String fileName;
+		private String absolutePath;
+		private String filename;
 
-		public Task(String fp) {
-			fileName = fp;
+		public Task(String absolutePath, String filename) {
+			this.absolutePath = absolutePath;
+			this.filename = filename;
 		}
 
 		@Override 
@@ -100,7 +102,7 @@ public class LoadDataToJTable implements PropertyChangeListener {
 			parent.dataConfigPanel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			System.out.println();
 			System.out.println("-----New File-----");
-			System.out.println(fileName + "\n");
+			System.out.println(absolutePath + "\n");
 
 			returnData = new ArrayList<ArrayList<Object[]>>();
 			ArrayList<Object[]> fieldsData = new ArrayList<Object[]>();
@@ -115,73 +117,98 @@ public class LoadDataToJTable implements PropertyChangeListener {
 			parent.headers[3] = "study-local-timestamp";
 			parent.headers[4] = "yyyy-MM-dd HH:mm:ss.SSS";
 
+			// load the header fields from file if previously known
+			LoadKnownDataHeaders lkdh = new LoadKnownDataHeaders("./config/RememberedHeaders.txt");
+			String[] previouslyFoundHeaders = lkdh.queryFilename(filename);
+			if(previouslyFoundHeaders != null) {
+				System.out.println("Required fields are remembered for "+ filename);
+
+				parent.headers[0] = previouslyFoundHeaders[1];
+				parent.headers[1] = previouslyFoundHeaders[2];
+				parent.headers[2] = previouslyFoundHeaders[3];
+				parent.headers[3] = previouslyFoundHeaders[4];
+				parent.headers[4] = previouslyFoundHeaders[5];
+			}
+
 			LoadDiscardFields ldf = new LoadDiscardFields();
 			List<String> discardFields = ldf.loadData("./config/DiscardedFields.txt");
 
 			CustomCSVReader reader = null;
 			try {
 				// BufferedReader bfr = new BufferedReader(new InputStreamReader(new
-				// FileInputStream(fileName)));
-				File file = new File(fileName);
+				// FileInputStream(absolutePath)));
+				File file = new File(absolutePath);
 				reader = new CustomCSVReader(new FileReader(file));
 				max = (long) file.length();
 			} catch (FileNotFoundException e2) {
 				e2.printStackTrace();
 			}
 
+			boolean foundRequiredFields = true;
 			String[] header = null;
 			try {
 				header = reader.readNext();
 
 				if (!override) {
-					if (Arrays.asList(header).contains(parent.headers[0])) {
-						System.out.println("Individual-local-identifier found");
-					} else if (Arrays.asList(header).contains("individual.local.identifier")) {
-						System.out.println("Individual.local.identifier found");
-						parent.headers[0] = "individual.local.identifier";
-					} else {
-						getTag(header);
-					}
+					if(foundRequiredFields)
+						if (Arrays.asList(header).contains(parent.headers[0])) {
+							System.out.println("Individual-local-identifier found");
+						} else if (Arrays.asList(header).contains("individual.local.identifier")) {
+							System.out.println("Individual.local.identifier found");
+							parent.headers[0] = "individual.local.identifier";
+						} else {
+							foundRequiredFields = getTag(header);
+						}
 
-					if (Arrays.asList(header).contains(parent.headers[1])) {
-						System.out.println("Location-long found");
-					} else if (Arrays.asList(header).contains("location.long")) {
-						System.out.println("Location.long found");
-						parent.headers[1] = "location.long";
-					} else {
-						getLong(header);
-					}
+					if(foundRequiredFields) // stop asking for field names if tag selection is already cancelled
+						if (Arrays.asList(header).contains(parent.headers[1])) {
+							System.out.println("Location-long found");
+						} else if (Arrays.asList(header).contains("location.long")) {
+							System.out.println("Location.long found");
+							parent.headers[1] = "location.long";
+						} else {
+							foundRequiredFields = getLong(header);
+						}
+					
+					if(foundRequiredFields) // stop asking for field names if previous fields are already cancelled
+						if (Arrays.asList(header).contains(parent.headers[2])) {
+							System.out.println("Location-lat found");
+						} else if (Arrays.asList(header).contains("location.lat")) {
+							System.out.println("Location.lat found");
+							parent.headers[2] = "location.lat";
+						} else {
+							foundRequiredFields = getLat(header);
+						}
 
-					if (Arrays.asList(header).contains(parent.headers[2])) {
-						System.out.println("Location-lat found");
-					} else if (Arrays.asList(header).contains("location.lat")) {
-						System.out.println("Location.lat found");
-						parent.headers[2] = "location.lat";
-					} else {
-						getLat(header);
-					}
-
-					if (Arrays.asList(header).contains(parent.headers[3])) {
-						System.out.println("Timestamp found");
-					} else if (Arrays.asList(header).contains("study.local.timestamp")) {
-						System.out.println("Study.local.timestamp found");
-						parent.headers[3] = "study.local.timestamp";
-					} else {
-						getTime(header);
-					}
+					if(foundRequiredFields) // stop asking for field names if previous fields are already cancelled
+						if (Arrays.asList(header).contains(parent.headers[3])) {
+							System.out.println("Timestamp found");
+						} else if (Arrays.asList(header).contains("study.local.timestamp")) {
+							System.out.println("Study.local.timestamp found");
+							parent.headers[3] = "study.local.timestamp";
+						} else {
+							foundRequiredFields = getTime(header);
+						}
 				} else if (override) {
-					getTag(header);
-					getLong(header);
-					getLat(header);
-					getTime(header);
+					if(foundRequiredFields) foundRequiredFields = getTag(header);
+					if(foundRequiredFields) foundRequiredFields = getLong(header);
+					if(foundRequiredFields) foundRequiredFields = getLat(header);
+					if(foundRequiredFields) foundRequiredFields = getTime(header);
 				}
 				goodHeaders.add(parent.headers[0]);
 
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
+			if (foundRequiredFields == false) {
+				System.out.println("Aborting...\nRequired Fields: 'Tag', 'Longitude', 'Latitude' and 'Time'.");
+				parent.dataConfigPanel.setCursor(null);
+				return null;
+			}
 			if (header == null) {
-				throw new RuntimeException("No header");
+				System.out.println("Aborting...\nNo header.");
+				parent.dataConfigPanel.setCursor(null);
+				return null;
 			}
 
 			fmt = DateTimeFormat.forPattern(parent.headers[4]);
@@ -277,6 +304,15 @@ public class LoadDataToJTable implements PropertyChangeListener {
 										}
 									}
 
+									// if time formatting prompt is cancelled
+									if (time == null) {
+										foundRequiredFields = false;
+										System.out.println("Aborting...\nCorrect time format is required.");
+										parent.dataConfigPanel.setCursor(null);
+										return null;
+									}
+
+
 									if (time.getYear() < 1980 && time.getYear() > 1800) {
 										countEarly++;
 									} else if (time.isAfter(now) && time.getYear() < 2040) {
@@ -340,6 +376,12 @@ public class LoadDataToJTable implements PropertyChangeListener {
 						}
 					}
 
+				}
+
+				// check the edge of map
+				for (Entry<String, Track> entry : trackList.entrySet()) {
+					Track track = entry.getValue();
+					track.checkEdgeOfMap();
 				}
 
 				for (Entry<String, ArrayList<Float>> entry : fieldValues.entrySet()) {
@@ -429,6 +471,10 @@ public class LoadDataToJTable implements PropertyChangeListener {
 				fieldsData.add(temp);
 
 			}
+			if(foundRequiredFields) {
+				lkdh.keepInfoIfMissing(filename, parent.headers[0], parent.headers[1], parent.headers[2], parent.headers[3], parent.headers[4]);
+			}
+
 			returnData.add(fieldsData);
 			returnData.add(tagData);
 			returnData.add(miscData);
@@ -441,43 +487,45 @@ public class LoadDataToJTable implements PropertyChangeListener {
 		public void done() {
 			try {
 				ArrayList<ArrayList<Object[]>> result = get();
-				parent.dataConfigPanel.returned(result);
-
-				System.out.println("");
-				System.out.println("Total Records in File: " + records);
-
-				if (visibleCount > 0) {
-					System.out.println("Records marked as outliers (Visible = FALSE): " + visibleCount);
+				if(result != null) {
+					parent.dataConfigPanel.returned(result);
+	
+					System.out.println("");
+					System.out.println("Total Records in File: " + records);
+	
+					if (visibleCount > 0) {
+						System.out.println("Records marked as outliers (Visible = FALSE): " + visibleCount);
+					}
+					if (badCoordCounter > 0) {
+						System.out.println("Records with bad coordinates: " + badCoordCounter);
+					}
+					if (countEarly > 0) {
+						System.out.println("Dates between 1800 and 1980 (Kept): " + countEarly);
+					}
+					if (countWayEarly > 0) {
+						System.out.println("Dates prior to 1800 (Ignored): " + countWayEarly);
+					}
+					if (countLate > 0) {
+						System.out.println("Dates between now and 2040 (Kept): " + countLate);
+					}
+					if (countWayLate > 0) {
+						System.out.println("Dates after 2040 (Ignored): " + countWayLate);
+					}
+					if (visibleCount == 0 && badCoordCounter == 0 && countEarly == 0 && countWayEarly == 0 && countLate == 0
+							&& countWayLate == 0) {
+						System.out.println("No outliers or bad dates found");
+					}
+					System.out.println("Records available for Visualization: "
+							+ (records - visibleCount - badCoordCounter - countWayEarly - countWayLate));
+	
+					/*
+					 * JOptionPane.showMessageDialog(parent, "Total Records: " + records + "\n" +
+					 * "Records marked as outliers (Visible = False): " + visibleCount + "\n" +
+					 * "Records with bad coordinates: " + badCoordCounter,
+					 * 
+					 * "Records Processed", JOptionPane.WARNING_MESSAGE);
+					 */
 				}
-				if (badCoordCounter > 0) {
-					System.out.println("Records with bad coordinates: " + badCoordCounter);
-				}
-				if (countEarly > 0) {
-					System.out.println("Dates between 1800 and 1980 (Kept): " + countEarly);
-				}
-				if (countWayEarly > 0) {
-					System.out.println("Dates prior to 1800 (Ignored): " + countWayEarly);
-				}
-				if (countLate > 0) {
-					System.out.println("Dates between now and 2040 (Kept): " + countLate);
-				}
-				if (countWayLate > 0) {
-					System.out.println("Dates after 2040 (Ignored): " + countWayLate);
-				}
-				if (visibleCount == 0 && badCoordCounter == 0 && countEarly == 0 && countWayEarly == 0 && countLate == 0
-						&& countWayLate == 0) {
-					System.out.println("No outliers or bad dates found");
-				}
-				System.out.println("Records available for Visualization: "
-						+ (records - visibleCount - badCoordCounter - countWayEarly - countWayLate));
-
-				/*
-				 * JOptionPane.showMessageDialog(parent, "Total Records: " + records + "\n" +
-				 * "Records marked as outliers (Visible = False): " + visibleCount + "\n" +
-				 * "Records with bad coordinates: " + badCoordCounter,
-				 * 
-				 * "Records Processed", JOptionPane.WARNING_MESSAGE);
-				 */
 
 			} catch (InterruptedException e) {
 
@@ -498,6 +546,7 @@ public class LoadDataToJTable implements PropertyChangeListener {
 
 	public DateTime formatTime(String row) {
 		boolean success = false;
+		boolean cancelledFormatWindow = false;
 		DateTime time = null;
 		while (!success) {
 			try {
@@ -526,9 +575,9 @@ public class LoadDataToJTable implements PropertyChangeListener {
 									time = parseTime(row);
 								} catch (IllegalArgumentException e4) {
 									if (e1.toString().contains("time zone")) {
-										giveUp(e1);
+										cancelledFormatWindow = giveUp(e1);
 									} else {
-										giveUp(e4);
+										cancelledFormatWindow = giveUp(e4);
 									}
 								}
 							}
@@ -545,101 +594,125 @@ public class LoadDataToJTable implements PropertyChangeListener {
 							fmt = DateTimeFormat.forPattern(parent.headers[4]);
 							time = parseTime(row);
 						} catch (IllegalArgumentException e2) {
-							giveUp(e2);
 							try {
-								parent.headers[4] = "yyyy-MM-dd HH:mm";
-								fmt = DateTimeFormat.forPattern(parent.headers[4]);
-								time = parseTime(row);
-							} catch (IllegalArgumentException e3) {
+								cancelledFormatWindow = giveUp(e2);
+							}
+							catch (IllegalArgumentException e2_5) {
 								try {
-									parent.headers[4] = "yyyy-MM-dd HH";
+									parent.headers[4] = "yyyy-MM-dd HH:mm";
 									fmt = DateTimeFormat.forPattern(parent.headers[4]);
 									time = parseTime(row);
-								} catch (IllegalArgumentException e4) {
-									if (e1.toString().contains("time zone")) {
-										giveUp(e1);
-									} else {
-										giveUp(e4);
+								} catch (IllegalArgumentException e3) {
+									try {
+										parent.headers[4] = "yyyy-MM-dd HH";
+										fmt = DateTimeFormat.forPattern(parent.headers[4]);
+										time = parseTime(row);
+									} catch (IllegalArgumentException e4) {
+										if (e1.toString().contains("time zone")) {
+											cancelledFormatWindow = giveUp(e1);
+										} else {
+											cancelledFormatWindow = giveUp(e4);
+										}
 									}
 								}
 							}
 						}
-
 					}
 				} else {
-					giveUp(e);
+					cancelledFormatWindow = giveUp(e);
 				}
 			}
+			if(cancelledFormatWindow) break;
 		}
 		return time;
 	}
 
-	public void giveUp(IllegalArgumentException e) {
+	public boolean giveUp(IllegalArgumentException e) {
+		String prompt = "Invalid Date Format  ##  " + e.getMessage() + 
+			"\nUse identifiers below to match the datetime format in your data.\n"+
+			"Make sure to use appropriate separators (e.g.: '  : / - .'):\n" +
+			"year: 'yy/yyyy', month: 'MM', day: 'dd', hour: 'HH', min: 'mm', sec: 'ss', msec: 'SSS'"; 
 		String format = (String) JOptionPane.showInputDialog(parent.dataConfigPanel,
-				"Invalid Date Format:\n" + e.getMessage(), "Date Format", JOptionPane.PLAIN_MESSAGE, null, null,
+				prompt, "Date Format", JOptionPane.PLAIN_MESSAGE, null, null,
 				parent.headers[4]);
+		if(format == null) return true;
+
 		parent.headers[4] = format;
 		fmt = DateTimeFormat.forPattern(parent.headers[4]);
+		
+		return false;
 	}
 
-	public void getTag(String[] header) {
+	public boolean getTag(String[] header) {
 		Object[] fields = header;
 		String s = (String) JOptionPane.showInputDialog(parent.dataConfigPanel,
 				"individual-local-identifier not found\n" + "Please Select field containing unique tags:",
 				"Tag Selection", JOptionPane.PLAIN_MESSAGE, null, fields, null);
 
+		if(s == null) return false;
+
 		for (int i = 0; i < fields.length; i++) {
 			if (fields[i].equals(s)) {
 				parent.headers[0] = header[i];
 				System.out.println("Using " + header[i] + " as individual-local-identifier");
-				break;
+				return true;
 			}
 		}
+		return false;
 	}
 
-	public void getLong(String[] header) {
+	public boolean getLong(String[] header) {
 		Object[] fields = header;
 		String s = (String) JOptionPane.showInputDialog(parent.dataConfigPanel,
 				"location-long not found\n" + "Please Select field containing Longitude (WGS 84):",
 				"Longitude Selection", JOptionPane.PLAIN_MESSAGE, null, fields, null);
 
+		if(s == null) return false;
+
 		for (int i = 0; i < fields.length; i++) {
 			if (fields[i].equals(s)) {
 				parent.headers[1] = header[i];
 				System.out.println("Using " + header[i] + " as location-long");
-				break;
+				return true;
 			}
 		}
+		return false;
 	}
 
-	public void getLat(String[] header) {
+	public boolean getLat(String[] header) {
 		Object[] fields = header;
 		String s = (String) JOptionPane.showInputDialog(parent.dataConfigPanel,
 				"location-lat not found\n" + "Please Select field containing Latitude (WGS 84):", "Latitude Selection",
 				JOptionPane.PLAIN_MESSAGE, null, fields, null);
 
+		if(s == null) return false;
+
 		for (int i = 0; i < fields.length; i++) {
 			if (fields[i].equals(s)) {
 				parent.headers[2] = header[i];
 				System.out.println("Using " + header[i] + " as location-lat");
-				break;
+				return true;
 			}
 		}
+		return false;
 	}
 
-	public void getTime(String[] header) {
+	public boolean getTime(String[] header) {
 		Object[] fields = header;
 		String s = (String) JOptionPane.showInputDialog(parent.dataConfigPanel,
 				"study-local-timestamp not found\n" + "Please Select field containing a valid timestamp:",
 				"Timestamp Selection", JOptionPane.PLAIN_MESSAGE, null, fields, null);
 
+		if(s == null) return false;
+
 		for (int i = 0; i < fields.length; i++) {
 			if (fields[i].equals(s)) {
 				parent.headers[3] = header[i];
 				System.out.println("Using " + header[i] + " as study-local-timestamp");
-				break;
+				return true;
 			}
 		}
+		return false;
 	}
 
 	@Override

@@ -599,11 +599,14 @@ public class Legend {
 			p.text(title, (290 / 2) - ((int) p.textWidth(title) / 2) + titleX, -25 + titleY);
 			p.textFont(font);
 		}
-
+		
 		p.noStroke();
 		p.fill(0,50);
-		p.rect(titleX, 5 + titleY, 280, 40);
+		p.rect(titleX, 5 + titleY, 285, 40);
 		p.rect(titleX, -10 + titleY, p.textWidth(parent.animationTitle)+30, 15);
+		
+		// use the gap better and fit the the full width of bar scale
+		p.translate(-5, 0);
 
 		p.fill(fontColor);
 		p.text(parent.animationTitle, 13 + titleX, 4 + titleY);
@@ -659,6 +662,12 @@ public class Legend {
 		ScreenPosition destPos = map.getScreenPosition(destLocation);
 		ScreenPosition startPos = map.getScreenPosition(startLocation);
 		float dx = destPos.x - startPos.x;
+		
+		// TODO: fix for left/right map
+		// while(Math.abs(dx) > 1000) {
+
+		// }
+
 
 		p.stroke(0, 0, 100);
 		p.strokeWeight(2);

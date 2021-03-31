@@ -22,28 +22,25 @@
 
 #### Project Name: `DynamoVis`
 
-**TODO:**
+[ ] Loads too slowly if both left and right maps are needed
+[ ] Legend bar scale is off while panned to the extra map
 
-[ ] "new" does not close sketch window
-
-[ ] unfolding maps, data longitude, [??] 
-[ ] -- dummy data set, shift already existing dataset
-
-[ ] external "tiger" data variables should be read
-[ ] -- shouldn't ignore any variables, let users to select those as well 
-[ ] -- ignored ones are strings, do we want these? 
-
-[ ] timeline shift-click, disable this interaction
-
-[ ] go over the whole system to see if anything is broken
-
+##### 0.4.1.8 - 2021/03/31
+- "New" menu item displays an appropriate text in the animation window.
+- Map repeats for dataset at the edge of the map
+  - Smooth pan and zoom are off when repeated
 
 ##### 0.4.1.7 - 2021/03/25
 - Control panel toggles won't resize the data config window.
-- Loading another file does not cause a crash now. 
+- Loading second data file does not cause a crash now.
+- Data config window gets disabled once we have an animation window running.
+- Refined legend in sketch rendering.
+- Cancelling the prompt window for essential header fields aborts data loading all together (including time formatting). 
+- Prompt window for time formatting includes details.
+- Remembers the names of the required header fields and time formatting after asking one time. Its database is located in './config/RememberedHeaders.txt'
 
 ##### 0.4.1.6 - 2021/03/19
-- "New" from task bar minimizes sketch window only (still TODO)
+- "New" from task bar minimizes sketch window only
 - OpenGl thread does not linger on exit
 - Moved icons to "resources" folder
 - Export location changed to "export" in the root folder
@@ -53,18 +50,19 @@
 
 ##### 0.4.1.5 - 2021/03/12
 - Data config pane has smaller minimum width
-- Removed 3D translate commands in 2D Processing sketch
 - "Create Animation" button is disabled when a sketch is already running
 - Data configuration panel does not crash after animation is created multiple times 
 - Timeline is visible again after the second animation is created
 - Resolved a bug where the data config panel was scaling right before creating an animation
 - Default window locations and sizes adjusted (reset locations)
 - No windows are spawned outside the screen with different animation resolutions
-- Disabled Cancel and Help windows for now.
+- Disabled Cancel and Help buttons for now.
 - Legend edits (scale, tag text cropping and wrapping).
 - Removed "Edit/Data Config" menubar subitem.
 - Removed "Help" and "Dev" menubar items
 - Removed disfunctional base maps 
+
+=======
 
 ##### 0.4.1.4 - 2021/03/11
 - Closing Processing sketch hides timeline and control panel
