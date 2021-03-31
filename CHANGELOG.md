@@ -19,7 +19,7 @@
 
 #### Project Name: `DynamoVis`
 
-##### 0.4.1.8 - 2021/03/31
+##### 0.4.2 - 2021/03/31
 - "New" menu item displays an appropriate text in the animation window.
 - Map repeats for dataset at the edge of the map.
 - Smooth pan and zoom are off when repeated.

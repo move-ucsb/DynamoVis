@@ -664,8 +664,10 @@ public class Legend {
 		float dx = destPos.x - startPos.x;
 		
 		// TODO: fix for left/right map
-		// while(Math.abs(dx) > 1000) {
-
+		// if(Math.abs(dx) > 1000) {
+		// 	// if(leftMap != null)
+		// 	destPos = map.getScreenPosition(destLocation);
+		// 	startPos = map.getScreenPosition(startLocation);
 		// }
 
 
