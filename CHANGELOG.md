@@ -5,6 +5,7 @@
 ##### 0.4.2 - 2021/03/31
 - "New" menu item displays an appropriate text in the animation window.
 - Map repeats for dataset at the edge of the map.
+- Legend reacts correctly to repeating maps.
 - Smooth pan and zoom are disabled when map is repeated.
 - Cleaned unused source files
 - Added Move@ucsb logo to exported videos.
@@ -192,9 +193,16 @@
 - Added field select dropdowns for each visual variable
 - Only has one color gradient + colors for tags
 
+--------
 
-### Things to do:
+# KNOWN ISSUES
+- Malfunctioned data lines prevents loading the whole datafile (bisbing_mig.csv)
+- Barscale in legend becomes too long closer to poles
+- Occasional line between repeated maps on some zoom levels.
+- Timeline checkboxes does not react to Shift/Ctrl+click well. 
+
+# TO-DO:
 - Pending library upgrades
-  - log4j 1.2.15 (2.14.1 available but Unfolding Maps uses 1.2.15)
   - miglayout 4.2 (5.0 available)
+  - log4j 1.2.15 (2.14.1 available but Unfolding Maps uses 1.2.15)
   - jcodec 0.1.6 (0.2.5 available but drastically changes the encoding method)

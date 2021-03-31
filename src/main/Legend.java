@@ -661,17 +661,16 @@ public class Legend {
 		startLocation = map.getLocation(p.width / 2, p.height / 2);
 		destLocation = GeoUtils.getDestinationLocation(startLocation, 90f, distance);
 
-		ScreenPosition destPos = map.getScreenPosition(destLocation);
-		ScreenPosition startPos = map.getScreenPosition(startLocation);
-		float dx = destPos.x - startPos.x;
+		// repeating map check
+		if(startLocation.getLon() > 0 && destLocation.getLon() < 0) {
+			destLocation.setLon(destLocation.getLon()+360);
+		} else if(startLocation.getLon() < 0 && destLocation.getLon() > 0) {
+			destLocation.setLon(destLocation.getLon()-360);
+		}
 		
-		// TODO: fix for left/right map
-		// if(Math.abs(dx) > 1000) {
-		// 	// if(leftMap != null)
-		// 	destPos = map.getScreenPosition(destLocation);
-		// 	startPos = map.getScreenPosition(startLocation);
-		// }
-
+		ScreenPosition startPos = map.getScreenPosition(startLocation);
+		ScreenPosition destPos = map.getScreenPosition(destLocation);
+		float dx = destPos.x - startPos.x;
 
 		p.stroke(0, 0, 100);
 		p.strokeWeight(2);
