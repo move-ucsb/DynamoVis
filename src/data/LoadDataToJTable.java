@@ -388,6 +388,7 @@ public class LoadDataToJTable implements PropertyChangeListener {
 					ArrayList<Float> values = entry.getValue();
 					Float max = Collections.max(values);
 					Float min = Collections.min(values);
+					@SuppressWarnings("unlikely-arg-type")
 					ArrayList<Float> minMaxValues = fieldMinMax.get(entry.getValue());
 					if (minMaxValues == null) {
 						minMaxValues = new ArrayList<Float>();

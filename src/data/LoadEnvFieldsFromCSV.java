@@ -47,7 +47,6 @@ public class LoadEnvFieldsFromCSV {
 		} catch (FileNotFoundException e2) {
 			e2.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String[] header = null;
@@ -56,7 +55,6 @@ public class LoadEnvFieldsFromCSV {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		} catch (CsvValidationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		if (header == null) {
@@ -64,10 +62,10 @@ public class LoadEnvFieldsFromCSV {
 		}
 
 		String[] row;
-		int i = 0;
+		// int i = 0;
 		try {
 			while ((row = reader.readNext()) != null) {
-				i++;
+				// i++;
 
 				String fieldFull = row[0] + " ";
 				if (!row[1].equals("N/A")) {
@@ -86,7 +84,6 @@ public class LoadEnvFieldsFromCSV {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (CsvValidationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		try {

@@ -32,14 +32,6 @@ import gui.TimeLine;
 import utils.Attributes;
 import utils.Track;
 
-// from the components
-// import gui.ActivitySpacePanel;
-// import gui.InteractionPanel;
-// import gui.MoveParameterPanel;
-// import gui.BoundaryVisualizationPanel;
-// import gui.TimeBoxControlPanel;
-// import gui.TimeBoxPanel;
-
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
@@ -84,7 +76,6 @@ import de.fhpotsdam.unfolding.data.Feature;
 
 public class DesktopPane extends JFrame implements ActionListener {
 	/*
-	 *
 	 * 
 	 * 
 	 */
@@ -99,41 +90,18 @@ public class DesktopPane extends JFrame implements ActionListener {
 	public LegendPanel legendPanel;
 	public DataPanel dataConfigPanel;
 	public ControlPanel controlPanel;
-	// public ActivitySpacePanel activityPanel; // New Panel for Activity Space
-	// public InteractionPanel interactionPanel; // New Panel for Interaction
-	// Analysis
-	// public MoveParameterPanel moveparaPanel; // New Panel for Move Parameter
-	// public BoundaryVisualizationPanel Bdy_Viz_Panel; // New Panel for Boundary
-	// Visualization
-	// public TimeBoxControlPanel timeBoxControlPanel; // New Panel for 3D Time
-	// Analysis control by Kate
 
-	// public JDialog asContainer; // Activity Space Container
-	// public JDialog iContainer; // Interaction Container
-	// public JDialog mpContainer; // Move Parameter Container
 	public JDialog timelineContainer;
-	// public JDialog tbcContainer; // for the time box control panel
-	// public TimeBoxPanel bContainer; // for the time box
 
 	public TimeLine timeLine;
 	public JDialog textOutput;
 	public CombinedControlPanel cp;
 	public JDialog controlContainer;
-	// public JDialog vpContainer;
-	// public JDialog tbContainer;
 
 	JCheckBoxMenuItem status;
 	JMenu editMenu;
-	// JMenuItem shapeFile;
 	JCheckBoxMenuItem timeline;
 	JCheckBoxMenuItem cpCheck;
-	// JCheckBoxMenuItem vpCheck;
-
-	// JCheckBoxMenuItem activityCheck; // Check box for visibility of asContainer
-	// JCheckBoxMenuItem setParaCheck; // Check box for visibility of mpContainer
-	// JCheckBoxMenuItem interactionCheck; // Check box for visibility of iContainer
-	// JCheckBoxMenuItem timeBoxCheck;
-	// JCheckBoxMenuItem Bdy_Viz_Check;
 
 	JMenuBar menuBar;
 	JMenu export;
@@ -221,7 +189,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		setLocation(sWidth / 5, sHeight / 5);
 		dataConfigPanel = new DataPanel(this);
 		setContentPane(dataConfigPanel);
-		setIconImage(new ImageIcon(this.getClass().getClassLoader().getResource("logo32_empty.png")).getImage());  // app icon
+		setIconImage(new ImageIcon(this.getClass().getClassLoader().getResource("logo32e.png")).getImage());  // app icon
 		pack();
 		wl.registerWindow(this);
 
@@ -254,13 +222,6 @@ public class DesktopPane extends JFrame implements ActionListener {
 		controlContainer = new JDialog(this);
 		recordContainer = new JDialog(this);
 		baseMapContainer = new JDialog(this);
-		// asContainer = new JDialog(this);
-		// iContainer = new JDialog(this);
-		// mpContainer = new JDialog(this);
-		// tbcContainer = new JDialog(this);
-		// bContainer = new TimeBoxPanel();
-		// vpContainer = new JDialog(this);
-		// tbContainer = new JDialog(this);
 
 		// BASE MAP WINDOW -----------------------------
 		bm = new BaseMapPanel(this);
@@ -278,7 +239,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		System.out.println("# DynamoVis Animation Tool");
 		System.out.println("# Copyright (C) 2016 Glenn Xavier");
 		System.out.println("#      Updated: 2021 Mert Toka");
-		System.out.println("# Build 0.4.1.8-dev, Mar 31, 2021");
+		System.out.println("# Build 0.4.2, Mar 31, 2021");
 		System.out.println("# This program comes with ABSOLUTELY NO WARRANTY");
 		System.out.println("# This is free software, and you are welcome to \nredistribute it under certain conditions.");
 		System.out.println("");
@@ -305,101 +266,8 @@ public class DesktopPane extends JFrame implements ActionListener {
 			}
 		});
 
-		// Set up GUI for Activity Space Panel // ADDED
-		// activityPanel = new ActivitySpacePanel(this);
-		// asContainer.setResizable(true);
-		// asContainer.setTitle("Activity Space Analysis");
-		// asContainer.setContentPane(activityPanel);
-		// asContainer.setSize(500, 200);
-		// asContainer.addComponentListener(new ComponentAdapter() {
-		// public void componentHidden(ComponentEvent e) {
-		// activityCheck.setSelected(false);
-		// }
-		// });
-
-		// // Set up GUI for Move Parameter Panel // ADDED
-		// moveparaPanel = new MoveParameterPanel(this);
-		// mpContainer.setResizable(true);
-		// mpContainer.setTitle("Move Parameter");
-		// mpContainer.setContentPane(moveparaPanel);
-		// mpContainer.setSize(500, 100);
-		// mpContainer.addComponentListener(new ComponentAdapter() {
-		// public void componentHidden(ComponentEvent e) {
-		// setParaCheck.setSelected(false);
-		// }
-		// });
-
-		// // Set up GUI for Boundary Visualization Panel // MAY NEED TO REMOVE
-		// Bdy_Viz_Panel = new BoundaryVisualizationPanel(this);
-		// tbContainer.setResizable(false);
-		// tbContainer.setTitle("Boundary Visualization");
-		// tbContainer.setContentPane(Bdy_Viz_Panel);
-		// tbContainer.setSize(500, 200);
-		// tbContainer.setLocation(100, 100);
-		// tbContainer.addComponentListener(new ComponentAdapter() {
-		// public void componentHidden(ComponentEvent e) {
-		// setParaCheck.setSelected(false);
-		// }
-		// });
-		// tbContainer.addWindowListener(new WindowAdapter() {
-		// public void windowClosed(WindowEvent e) {
-		// // data.Bdy_Viz_Panel_Close = true;
-		// // data.Bdy_Viz_Enable = false;
-		// Bdy_Viz_Check.setSelected(false);
-
-		// }
-
-		// public void windowClosing(WindowEvent e) {
-		// // data.Bdy_Viz_Panel_Close = true;
-		// // data.Bdy_Viz_Enable = false;
-		// Bdy_Viz_Check.setSelected(false);
-
-		// }
-		// });
-
-		// // Set up GUI for Interaction Panel
-		// interactionPanel = new InteractionPanel(this);
-		// iContainer.setResizable(true);
-		// iContainer.setTitle("Interaction Analysis");
-		// iContainer.setContentPane(interactionPanel);
-		// iContainer.setSize(500, 270);
-		// iContainer.addComponentListener(new ComponentAdapter() {
-		// public void componentHidden(ComponentEvent e) {
-		// interactionCheck.setSelected(false);
-		// }
-		// });
-
-		// iContainer.addWindowListener(new WindowAdapter() // KATE just addded
-		// {
-		// public void windowClosed(WindowEvent e) {
-		// data.highlight_interaction_boundary = false;
-		// }
-		// });
-		// // Set up GUI for 3D Time analysis
-
-		// timeBoxControlPanel = new TimeBoxControlPanel(this);
-		// tbcContainer.setResizable(false);
-		// tbcContainer.setTitle("3D Space-Time Analysis Control Panel");
-		// tbcContainer.setContentPane(timeBoxControlPanel);
-		// tbcContainer.setSize(400, 170);
-		// tbcContainer.setLocation((int) (this.getBounds().getX()), 100);
-		// tbcContainer.addComponentListener(new ComponentAdapter() {
-		// public void componentHidden(ComponentEvent e) {
-		// timeBoxCheck.setSelected(false);
-		// }
-		// });
-
-		// // for the dynamic time box
-		// bContainer.setupBox(this);
-		// bContainer.addComponentListener(new ComponentAdapter() {
-		// public void componentHidden(ComponentEvent e) {
-		// timeBoxCheck.setSelected(false);
-		// }
-		// });
-
 		legendPanel = new LegendPanel(this);
 		cp = new CombinedControlPanel(this);
-		// vp = new VisPanel(this);
 
 		controlContainer.setTitle("Control Panel");
 		controlContainer.setContentPane(cp);
@@ -414,21 +282,12 @@ public class DesktopPane extends JFrame implements ActionListener {
 
 		recordContainer.setTitle("Video Recorder");
 		Recorder recorder = new Recorder(this);
-		// Recorder recorder = new Recorder(this, bContainer);// kate added passing in
 		recordContainer.setContentPane(recorder);
 		recordContainer.pack();
 
 		if (startup) {
-			// int locw = (int) controlContainer.getBounds().getWidth();
-			// int thisx = (int) this.getBounds().getX();
-			// int thisy = (int) this.getBounds().getY();
 			this.setLocation(textOutput.getLocation().x, textOutput.getLocation().y + textOutput.getBounds().height);
 			this.setSize(textOutput.getBounds().width, (int) (sHeight - (this.getLocation().y) * 1.1));
-			// controlContainer.setLocation(thisx - locw, thisy);
-			// vpContainer.setLocation(thisx - locw, thisy + 250);
-			// asContainer.setLocationRelativeTo(this);
-			// mpContainer.setLocationRelativeTo(this);
-			// iContainer.setLocationRelativeTo(this);
 			recordContainer.setLocationRelativeTo(this);
 			wl.registerWindow(timelineContainer);
 			wl.registerWindow(controlContainer);
@@ -444,10 +303,6 @@ public class DesktopPane extends JFrame implements ActionListener {
 			getContentPane().removeAll();
 			controlContainer.getContentPane().removeAll();
 			timelineContainer.getContentPane().removeAll();
-			// asContainer.getContentPane().removeAll();
-			// mpContainer.getContentPane().removeAll();
-			// iContainer.getContentPane().removeAll();
-			// tbcContainer.getContentPane().removeAll();// KATE ADDED
 			recordContainer.getContentPane().removeAll();
 			pack();
 		}
@@ -475,49 +330,6 @@ public class DesktopPane extends JFrame implements ActionListener {
 		}
 		Collections.sort(tagList);
 		data = new SketchData();
-
-		// for (Entry<String, Track> entry : trackList.entrySet()) {
-		// Track track = entry.getValue();
-		// if (track.getVisibility()) {
-		// if (data.Times_hash != null) {
-		// // System.out.println("the times arraylist is adding other times!");
-		// Hashtable<Integer, ArrayList<Integer>> temp_Times_hash =
-		// track.get_filter_times();
-		// data.Times_hash.forEach((Year, Months) -> {
-		// if (temp_Times_hash.containsKey(Year)) {
-		// Months.addAll(temp_Times_hash.get(Year));
-		// Set<Integer> NoDuplicates = new LinkedHashSet<Integer>(Months);
-		// Months.clear();
-		// Months.addAll(NoDuplicates);
-		// Collections.sort(Months);
-		// } else {
-		// data.Times_hash.put(Year, Months);
-		// }
-		// });
-
-		// } else {
-		// // System.out.println("the times arraylist is EMpty!");
-		// data.Times_hash = track.get_filter_times();
-		// }
-
-		// data.All_the_Times.addAll(track.gettheTimes());
-		// }
-
-		// }
-		// Collections.sort(data.All_the_Times);
-		// // System.out.println(data.All_the_Times);
-		// data.Times_hash.forEach((Year, Months) -> {
-		// int min = Collections.min(Months);
-		// int max = Collections.max(Months);
-		// Months.clear();
-		// if (min == max) {
-		// Months.add(min);
-		// } else {
-		// Months.add(min);
-		// Months.add(max);
-		// }
-		// });
-		// // System.out.println(data.Times_hash);
 
 		data.provider = bm.chosenProvider;
 
@@ -552,14 +364,8 @@ public class DesktopPane extends JFrame implements ActionListener {
 		setupSketch();
 
 		editMenu.setEnabled(true);
-		// shapeFile.setEnabled(true);
 		timeline.setEnabled(true);
 		timeline.setSelected(true);
-		// activityCheck.setEnabled(true);
-		// setParaCheck.setEnabled(true);
-		// Bdy_Viz_Check.setEnabled(true);
-		// interactionCheck.setEnabled(true);
-		// timeBoxCheck.setEnabled(true);
 		cpCheck.setEnabled(true);
 		cpCheck.setSelected(true);
 		export.setEnabled(true);
@@ -571,27 +377,6 @@ public class DesktopPane extends JFrame implements ActionListener {
 		if (startup) {
 			timelineContainer.setVisible(true);
 		}
-
-		// if (Bdy_Viz_Check.isSelected()) {
-		// tbContainer.setVisible(true);
-		// }
-
-		// if (activityCheck.isSelected()) {
-		// asContainer.setVisible(true);
-		// }
-
-		// if (setParaCheck.isSelected()) {
-		// mpContainer.setVisible(true);
-		// }
-
-		// if (interactionCheck.isSelected()) {
-		// iContainer.setVisible(true);
-		// }
-		// if (timeBoxCheck.isSelected()) {
-		// tbcContainer.setVisible(true);
-		// bContainer.setVisible(true);
-		// data.boxvisible = true;
-		// }
 
 		startup = false;
 
@@ -676,32 +461,10 @@ public class DesktopPane extends JFrame implements ActionListener {
 		exit.addActionListener(this);
 		file.add(exit);
 
-		// Import menu - Nathan
-		// JMenu importFile = new JMenu("Import");
-		// file.setMnemonic(KeyEvent.VK_I);
-		// menuBar.add(importFile);
-
-		// for displaying shape file - Nathan
-		// shapeFile = new JMenuItem("Import Shape File");
-		// shapeFile.setMnemonic(KeyEvent.VK_S);
-		// shapeFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
-		// ActionEvent.ALT_MASK));
-		// shapeFile.setActionCommand("shapeFile");
-		// shapeFile.addActionListener(this);
-		// shapeFile.setEnabled(false);
-		// importFile.add(shapeFile);
-
 		editMenu = new JMenu("Edit");
 		editMenu.setMnemonic(KeyEvent.VK_E);
 		editMenu.setEnabled(false);
 		menuBar.add(editMenu);
-
-		// JMenuItem editData = new JMenuItem("Data Configuration");
-		// editData.setMnemonic(KeyEvent.VK_D);
-		// editData.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.ALT_MASK));
-		// editData.setActionCommand("edit");
-		// editData.addActionListener(this);
-		// editMenu.add(editData);
 
 		JMenuItem baseMap = new JMenuItem("Basemap Provider");
 		baseMap.setEnabled(true);
@@ -794,118 +557,6 @@ public class DesktopPane extends JFrame implements ActionListener {
 		resetLayout.setActionCommand("reset");
 		view.add(resetLayout);
 		resetLayout.addActionListener(this);
-
-		// new menu bar
-		// JMenu vAnalytics = new JMenu("Visual Analytics");
-		// view.setMnemonic(KeyEvent.VK_A);
-		// menuBar.add(vAnalytics);
-
-		// Bdy_Viz_Check = new JCheckBoxMenuItem("Boundary Visualization");
-		// Bdy_Viz_Check.setSelected(false);
-		// Bdy_Viz_Check.setEnabled(false);
-		// Bdy_Viz_Check.setMnemonic(KeyEvent.VK_R);
-		// Bdy_Viz_Check.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T,
-		// ActionEvent.ALT_MASK));
-		// Bdy_Viz_Check.addActionListener(this);
-		// vAnalytics.add(Bdy_Viz_Check);
-		// Bdy_Viz_Check.addItemListener(new ItemListener() {
-		// public void itemStateChanged(ItemEvent evt) {
-		// JCheckBoxMenuItem cb = (JCheckBoxMenuItem) evt.getSource();
-		// if (cb.isSelected()) {
-		// tbContainer.setVisible(true);// if check box is checked, open up move
-		// parameter window
-		// // data.Bdy_Viz_Enable = true;
-		// } else {
-		// tbContainer.setVisible(false);
-		// // data.Bdy_Viz_Enable = false;
-		// }
-		// }
-		// });
-
-		// setParaCheck = new JCheckBoxMenuItem("Move Parameter");
-		// setParaCheck.setSelected(false);
-		// setParaCheck.setEnabled(false);
-		// setParaCheck.setMnemonic(KeyEvent.VK_P);
-		// setParaCheck.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
-		// ActionEvent.ALT_MASK));
-		// setParaCheck.addActionListener(this);
-		// vAnalytics.add(setParaCheck);
-		// setParaCheck.addItemListener(new ItemListener() {
-		// public void itemStateChanged(ItemEvent evt) {
-		// JCheckBoxMenuItem cb = (JCheckBoxMenuItem) evt.getSource();
-		// if (cb.isSelected()) {
-		// mpContainer.setVisible(true); // if check box is checked, open up move
-		// parameter window
-		// } else {
-		// mpContainer.setVisible(false);
-		// }
-		// }
-		// });
-
-		// interactionCheck = new JCheckBoxMenuItem("Interaction Analysis");
-		// interactionCheck.setSelected(false);
-		// interactionCheck.setEnabled(false);
-		// interactionCheck.setMnemonic(KeyEvent.VK_I);
-		// interactionCheck.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
-		// ActionEvent.ALT_MASK));
-		// interactionCheck.addActionListener(this);
-		// vAnalytics.add(interactionCheck);
-		// interactionCheck.addItemListener(new ItemListener() {
-		// public void itemStateChanged(ItemEvent evt) {
-		// JCheckBoxMenuItem cb = (JCheckBoxMenuItem) evt.getSource();
-		// if (cb.isSelected()) {
-		// iContainer.setVisible(true); // if check box is checked, open up interaction
-		// analysis window
-		// } else {
-		// iContainer.setVisible(false);
-		// }
-		// }
-		// });
-
-		// timeBoxCheck = new JCheckBoxMenuItem("3D Space-Time Analysis");
-		// timeBoxCheck.setSelected(false);
-		// timeBoxCheck.setEnabled(false);
-		// timeBoxCheck.setMnemonic(KeyEvent.VK_3);
-		// timeBoxCheck.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
-		// ActionEvent.ALT_MASK));
-		// timeBoxCheck.addActionListener(this);
-		// vAnalytics.add(timeBoxCheck);
-		// timeBoxCheck.addItemListener(new ItemListener() {
-		// public void itemStateChanged(ItemEvent evt) {
-		// JCheckBoxMenuItem cb = (JCheckBoxMenuItem) evt.getSource();
-		// if (cb.isSelected()) {
-		// tbcContainer.setVisible(true); // if check box is checked, open up
-		// interaction analysis window
-		// bContainer.setVisible(true); // if checked, open up the time box panel
-		// data.boxvisible = true;
-		// } else {
-		// tbcContainer.setVisible(false);
-		// bContainer.setVisible(false);
-		// data.boxvisible = false;
-		// }
-		// }
-		// });
-
-		// activityCheck = new JCheckBoxMenuItem("Activity Space Analysis");
-		// activityCheck.setSelected(false);
-		// activityCheck.setEnabled(false);
-		// activityCheck.setMnemonic(KeyEvent.VK_Y);
-		// activityCheck.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
-		// ActionEvent.ALT_MASK));
-		// activityCheck.addActionListener(this);
-		// vAnalytics.add(activityCheck);
-		// activityCheck.addItemListener(new ItemListener() {
-		// public void itemStateChanged(ItemEvent evt) {
-		// JCheckBoxMenuItem cb = (JCheckBoxMenuItem) evt.getSource();
-		// if (cb.isSelected()) {
-		// asContainer.setVisible(true); // if check box is checked, open up activity
-		// space analysis window
-		// } else {
-		// asContainer.setVisible(false); // if check box is not checked, nothing
-		// happenss
-		// }
-		// }
-		// });
 
 		export = new JMenu("Export");
 		export.setMnemonic(KeyEvent.VK_X);

@@ -29,14 +29,11 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingConstants;
 import javax.swing.ToolTipManager;
-import javax.swing.UIManager;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -61,7 +58,7 @@ public class GhostPanel extends JPanel {
 
 	GhostPanel me;
 
-	JComboBox size;
+	// JComboBox size;
 
 	public GhostPanel(DesktopPane father) {
 		parent = father;

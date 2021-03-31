@@ -25,9 +25,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map.Entry;
-
-import utils.Track;
 
 import org.gicentre.utils.io.DOMProcessor;
 import org.joda.time.format.DateTimeFormat;
@@ -39,6 +36,7 @@ import de.fhpotsdam.unfolding.utils.GeoUtils;
 import de.fhpotsdam.unfolding.utils.ScreenPosition;
 import processing.core.PApplet;
 import processing.core.PFont;
+import processing.core.PImage;
 import processing.core.PShape;
 
 public class Legend {
@@ -54,6 +52,7 @@ public class Legend {
 	PShape lineWidthLegend;
 	PShape pointSizeLegend;
 	PShape vectorLengthLegend;
+	PImage logo;
 	PFont font, font2;
 	PFont message;
 	PFont headers;
@@ -99,6 +98,9 @@ public class Legend {
 		temp = p.createFont("Arial", 18);
 		p.textFont(font);
 		fontColor = p.color(0, 0, 100);
+
+		System.out.println(parent.getClass().getClassLoader().getResource("move_ucsb.png").getPath());
+		logo = p.loadImage(parent.getClass().getClassLoader().getResource("move_ucsb.png").getPath());
 	}
 
 	public void setLocation(float tempX, float tempY) {
@@ -627,11 +629,11 @@ public class Legend {
 			// Copyright statement
 			p.textFont(temp);
 			
-			String copyrightText = "Created by DYNAMOVIS";
+			String copyrightText = "Created by 'DynamoVis'";
 			p.text(copyrightText, parent.sketch.width-p.textWidth(copyrightText)-20, 35);
-			
-			copyrightText = "MoveLab@UCSB, 2021";
-			p.text(copyrightText, parent.sketch.width-p.textWidth(copyrightText)-20, 65);
+
+			float h = (float)logo.height / (float)logo.width * p.textWidth(copyrightText);
+			p.image(logo, parent.sketch.width-p.textWidth(copyrightText)-20, 50, (int)p.textWidth(copyrightText), (int)h);
 		}
 		p.textFont(font);
 	}

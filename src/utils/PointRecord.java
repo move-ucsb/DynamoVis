@@ -38,6 +38,7 @@ public class PointRecord {
 	private HashMap<String, Object> properties = new HashMap<String, Object>();
 
 	// a flag for the edge of map condition
+	@SuppressWarnings("unused")
 	private boolean altered = false;
 
 	/*

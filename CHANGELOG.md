@@ -1,29 +1,13 @@
-#### Things to do:
-[ ] Pending library upgrades
-  - log4j 1.2.15 (2.14.1 available but Unfolding Maps uses 1.2.15)
-  - miglayout 4.2 (5.0 available)
-  - jcodec 0.1.6 (0.2.5 available) 
-    - Drastically changes the encoding method
-[ ] Add contents to the help box
+# CHANGES
 
-[ ] Animation window loads too slowly if both left and right maps are needed
-[ ] Legend bar scale is off while panned to the extra map
-[ ] Occasional line between the edges of main map and peripheral maps
-
-#### Roadmap:
-[ ] Publish updated release
-[ ] Incorporate spacetime cube
-[ ] Timeline improvements
-
-### CHANGES
-
-#### Project Name: `DynamoVis`
+### Project Name: `DynamoVis`
 
 ##### 0.4.2 - 2021/03/31
 - "New" menu item displays an appropriate text in the animation window.
 - Map repeats for dataset at the edge of the map.
-- Smooth pan and zoom are off when repeated.
-- 
+- Smooth pan and zoom are disabled when map is repeated.
+- Cleaned unused source files
+- Added Move@ucsb logo to exported videos.
 
 ##### 0.4.1.7 - 2021/03/25
 - Control panel toggles won't resize the data config window.
@@ -84,7 +68,7 @@
 - Started running with **Java 15.0.2.7**
 - Upgraded libraries: commons-math3 3.3 to 3.6.1, joda-time 2.3 to 2.10.10, opencsv 2.3 to 5.3 (added commons-lang3 3.11 for opencsv 5.3)
 
-#### Project Name: `DYNAMO`
+### Project Name: `DYNAMO`
 ##### 0.4.0.4 - 2020/11/22
 - Pushed date outlier filter from 2020 to 2040
 
@@ -99,7 +83,7 @@
 - New name
 - Minor bug fix
 
-#### Project Name: `mb_AnimationTool`
+### Project Name: `mb_AnimationTool`
 ##### 0.4.0.0 - 2014/11/17
 - rewrite of backend to support future development and new modules
 - new PointRecord & Track and Field & Attributes classes
@@ -207,3 +191,10 @@
 - Removed most of the static GalapagosSketchTest code
 - Added field select dropdowns for each visual variable
 - Only has one color gradient + colors for tags
+
+
+### Things to do:
+- Pending library upgrades
+  - log4j 1.2.15 (2.14.1 available but Unfolding Maps uses 1.2.15)
+  - miglayout 4.2 (5.0 available)
+  - jcodec 0.1.6 (0.2.5 available but drastically changes the encoding method)

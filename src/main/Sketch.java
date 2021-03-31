@@ -42,6 +42,7 @@ import org.joda.time.Minutes;
 import org.joda.time.Seconds;
 
 import processing.core.PApplet;
+import processing.core.PImage;
 import processing.core.PShape;
 import processing.opengl.PJOGL;
 import de.fhpotsdam.unfolding.UnfoldingMap;

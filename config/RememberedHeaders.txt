@@ -1,0 +1,2 @@
+albatross-normal-tracks-9track-tailcrosswind.csv,individual.local.identifier,location-long,location-lat,study.local.timestamp,yyyy-MM-dd HH:mm:ss.SSS
+albatross-smalltest-wrappingWorld.csv,individual.local.identifier,location-long,location-lat,study.local.timestamp,yyyy-MM-dd HH:mm:ss
