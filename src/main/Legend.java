@@ -35,7 +35,6 @@ import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.geo.Location;
 import de.fhpotsdam.unfolding.utils.GeoUtils;
 import de.fhpotsdam.unfolding.utils.ScreenPosition;
-import jogamp.opengl.glu.mipmap.Image;
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PImage;
