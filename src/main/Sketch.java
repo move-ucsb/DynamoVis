@@ -21,6 +21,7 @@
 
 package main;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -112,8 +113,14 @@ public class Sketch extends PApplet  {
 	public void settings() {
 		size(w, h, P3D);
 
-		// set icon
-		PJOGL.setIcon(parent.getClass().getClassLoader().getResource("logo32.png").getPath());
+		// Set window icon
+		String iconFilename = "logo32.png";
+		URL res = parent.getClass().getClassLoader().getResource(iconFilename);
+		if(res.getProtocol().equals("jar")) {
+			PJOGL.setIcon(iconFilename);   // jar file contains the resource in its root directory
+		} else {
+			PJOGL.setIcon(res.getPath());  // source compilation can find the resource in bin directory
+		}
 	}
 	
 	public void setup() {

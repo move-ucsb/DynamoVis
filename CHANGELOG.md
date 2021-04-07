@@ -9,6 +9,8 @@
 - Legend improvements for poit and vector renderings.
 - Gradient picker is disabled when "Tag" field is selected.
 - Improved control panel rendering: arrows and labels, packing, glitches
+- JAR export finds resources.
+- Exported as `.jar` file for release.
 
 ##### 0.4.2 - 2021/03/31
 - "New" menu item displays an appropriate text in the animation window.

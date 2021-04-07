@@ -23,6 +23,7 @@ package main;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,6 +35,7 @@ import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.geo.Location;
 import de.fhpotsdam.unfolding.utils.GeoUtils;
 import de.fhpotsdam.unfolding.utils.ScreenPosition;
+import jogamp.opengl.glu.mipmap.Image;
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PImage;
@@ -99,8 +101,16 @@ public class Legend {
 		p.textFont(font);
 		fontColor = p.color(0, 0, 100);
 
-		System.out.println(parent.getClass().getClassLoader().getResource("move_ucsb.png").getPath());
-		logo = p.loadImage(parent.getClass().getClassLoader().getResource("move_ucsb.png").getPath());
+		// Load lab logo for export
+		String iconFilename = "move_ucsb.png";
+		URL res = parent.getClass().getClassLoader().getResource(iconFilename);
+		if(res.getProtocol().equals("jar")) {
+			// jar file contains the resource in its root directory
+			logo = p.loadImage(iconFilename);
+		} else {
+			// source compilation can find the resource in bin directory
+			logo = p.loadImage(res.getPath());
+		}
 	}
 
 	public void setLocation(float tempX, float tempY) {
