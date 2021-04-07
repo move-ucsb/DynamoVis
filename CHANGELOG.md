@@ -2,6 +2,11 @@
 
 ### Project Name: `DynamoVis`
 
+##### 0.4.2.1 - 2021/04/07
+- Empty fields in the dataset for latitude/longitude skips the row, empty fields for extra fields are marked as NaN.
+- Changed maximum values for interval values in data configuration window to [1000, 59, 59] for [hours, minutes, seconds], respectively.
+- Exported as `.jar` file for release.  
+
 ##### 0.4.2 - 2021/03/31
 - "New" menu item displays an appropriate text in the animation window.
 - Map repeats for dataset at the edge of the map.

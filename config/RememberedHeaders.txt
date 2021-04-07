@@ -1,0 +1,3 @@
+bisbing_mig_cleaned.csv,individual-local-identifier,location-long,location-lat,study-local-timestamp,yyyy-MM-dd HH:mm:ss
+bisbing_mig.csv,individual-local-identifier,location-long,location-lat,study-local-timestamp,yyyy-MM-dd HH:mm:ss
+albatross-normal-tracks-9track-tailcrosswind.csv,individual.local.identifier,location-long,location-lat,study.local.timestamp,yyyy-MM-dd HH:mm:ss.SSS

@@ -256,12 +256,16 @@ public class LoadDataToJTable implements PropertyChangeListener {
 									lon = Float.parseFloat(row[i]);
 								} catch (NumberFormatException e) {
 									noCoord = true;
+								} catch (NullPointerException e) { // if lat-lon is empty
+									noCoord = true;
 								}
 							}
 							if (header[i].contains(parent.headers[2])) {
 								try {
 									lat = Float.parseFloat(row[i]);
 								} catch (NumberFormatException e) {
+									noCoord = true;
+								} catch (NullPointerException e) { // if lat-lon is empty
 									noCoord = true;
 								}
 							}
@@ -337,10 +341,15 @@ public class LoadDataToJTable implements PropertyChangeListener {
 							if (!skip) {
 								ArrayList<Float> tempV = null;
 								for (int i = 0; i < row.length; i++) {
+									// if the row is empty, mark as NaN
+									if(row[i] == null) {
+										row[i] = "NaN";
+									}
+
 									if (header[i].equals(parent.headers[0])) {
-
+										continue;
 									} else if (header[i].equals(parent.headers[3])) {
-
+										continue;
 									} else if (!titlef
 											&& (header[i].equals("study-name") || header[i].equals("study.name"))) {
 										title = row[i];
@@ -368,7 +377,6 @@ public class LoadDataToJTable implements PropertyChangeListener {
 
 										}
 										record.addProperty(header[i], value);
-
 									}
 								}
 								track.addPoint(record);
@@ -482,7 +490,6 @@ public class LoadDataToJTable implements PropertyChangeListener {
 			setProgress(100);
 			parent.trackList = trackList;
 			return returnData;
-
 		}
 
 		public void done() {

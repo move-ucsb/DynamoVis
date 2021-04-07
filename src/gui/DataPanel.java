@@ -33,7 +33,6 @@ import java.awt.event.InputEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -83,7 +82,7 @@ public class DataPanel extends JPanel implements ActionListener {
 	public CustomTableModel tagModel;
 	private JTable tagsTable;
 	private JTextField titleField;
-	private JComboBox animationSize;
+	private JComboBox<Dimension> animationSize;
 	public JButton okButton;
 	private JButton cancelButton;
 	private JButton helpButton;
@@ -357,7 +356,7 @@ public class DataPanel extends JPanel implements ActionListener {
 		hoursSpinner = new JSpinner();
 		hoursSpinner.setMinimumSize(new Dimension(50, 20));
 		hoursSpinner
-				.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), new Integer(1000), new Integer(1)));
+				.setModel(new SpinnerNumberModel(0, 0, 1000, 1)); // new Integer(0), new Integer(0), new Integer(1000), new Integer(1)));
 		add(hoursSpinner, "flowx, cell 0 9,alignx right");
 		JLabel hours = new JLabel("h");
 		add(hours, "cell 0 9,alignx right,aligny bottom");
@@ -371,7 +370,7 @@ public class DataPanel extends JPanel implements ActionListener {
 		minutesSpinner = new JSpinner();
 		minutesSpinner.setMinimumSize(new Dimension(50, 20));
 		minutesSpinner
-				.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), new Integer(1000), new Integer(1)));
+				.setModel(new SpinnerNumberModel(0, 0, 59, 1)); // new Integer(0), new Integer(0), new Integer(1000), new Integer(1)));
 		add(minutesSpinner, "cell 0 9,alignx right");
 		JLabel minutes = new JLabel("m");
 		add(minutes, "cell 0 9,alignx right,aligny bottom");
@@ -385,7 +384,7 @@ public class DataPanel extends JPanel implements ActionListener {
 		secondsSpinner = new JSpinner();
 		secondsSpinner.setMinimumSize(new Dimension(50, 20));
 		secondsSpinner
-				.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), new Integer(1000), new Integer(1)));
+				.setModel(new SpinnerNumberModel(0, 0, 59, 1)); // new Integer(0), new Integer(0), new Integer(1000), new Integer(1)));
 		add(secondsSpinner, "cell 0 9,alignx right");
 		JLabel seconds = new JLabel("s");
 		add(seconds, "cell 0 9,alignx right,aligny bottom");
@@ -399,7 +398,7 @@ public class DataPanel extends JPanel implements ActionListener {
 		lblInterval = new JLabel("Interval");
 		add(lblInterval, "cell 2 9,alignx right,aligny bottom");
 
-		animationSize = new JComboBox();
+		animationSize = new JComboBox<Dimension>();
 		add(animationSize, "cell 0 10,growx");
 		animationSize.addItem(new Dimension(1920, 1080));
 		animationSize.addItem(new Dimension(1600, 900));
@@ -477,7 +476,7 @@ public class DataPanel extends JPanel implements ActionListener {
 
 	public void actionPerformed(ActionEvent e) {
 		if ("openFile".equals(e.getActionCommand())) {
-			if ((e.getModifiers() & InputEvent.SHIFT_MASK) != 0) {
+			if ((e.getModifiers() & InputEvent.SHIFT_DOWN_MASK) != 0) {
 				override = true;
 			} else {
 				override = false;
@@ -529,10 +528,10 @@ public class DataPanel extends JPanel implements ActionListener {
 	}
 
 	private void doIt() {
-		ArrayList<String> selectedFields = new ArrayList<String>();
-		ArrayList<String> editedFieldName = new ArrayList<String>();
-		ArrayList<String> units = new ArrayList<String>();
-		HashMap<String, ArrayList<Float>> minMax = new HashMap<String, ArrayList<Float>>();
+		// ArrayList<String> selectedFields = new ArrayList<String>();
+		// ArrayList<String> editedFieldName = new ArrayList<String>();
+		// ArrayList<String> units = new ArrayList<String>();
+		// HashMap<String, ArrayList<Float>> minMax = new HashMap<String, ArrayList<Float>>();
 
 		parent.attributes.setIndex(fieldModel.getValueAt(0, 0).toString());
 

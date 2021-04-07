@@ -1,7 +1,13 @@
 # DynamoVis
 
-- *TODO*: 
-	- Add README
-	- Add documentation link in software
+Description, documentation, and run instructions will be available shortly.
 
-- Add compiled versions as release
+
+**Tested with:**
+- Java version 15.0.2
+- Windows 10
+
+
+**To-Do**: 
+- Add README
+- Add documentation link in software
