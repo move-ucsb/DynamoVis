@@ -74,6 +74,22 @@ public class LinePanel extends JPanel {
 		lblLineColor.setBackground(Color.LIGHT_GRAY);
 		this.add(lblLineColor, "cell 0 0,alignx left,aligny baseline");
 
+		// 2 - color ramp list
+		colorRampList = new WideComboBox(parent.colors.colorRampList.toArray());
+		colorRampList.setMaximumSize(new Dimension(120, 32767));
+		colorRampList.setMaximumRowCount(100);
+		colorRampList.setForeground(Color.BLACK);
+		colorRampList.setBackground(UIManager.getColor("CheckBox.background"));
+		colorRampList.setFont(new Font("Arial", Font.PLAIN, 9));
+		this.add(colorRampList, "cell 0 2,growx");
+		colorRampList.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				WideComboBox comboBox = (WideComboBox) e.getSource();
+				parent.data.selectedLineSwatch = (int) comboBox.getSelectedIndex();
+			}
+		});
+
+		// 1 - line color field name
 		strokeColor = new WideComboBox();
 		strokeColor.setMaximumSize(new Dimension(120, 32767));
 		strokeColor.setMaximumRowCount(100);
@@ -85,6 +101,10 @@ public class LinePanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				WideComboBox cb = (WideComboBox) e.getSource();
 				String item = (String) cb.getSelectedItem();
+
+				if(item.equals("Tag")) colorRampList.setEnabled(false);
+				else				   colorRampList.setEnabled(true);
+
 				data.strokeColorSelection = parent.attributes.getName(item);
 				String unit = parent.attributes.getUnit(data.strokeColorSelection);
 				if (unit.contains("none")) {
@@ -114,19 +134,7 @@ public class LinePanel extends JPanel {
 		});
 		strokeColorToggle.setSelected(true);
 
-		colorRampList = new WideComboBox(parent.colors.colorRampList.toArray());
-		colorRampList.setMaximumSize(new Dimension(120, 32767));
-		colorRampList.setMaximumRowCount(100);
-		colorRampList.setForeground(Color.BLACK);
-		colorRampList.setBackground(UIManager.getColor("CheckBox.background"));
-		colorRampList.setFont(new Font("Arial", Font.PLAIN, 9));
-		this.add(colorRampList, "cell 0 2,growx");
-		colorRampList.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				WideComboBox comboBox = (WideComboBox) e.getSource();
-				parent.data.selectedLineSwatch = (int) comboBox.getSelectedIndex();
-			}
-		});
+		
 
 		JButton editColor = new JButton("Edit");
 		editColor.setIconTextGap(0);

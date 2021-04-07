@@ -118,18 +118,37 @@ public class VectorPanel extends JPanel {
 		lblColor.setBackground(Color.LIGHT_GRAY);
 		this.add(lblColor, "cell 0 2,alignx left,aligny baseline");
 
+		// 2 - color ramp list
+		colorRampList = new WideComboBox(parent.colors.colorRampList.toArray());
+		colorRampList.setMaximumSize(new Dimension(120, 32767));
+		colorRampList.setMaximumRowCount(100);
+		colorRampList.setForeground(Color.BLACK);
+		colorRampList.setBackground(UIManager.getColor("CheckBox.background"));
+		colorRampList.setFont(new Font("Arial", Font.PLAIN, 9));
+		this.add(colorRampList, "cell 0 4,growx");
+		colorRampList.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				WideComboBox comboBox = (WideComboBox) e.getSource();
+				parent.data.selectedVectorSwatch = (int) comboBox.getSelectedIndex();
+			}
+		});
+
+		// 1 - vector color field name
 		WideComboBox vectorColor = new WideComboBox();
 		vectorColor.setMaximumSize(new Dimension(120, 32767));
 		vectorColor.setMaximumRowCount(100);
 		vectorColor.setForeground(Color.BLACK);
 		vectorColor.setBackground(UIManager.getColor("CheckBox.background"));
 		vectorColor.setFont(new Font("Arial", Font.PLAIN, 9));
-
 		this.add(vectorColor, "cell 0 3,growx");
 		vectorColor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				WideComboBox cb = (WideComboBox) e.getSource();
 				String item = (String) cb.getSelectedItem();
+
+				if(item.equals("Tag")) colorRampList.setEnabled(false);
+				else				   colorRampList.setEnabled(true);
+
 				data.vectorColorSelection = parent.attributes.getName(item);
 			}
 		});
@@ -151,20 +170,6 @@ public class VectorPanel extends JPanel {
 			}
 		});
 		vectorColorCheck.setSelected(false);
-
-		colorRampList = new WideComboBox(parent.colors.colorRampList.toArray());
-		colorRampList.setMaximumSize(new Dimension(120, 32767));
-		colorRampList.setMaximumRowCount(100);
-		colorRampList.setForeground(Color.BLACK);
-		colorRampList.setBackground(UIManager.getColor("CheckBox.background"));
-		colorRampList.setFont(new Font("Arial", Font.PLAIN, 9));
-		this.add(colorRampList, "cell 0 4,growx");
-		colorRampList.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				WideComboBox comboBox = (WideComboBox) e.getSource();
-				parent.data.selectedVectorSwatch = (int) comboBox.getSelectedIndex();
-			}
-		});
 
 		JButton editColor = new JButton("Edit");
 		editColor.setIconTextGap(0);

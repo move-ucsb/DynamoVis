@@ -75,21 +75,7 @@ public class PointPanel extends JPanel {
 		lblPointColor.setBackground(Color.LIGHT_GRAY);
 		this.add(lblPointColor, "cell 0 0,alignx left,aligny baseline");
 
-		pointColor = new WideComboBox();
-		pointColor.setMaximumSize(new Dimension(120, 32767));
-		pointColor.setMaximumRowCount(100);
-		pointColor.setForeground(Color.BLACK);
-		pointColor.setBackground(UIManager.getColor("CheckBox.background"));
-		pointColor.setFont(new Font("Arial", Font.PLAIN, 9));
-		this.add(pointColor, "cell 0 1,growx");
-		pointColor.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				WideComboBox cb = (WideComboBox) e.getSource();
-				String item = (String) cb.getSelectedItem();
-				data.pointColorSelection = parent.attributes.getName(item);
-			}
-		});
-
+		// 2 - color ramp list
 		colorRampList = new WideComboBox(parent.colors.colorRampList.toArray());
 		colorRampList.setMaximumSize(new Dimension(120, 32767));
 		colorRampList.setMaximumRowCount(100);
@@ -103,6 +89,28 @@ public class PointPanel extends JPanel {
 				parent.data.selectedPointSwatch = (int) comboBox.getSelectedIndex();
 			}
 		});
+
+		// 1 - point color field name
+		pointColor = new WideComboBox();
+		pointColor.setMaximumSize(new Dimension(120, 32767));
+		pointColor.setMaximumRowCount(100);
+		pointColor.setForeground(Color.BLACK);
+		pointColor.setBackground(UIManager.getColor("CheckBox.background"));
+		pointColor.setFont(new Font("Arial", Font.PLAIN, 9));
+		this.add(pointColor, "cell 0 1,growx");
+		pointColor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				WideComboBox cb = (WideComboBox) e.getSource();
+				String item = (String) cb.getSelectedItem();
+
+				if(item.equals("Tag")) colorRampList.setEnabled(false);
+				else				   colorRampList.setEnabled(true);
+
+				data.pointColorSelection = parent.attributes.getName(item);
+			}
+		});
+
+		
 
 		JButton editColor = new JButton("Edit");
 		editColor.setIconTextGap(0);

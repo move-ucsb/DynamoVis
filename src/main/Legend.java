@@ -312,16 +312,20 @@ public class Legend {
 				int itr = 0;
 				int y = 0;
 				for (String i : parent.tagList) {
+					int _w = 35;
+					int _h = y * 25;
 
 					int color = parent.colors.getTagColor(i).getRGB();
 					p.strokeWeight(0);
 					p.fill(color);
-					p.rect(li - 27, -20 + (y * 25), 25, 10);
+					p.rect(li - 27, -20 + _h, _w, 10);
 					p.fill(fontColor);
-					p.text(i, li - 27, -22 + (y * 25));
-					li = li + 30;
+					p.text((p.textWidth(i) > _w ? i.substring(0, 5)+".." : i), 
+						   li - 27, 
+						   _h - 22);
+					li = li + _w + 10;
 					itr++;
-					if (itr % 10 == 0) {
+					if (itr % 7 == 0) {
 						li = 0;
 						y++;
 					}
@@ -423,16 +427,26 @@ public class Legend {
 				int itr = 0;
 				int y = 0;
 				for (String i : parent.tagList) {
+					int _w = 35;
+					int _h = y * 25;
 
 					int color = parent.colors.getTagColor(i).getRGB();
 					p.strokeWeight(0);
 					p.fill(color);
-					p.rect(li - 27, -20 + (y * 25), 25, 10);
+					// p.rect(li - 27, -20 + (y * 25), 25, 10);
+					p.rect(li - 27, -20 + _h, _w, 10);
 					p.fill(fontColor);
-					p.text(i, li - 27, -22 + (y * 25));
-					li = li + 30;
+					// p.text(i, li - 27, -22 + (y * 25));
+					p.text((p.textWidth(i) > _w ? i.substring(0, 5)+".." : i), 
+						   li - 27, 
+						   _h - 22);
+
+					// li = li + 30;
+					li = li + _w + 10;
+
 					itr++;
-					if (itr % 10 == 0) {
+					// if (itr % 10 == 0) {
+					if (itr % 7 == 0) {
 						li = 0;
 						y++;
 					}

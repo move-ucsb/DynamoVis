@@ -293,7 +293,15 @@ public class LoadDataToJTable implements PropertyChangeListener {
 							boolean skip = false;
 							for (int i = 0; i < row.length; i++) {
 								if (header[i].equals(parent.headers[3])) {
+									
+									// if time field is missing
+									if(row[i] == null) {
+										skip = true;
+										break;
+									}
+
 									DateTime time;
+
 									if (first) {
 										time = formatTime(row[i]);
 										System.out.println("Timestamp format: " + parent.headers[4]);

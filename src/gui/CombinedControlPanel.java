@@ -50,6 +50,12 @@ public class CombinedControlPanel extends JPanel {
 	VectorPanel vectorPanel;
 	GhostPanel ghostPanel;
 
+	String formattedLabel(String str, boolean flag) {
+		String downArrowLabel = "\u25BC   "+str;
+		String   upArrowLabel = "\u25B2   "+str;
+		return (flag?downArrowLabel:upArrowLabel);
+	}
+
 	public CombinedControlPanel(DesktopPane father) {
 		parent = father;
 		setLayout(new MigLayout("insets 10", "[145!]", "[]10[]10[]10[]10[]10[]10[]10[]10[]10[]10[]10[]10[]"));
@@ -63,9 +69,9 @@ public class CombinedControlPanel extends JPanel {
 		JSeparator separator = new JSeparator();
 		add(separator, "cell 0 1,growx");
 
-		JLabel linelabel = new JLabel("Tracks   \u25BC");
+		JLabel linelabel = new JLabel(formattedLabel("Tracks", line));
 		linelabel.setForeground(Color.BLACK);
-		linelabel.setFont(new Font("Arial", Font.PLAIN, 8));
+		linelabel.setFont(new Font("Arial", Font.BOLD, 10));
 		linelabel.setBackground(Color.LIGHT_GRAY);
 		add(linelabel, "cell 0 2");
 		linelabel.addMouseListener(new MouseAdapter() {
@@ -73,25 +79,23 @@ public class CombinedControlPanel extends JPanel {
 			public void mousePressed(MouseEvent e) {
 				if (line) {
 					remove(linePanel);
-					// revalidate();
-					// parent.pack();
-					// ((JLabel) e.getSource()).setText("Tracks   \u25BC");
 				} else {
-					add(linePanel, "cell 0 3,growx");
+					add(linePanel, "cell 0 3,grow");
 				}
 				revalidate();
-				// parent.pack();
-				((JLabel) e.getSource()).setText("Tracks   \u25B2");
+				parent.controlContainer.pack();
 				line = !line;
+				((JLabel) e.getSource()).setText(formattedLabel("Tracks", line));
 			}
 		});
+		if (line)	add(linePanel, "cell 0 3,grow");
 
 		JSeparator separator1 = new JSeparator();
 		add(separator1, "cell 0 4,growx");
 
-		JLabel pointlabel = new JLabel("Points   \u25BC");
+		JLabel pointlabel = new JLabel(formattedLabel("Points", point));
 		pointlabel.setForeground(Color.BLACK);
-		pointlabel.setFont(new Font("Arial", Font.PLAIN, 8));
+		pointlabel.setFont(new Font("Arial", Font.BOLD, 10));
 		pointlabel.setBackground(Color.LIGHT_GRAY);
 		add(pointlabel, "cell 0 5");
 		pointlabel.addMouseListener(new MouseAdapter() {
@@ -100,21 +104,21 @@ public class CombinedControlPanel extends JPanel {
 				if (point) {
 					remove(pointPanel);
 				} else {
-					add(pointPanel, "cell 0 6,growx");
+					add(pointPanel, "cell 0 6,grow");
 				}
 				revalidate();
-				// parent.pack();
-				((JLabel) e.getSource()).setText("Points   \u25BC");
+				parent.controlContainer.pack();
 				point = !point;
+				((JLabel) e.getSource()).setText(formattedLabel("Points", point));
 			}
 		});
 
 		JSeparator separator2 = new JSeparator();
 		add(separator2, "cell 0 7,growx");
 
-		JLabel vectorlabel = new JLabel("Vectors   \u25BC");
+		JLabel vectorlabel = new JLabel(formattedLabel("Vectors", vector));
 		vectorlabel.setForeground(Color.BLACK);
-		vectorlabel.setFont(new Font("Arial", Font.PLAIN, 8));
+		vectorlabel.setFont(new Font("Arial", Font.BOLD, 10));
 		vectorlabel.setBackground(Color.LIGHT_GRAY);
 		add(vectorlabel, "cell 0 8");
 		vectorlabel.addMouseListener(new MouseAdapter() {
@@ -123,21 +127,21 @@ public class CombinedControlPanel extends JPanel {
 				if (vector) {
 					remove(vectorPanel);
 				} else {
-					add(vectorPanel, "cell 0 9,growx");
+					add(vectorPanel, "cell 0 9,grow");
 				}
 				revalidate();
-				// parent.pack();
-				((JLabel) e.getSource()).setText("Vectors   \u25B2");
+				parent.controlContainer.pack();
 				vector = !vector;
+				((JLabel) e.getSource()).setText(formattedLabel("Vectors", vector));
 			}
 		});
 
 		JSeparator separator3 = new JSeparator();
 		add(separator3, "cell 0 10,growx");
 
-		JLabel legendlabel = new JLabel("Legend   \u25BC");
+		JLabel legendlabel = new JLabel(formattedLabel("Legend", parent.legend));
 		legendlabel.setForeground(Color.BLACK);
-		legendlabel.setFont(new Font("Arial", Font.PLAIN, 8));
+		legendlabel.setFont(new Font("Arial", Font.BOLD, 10));
 		legendlabel.setBackground(Color.LIGHT_GRAY);
 		add(legendlabel, "cell 0 11");
 		legendlabel.addMouseListener(new MouseAdapter() {
@@ -146,21 +150,21 @@ public class CombinedControlPanel extends JPanel {
 				if (parent.legend) {
 					remove(parent.legendPanel);
 				} else {
-					add(parent.legendPanel, "cell 0 12,growx");
+					add(parent.legendPanel, "cell 0 12,grow");
 				}
 				revalidate();
-				// parent.pack();
-				((JLabel) e.getSource()).setText("Legend   \u25B2");
+				parent.controlContainer.pack();
 				parent.legend = !parent.legend;
+				((JLabel) e.getSource()).setText(formattedLabel("Legend", parent.legend));
 			}
 		});
 
 		JSeparator separator4 = new JSeparator();
 		add(separator4, "cell 0 13,growx");
 
-		JLabel ghostLabel = new JLabel("Underlay   \u25BC");
+		JLabel ghostLabel = new JLabel(formattedLabel("Underlay", ghost));
 		ghostLabel.setForeground(Color.BLACK);
-		ghostLabel.setFont(new Font("Arial", Font.PLAIN, 8));
+		ghostLabel.setFont(new Font("Arial", Font.BOLD, 10));
 		ghostLabel.setBackground(Color.LIGHT_GRAY);
 		add(ghostLabel, "cell 0 14");
 		ghostLabel.addMouseListener(new MouseAdapter() {
@@ -169,26 +173,26 @@ public class CombinedControlPanel extends JPanel {
 				if (ghost) {
 					remove(ghostPanel);
 				} else {
-					add(ghostPanel, "cell 0 15,growx");
+					add(ghostPanel, "cell 0 15,grow");
 				}
 				revalidate();
-				// parent.pack();
-				((JLabel) e.getSource()).setText("Underlay   \u25B2");
+				parent.controlContainer.pack();
 				ghost = !ghost;
+				((JLabel) e.getSource()).setText(formattedLabel("Underlay", ghost));
 			}
 		});
 
-		if (line) {
-			add(linePanel, "cell 0 3");
-			linelabel.setText("Tracks   \u25B2");
-		}
+		// if (line) {
+		// 	add(linePanel, "cell 0 3");
+		// 	linelabel.setText("\u25B2    Tracks");
+		// }
 
-		if (parent.legend) {
-			add(parent.legendPanel, "cell 0 12,growx");
-			legendlabel.setText("Legend   \u25B2");
-		}
+		// if (parent.legend) {
+		// 	add(parent.legendPanel, "cell 0 12,growx");
+		// 	legendlabel.setText("Legend    \u25B2");
+		// }
 
 		revalidate();
-		// parent.pack();
+		parent.controlContainer.pack();
 	}
 }
