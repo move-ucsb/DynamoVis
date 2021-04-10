@@ -493,7 +493,9 @@ public class DataPanel extends JPanel implements ActionListener {
 	}
 
 	public void openData() {
-		dataChooser = new JFileChooser(new File("./data"));
+		File defaultDataDirectiory = new File("./data");
+		if(!defaultDataDirectiory.exists()) defaultDataDirectiory = new File("./public-data");
+		dataChooser = new JFileChooser(defaultDataDirectiory);
 		dataChooser.setAcceptAllFileFilterUsed(false);
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("MoveBank Formatted CSV or TXT", "CSV", "csv",
 				"TXT", "txt");
