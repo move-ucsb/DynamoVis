@@ -4,10 +4,9 @@
 
 ##### 0.4.2.2 - 2021/04/10-12
 - "data" or "public-data" as the default data directories.
-- Higher resolution app icon for macOS
-- Processing 4 libraries for macOS integration
-
-[+] Closing animation window crashes for mac
+- Higher resolution app icon for MacOS
+- Processing 4 libraries for MacOS integration
+- Fixed a bug when closing animation window freezes the app in MacOS
 
 ##### `0.4.2-alpha.1` - 2021/04/07
 - Empty fields in the dataset for latitude,longitude, and time skips the whole row

@@ -26,17 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-
-import com.jogamp.nativewindow.WindowClosingProtocol.WindowClosingMode;
-
-
-import javax.swing.JFrame;
-import javax.swing.WindowConstants;
-
 import gui.ControlPanel;
 import utils.PointRecord;
 import utils.Track;
 
+import com.jogamp.nativewindow.WindowClosingProtocol.WindowClosingMode;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 import org.joda.time.Minutes;
@@ -114,7 +108,7 @@ public class Sketch extends PApplet  {
 		size(w, h, P3D);
 
 		// Set window icon
-		String iconFilename = "logo32.png";
+		String iconFilename = DesktopPane.isMacOSX() ? "logo1024.png" : "logo32.png";
 		URL res = parent.getClass().getClassLoader().getResource(iconFilename);
 		if(res.getProtocol().equals("jar")) {
 			PJOGL.setIcon(iconFilename);   // jar file contains the resource in its root directory
