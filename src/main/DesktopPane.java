@@ -184,7 +184,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		menuBar = createMenuBar();
 		setJMenuBar(menuBar);
 
-		setTitle("Configure Animation");
+		setTitle("DynamoVis - Configure Animation");
 		setResizable(true);
 		setSize(250, 700);
 		setLocation(sWidth / 5, sHeight / 5);
@@ -194,15 +194,15 @@ public class DesktopPane extends JFrame implements ActionListener {
 		// App Icon
 		if (isMacOSX()) {
 			// macos app icon
-			Image icon = new ImageIcon(this.getClass().getClassLoader().getResource("logo32.png")).getImage();
+			Image icon = new ImageIcon(this.getClass().getClassLoader().getResource("logo1024.png")).getImage();
 			com.apple.eawt.Application.getApplication().setDockIconImage(icon);
-			System.out.println("Platform: macOS");
+			// System.out.println("Platform: macOS");
 		}
 		else {
 			// windows app icon
 			Image icon = new ImageIcon(this.getClass().getClassLoader().getResource("logo32e.png")).getImage();
 			setIconImage(icon);
-			System.out.println("Platform: non-mac (Windows or Linux)");
+			// System.out.println("Platform: non-mac (Windows or Linux)");
 		}
 		pack();
 		wl.registerWindow(this);
@@ -253,7 +253,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		System.out.println("# DynamoVis Animation Tool");
 		System.out.println("# Copyright (C) 2016 Glenn Xavier");
 		System.out.println("#      Updated: 2021 Mert Toka");
-		System.out.println("# Build 0.4.2.1, Apr 07, 2021");
+		System.out.println("# Build 0.4.2.2-dev, Apr 12, 2021");
 		System.out.println("# This program comes with ABSOLUTELY NO WARRANTY");
 		System.out.println("# This is free software, and you are welcome to \nredistribute it under certain conditions.");
 		System.out.println("");
@@ -642,7 +642,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		}
 	}
 
-	private static boolean isMacOSX() {
+	public static boolean isMacOSX() {
 		return System.getProperty("os.name").indexOf("Mac OS X") >= 0;
 	}
 

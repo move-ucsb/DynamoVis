@@ -128,16 +128,16 @@ public class Sketch extends PApplet  {
 		frameRate(60);
 
 		// Closes only the sketch on exit
-		if (getGraphics().isGL()) {
+		if (getGraphics().isGL() && !DesktopPane.isMacOSX()) {
 			final com.jogamp.newt.Window w = (com.jogamp.newt.Window) getSurface().getNative();
 			w.setDefaultCloseOperation(WindowClosingMode.DISPOSE_ON_CLOSE);
 			// w.setAlwaysOnTop(true);
 		}
-		else {
-			// Not Tested
-			final JFrame w = (JFrame) getSurface().getNative();
-			w.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		}
+		// else {
+		// 	// Not Tested
+		// 	final JFrame w = (JFrame) getSurface().getNative();
+		// 	w.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		// }
 
 		// NONOPENGL ICON SETUP
 		// PImage icon = loadImage(parent.getClass().getResource("logo32.png").getPath()); 

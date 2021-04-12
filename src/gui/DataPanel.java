@@ -426,7 +426,7 @@ public class DataPanel extends JPanel implements ActionListener {
 		// add(helpButton, "cell 0 12 3 1,alignx right,aligny bottom");
 		// helpButton.setActionCommand("help");
 		// helpButton.addActionListener(this);
-
+		
 	}
 
 	// format psketch title 
