@@ -108,12 +108,14 @@ public class Sketch extends PApplet  {
 		size(w, h, P3D);
 
 		// Set window icon
-		String iconFilename = DesktopPane.isMacOSX() ? "logo1024.png" : "logo32.png";
-		URL res = parent.getClass().getClassLoader().getResource(iconFilename);
-		if(res.getProtocol().equals("jar")) {
-			PJOGL.setIcon(iconFilename);   // jar file contains the resource in its root directory
-		} else {
-			PJOGL.setIcon(res.getPath());  // source compilation can find the resource in bin directory
+		if(!DesktopPane.isMacOSX()) {
+			String iconFilename = "logo32.png";
+			URL res = parent.getClass().getClassLoader().getResource(iconFilename);
+			if(res.getProtocol().equals("jar")) {
+				PJOGL.setIcon(iconFilename);   // jar file contains the resource in its root directory
+			} else {
+				PJOGL.setIcon(res.getPath());  // source compilation can find the resource in bin directory
+			}
 		}
 	}
 	
