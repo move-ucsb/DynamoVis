@@ -36,6 +36,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -189,7 +190,18 @@ public class DesktopPane extends JFrame implements ActionListener {
 		setLocation(sWidth / 5, sHeight / 5);
 		dataConfigPanel = new DataPanel(this);
 		setContentPane(dataConfigPanel);
-		setIconImage(new ImageIcon(this.getClass().getClassLoader().getResource("logo32e.png")).getImage());  // app icon
+
+		// App Icon
+		if (isMacOSX()) {
+			// macos app icon
+			Image icon = new ImageIcon(this.getClass().getClassLoader().getResource("logo32.png")).getImage();
+			com.apple.eawt.Application.getApplication().setDockIconImage(icon);
+		}
+		else {
+			// windows app icon
+			Image icon = new ImageIcon(this.getClass().getClassLoader().getResource("logo32e.png")).getImage();
+			setIconImage(icon);
+		}
 		pack();
 		wl.registerWindow(this);
 
