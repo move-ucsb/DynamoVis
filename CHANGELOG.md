@@ -2,13 +2,13 @@
 
 ### Project Name: `DynamoVis`
 
-##### 0.4.2-alpha.2 - 2021/04/10 - 12
+##### 0.4.2.2 - 2021/04/10 - 12
 - "data" or "public-data" as the default data directories.
 - App icon for macOS
 [+] macOS support for Processing 3 with Java 15.
 [+] Test comp: Catalina - 10.15.6
 
-##### 0.4.2-alpha.1 - 2021/04/07
+##### `0.4.2-alpha.1` - 2021/04/07
 - Empty fields in the dataset for latitude,longitude, and time skips the whole row
 - Empty fields in the dataset for additional fields are marked as NaN.
 - Changed maximum values for interval values in data configuration window to [1000, 59, 59] for [hours, minutes, seconds], respectively.

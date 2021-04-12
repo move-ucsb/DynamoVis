@@ -196,11 +196,13 @@ public class DesktopPane extends JFrame implements ActionListener {
 			// macos app icon
 			Image icon = new ImageIcon(this.getClass().getClassLoader().getResource("logo32.png")).getImage();
 			com.apple.eawt.Application.getApplication().setDockIconImage(icon);
+			System.out.println("Platform: macOS");
 		}
 		else {
 			// windows app icon
 			Image icon = new ImageIcon(this.getClass().getClassLoader().getResource("logo32e.png")).getImage();
 			setIconImage(icon);
+			System.out.println("Platform: non-mac (Windows or Linux)");
 		}
 		pack();
 		wl.registerWindow(this);

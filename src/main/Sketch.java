@@ -193,8 +193,7 @@ public class Sketch extends PApplet  {
 		nextMap.panTo(new Location(-map1RightLocation.getLat(), lonDiff));
 
 		// Ensure next map is always over main map (push 1px)
-		float fixLastPixel = (left) ? 1 : -1;
-		nextMap.panBy(fixLastPixel, 0);
+		nextMap.panBy( (left ? 1 : -1), 0);
 	}
 	////
 
