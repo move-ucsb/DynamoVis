@@ -85,6 +85,8 @@ public class BaseMapPanel extends JPanel {
 					chosenProvider = provider;
 					if (parent.sketch != null) {
 						parent.sketch.map.mapDisplay.setProvider(provider);
+						if(parent.sketch.leftMap != null) 	parent.sketch.leftMap.mapDisplay.setProvider(provider);
+						if(parent.sketch.rightMap != null) 	parent.sketch.rightMap.mapDisplay.setProvider(provider);
 					}
 				}
 			});

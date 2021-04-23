@@ -63,8 +63,8 @@ public class Sketch extends PApplet  {
 	// 
 	public boolean leftMapNeeded = false;
 	public boolean rightMapNeeded = false;
-	UnfoldingMap leftMap;
-	UnfoldingMap rightMap;
+	public UnfoldingMap leftMap;
+	public UnfoldingMap rightMap;
 
 	int colorMin;
 	int colorMax;

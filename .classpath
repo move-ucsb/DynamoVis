@@ -46,7 +46,7 @@
 	<classpathentry kind="lib" path="lib/miglayout-core-4.2.jar"/>
 	<classpathentry kind="lib" path="lib/miglayout-swing-4.2.jar"/>
 	<classpathentry kind="lib" path="lib/opencsv-5.3.jar"/>
-	<classpathentry kind="lib" path="lib/processing-core-3.5.4.jar"/>
+	
 	<classpathentry kind="lib" path="lib/timebars-1.49.jar" sourcepath="/timebars-1.49/src"/>
 	<classpathentry kind="lib" path="lib/unfolding.0.9.9.jar"/>
 	
@@ -55,7 +55,8 @@
 	<classpathentry kind="output" path="bin"/>
 </classpath>
 
-<!-- 
+<!--
+<classpathentry kind="lib" path="lib/processing-core-3.5.4.jar"/> 
 <classpathentry kind="lib" path="lib/apple.jar"/>
 	<classpathentry kind="lib" path="lib/processing-core-3.5.4.jar"/>
 	<classpathentry kind="lib" path="lib/json4processing.jar"/>

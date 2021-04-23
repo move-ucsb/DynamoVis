@@ -13,3 +13,6 @@
 
 # Data directory
 /data
+
+# Remembered headers file
+/config/RememberedHeaders.txt

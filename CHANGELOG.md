@@ -2,6 +2,10 @@
 
 ### Project Name: `DynamoVis`
 
+##### 0.4.2.3 - 2021/04/23
+- Changing base map changes both left and right maps if we repeat the map display for edge cases
+- Date outlier filter now takes into account of the current year and filters dates 20 years out
+
 ##### 0.4.2.2 - 2021/04/10-12
 - "data" or "public-data" as the default data directories.
 - Higher resolution app icon for MacOS

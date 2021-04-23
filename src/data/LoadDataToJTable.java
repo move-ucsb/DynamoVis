@@ -323,13 +323,12 @@ public class LoadDataToJTable implements PropertyChangeListener {
 										parent.dataConfigPanel.setCursor(null);
 										return null;
 									}
-
-
+									
 									if (time.getYear() < 1980 && time.getYear() > 1800) {
 										countEarly++;
-									} else if (time.isAfter(now) && time.getYear() < 2040) {
+									} else if (time.isAfter(now) && time.getYear() < DateTime.now().getYear()+20) {
 										countLate++;
-									} else if (time.getYear() >= 2040) {
+									} else if (time.getYear() >= DateTime.now().getYear()+20) {
 										countWayLate++;
 										skip = true;
 									} else if (time.getYear() <= 1800) {
@@ -522,10 +521,10 @@ public class LoadDataToJTable implements PropertyChangeListener {
 						System.out.println("Dates prior to 1800 (Ignored): " + countWayEarly);
 					}
 					if (countLate > 0) {
-						System.out.println("Dates between now and 2040 (Kept): " + countLate);
+						System.out.println("Dates between now and "+(DateTime.now().getYear()+20)+" (Kept): " + countLate);
 					}
 					if (countWayLate > 0) {
-						System.out.println("Dates after 2040 (Ignored): " + countWayLate);
+						System.out.println("Dates after "+(DateTime.now().getYear()+20)+" (Ignored): " + countWayLate);
 					}
 					if (visibleCount == 0 && badCoordCounter == 0 && countEarly == 0 && countWayEarly == 0 && countLate == 0
 							&& countWayLate == 0) {
