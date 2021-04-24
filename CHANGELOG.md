@@ -2,6 +2,9 @@
 
 ### Project Name: `DynamoVis`
 
+##### 0.5.0 - 2021/04/23
+- Spacetime cube 
+
 ##### 0.4.2.3 - 2021/04/23
 - Changing base map changes both left and right maps if we repeat the map display for edge cases
 - Date outlier filter now takes into account of the current year and filters dates 20 years out
