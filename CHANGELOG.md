@@ -2,14 +2,20 @@
 
 ### Project Name: `DynamoVis`
 
-##### 0.5.0 - 2021/04/23
-- Spacetime cube 
+##### 0.5.0 - 2021/04/30
+- Incorporated the window management from the space-time cube from Kate Carlson
+[ ] Shutdown behaviour
+[ ] Make the 3D cube work with the animation
+[ ] PeasyCam
+[ ] Date scaling
+[ ] Static/Ghost view
+[ ] Populate control panel 
 
 ##### 0.4.2.3 - 2021/04/23
 - Changing base map changes both left and right maps if we repeat the map display for edge cases
 - Date outlier filter now takes into account of the current year and filters dates 20 years out
 
-##### 0.4.2.2 - 2021/04/10-12
+##### `0.4.2-alpha.2` - 2021/04/10-12
 - "data" or "public-data" as the default data directories.
 - Higher resolution app icon for MacOS
 - Processing 4 libraries for MacOS integration

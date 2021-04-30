@@ -97,7 +97,6 @@ public class DesktopPane extends JFrame implements ActionListener {
 
 	public JDialog timelineContainer;
 	public JDialog tbcContainer; // STC
-	// public TimeBoxPanel bContainer; // STC
 	public Box box; // STC
 
 	public TimeLine timeLine;
@@ -110,6 +109,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 	JCheckBoxMenuItem timeline;
 	JCheckBoxMenuItem cpCheck;
 
+	JMenu vAnalytics; // STC
 	JCheckBoxMenuItem timeBoxCheck; // STC
 
 	JMenuBar menuBar;
@@ -244,7 +244,6 @@ public class DesktopPane extends JFrame implements ActionListener {
 		recordContainer = new JDialog(this);
 		baseMapContainer = new JDialog(this);
 		tbcContainer = new JDialog(this); // STC
-		// bContainer = new TimeBoxPanel(); // STC
 
 		// BASE MAP WINDOW -----------------------------
 		bm = new BaseMapPanel(this);
@@ -262,7 +261,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		System.out.println("# DynamoVis Animation Tool");
 		System.out.println("# Copyright (C) 2016 Glenn Xavier");
 		System.out.println("#      Updated: 2021 Mert Toka");
-		System.out.println("# Build 0.5.0-dev, Apr 23, 2021");
+		System.out.println("# Build 0.5.0-dev, Apr 30, 2021");
 		System.out.println("# This program comes with ABSOLUTELY NO WARRANTY");
 		System.out.println("# This is free software, and you are welcome to \nredistribute it under certain conditions.");
 		System.out.println("");
@@ -277,11 +276,11 @@ public class DesktopPane extends JFrame implements ActionListener {
 	}
 
 	// STC -----------------------------
-	public void setupSpacetimeCubeSketch() {
+	public void setupSpaceTimeCubeSketch() {
 		box = new Box();
 		box.setParent(this);
-		box.run(0, 0); // temp location
-		box.getSurface().setTitle(dataConfigPanel.getSurfaceTitle());
+		box.run(100, 100); // temp location
+		box.getSurface().setTitle("3D Space-Time Cube");
 	}
 	// STC -----------------------------
 
@@ -309,15 +308,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 			public void componentHidden(ComponentEvent e) {
 				timeBoxCheck.setSelected(false);
 			}
-		});
-		// for the dynamic time box
-		setupSpacetimeCubeSketch();
-		// bContainer.setupBox(this);
-		// bContainer.addComponentListener(new ComponentAdapter() {
-		// 	public void componentHidden(ComponentEvent e) {
-		// 		timeBoxCheck.setSelected(false);
-		// 	}
-		// });
+		}); 
 		// STC -----------------------------
 
 		legendPanel = new LegendPanel(this);
@@ -427,6 +418,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		cpCheck.setSelected(true);
 		export.setEnabled(true);
 
+		vAnalytics.setEnabled(true);   // STC
 		timeBoxCheck.setEnabled(true); // STC
 
 		if (!startup) {
@@ -440,8 +432,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		// STC -----------------------------
 		if (timeBoxCheck.isSelected()) {
 			tbcContainer.setVisible(true);
-			// bContainer.setVisible(true);
-			box.getSurface().setVisible(false);
+			box.getSurface().setVisible(true);
 			data.boxvisible = true;
 		}
 		// STC -----------------------------
@@ -629,8 +620,9 @@ public class DesktopPane extends JFrame implements ActionListener {
 		resetLayout.addActionListener(this);
 
 		// STC -----------------------------
-		JMenu vAnalytics = new JMenu("Visual Analytics");
+		vAnalytics = new JMenu("Visual Analytics");
 		vAnalytics.setMnemonic(KeyEvent.VK_A);
+		vAnalytics.setEnabled(false);
 		menuBar.add(vAnalytics);
 
 		timeBoxCheck = new JCheckBoxMenuItem("3D Space-Time Analysis");
@@ -644,15 +636,12 @@ public class DesktopPane extends JFrame implements ActionListener {
 			public void itemStateChanged(ItemEvent evt) {
 				JCheckBoxMenuItem cb = (JCheckBoxMenuItem) evt.getSource();
 				if (cb.isSelected()) {
-					tbcContainer.setVisible(true); // if check box is checked, open up interaction analysis window
-					// bContainer.setVisible(true); // if checked, open up the time box panel
-					box.getSurface().setVisible(true);
-					data.boxvisible = true;
+					tbcContainer.setVisible(true);
+					if(box == null)	 setupSpaceTimeCubeSketch();
+					box.setVisible(true);
 				} else {
 					tbcContainer.setVisible(false);
-					// bContainer.setVisible(false);
-					box.getSurface().setVisible(false);
-					data.boxvisible = false;
+					if(box != null)	 box.exit();
 				}
 			}
 		});
@@ -752,17 +741,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		case "record" -> recordContainer.setVisible(true);
 		case "basemap" -> baseMapContainer.setVisible(true);
 		case "reset" -> resetWindowLocs();
-		case "histo" -> {
-			if (hc == null) {
-				hc = new JDialog(this);
-				hc.setTitle("HISTO TEST");
-				Histo histo = new Histo();
-				hc.setContentPane(histo);
-				hc.setLocationRelativeTo(this);
-				hc.pack();
-			}
-			hc.setVisible(true);
-		}
+		
 		}
 		;
 	}
