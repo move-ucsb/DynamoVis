@@ -423,9 +423,9 @@ public class DataPanel extends JPanel implements ActionListener {
 		// cancelButton.addActionListener(this);
 
 		helpButton = new JButton("Help");
-		// add(helpButton, "cell 0 12 3 1,alignx right,aligny bottom");
-		// helpButton.setActionCommand("help");
-		// helpButton.addActionListener(this);
+		add(helpButton, "cell 0 12 3 1,alignx right,aligny bottom");
+		helpButton.setActionCommand("help");
+		helpButton.addActionListener(this);
 	}
 
 	// format psketch title 
@@ -487,7 +487,7 @@ public class DataPanel extends JPanel implements ActionListener {
 			doIt();
 			// parent.dataConfigContainer.setVisible(false);
 		} else if ("help".equals(e.getActionCommand())) {
-
+			DesktopPane.openWebpage(parent.projectWebsite);
 		}
 	}
 

@@ -86,7 +86,7 @@ public class GhostPanel extends JPanel {
 		lblLineColor.setBackground(Color.LIGHT_GRAY);
 		this.add(lblLineColor, "cell 0 0,alignx left,aligny baseline");
 
-		JLabel lblOpac = new JLabel("Opacity");
+		JLabel lblOpac = new JLabel("Opacity (%)");
 		lblOpac.setForeground(Color.BLACK);
 		lblOpac.setFont(new Font("Arial", Font.PLAIN, 8));
 		lblOpac.setBackground(Color.LIGHT_GRAY);
@@ -142,13 +142,13 @@ public class GhostPanel extends JPanel {
 		AlphaValue.setForeground(Color.BLACK);
 		AlphaValue.setBackground(Color.LIGHT_GRAY);
 		AlphaValue.setFont(new Font("Arial", Font.PLAIN, 9));
-		AlphaValue.setModel(new SpinnerNumberModel(1, 1, 255, 1));
+		AlphaValue.setModel(new SpinnerNumberModel(1, 1, 100, 1)); 
 		AlphaValue.setToolTipText("");
 		ToolTipManager.sharedInstance().registerComponent(AlphaValue);
 		AlphaValue.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent evt) {
 				JSpinner spin = (JSpinner) evt.getSource();
-				data.ghostAlpha = (Integer) spin.getValue();
+				data.ghostAlpha = (Integer) spin.getValue() * 255 / 100; // scale back to [0-255]
 			}
 		});
 		AlphaValue.setValue(15);

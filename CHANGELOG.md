@@ -2,6 +2,10 @@
 
 ### Project Name: `DynamoVis`
 
+##### 0.4.2.4 - 2021/05/12
+- Added help box back
+- Changed the maximum value of underlay opacity from 255 to 100 to make it more intuitive  
+
 ##### 0.4.2.3 - 2021/04/23
 - Changing base map changes both left and right maps if we repeat the map display for edge cases
 - Date outlier filter now takes into account of the current year and filters dates 20 years out

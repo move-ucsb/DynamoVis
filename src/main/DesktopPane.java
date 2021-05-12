@@ -38,6 +38,7 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Desktop;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -48,6 +49,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -81,6 +83,8 @@ public class DesktopPane extends JFrame implements ActionListener {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	public final String projectWebsite = "https://github.com/move-ucsb/DynamoVis";
 
 	JFrame desktop;
 	public Dimension animationSize = new Dimension(1280, 720);
@@ -253,7 +257,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		System.out.println("# DynamoVis Animation Tool");
 		System.out.println("# Copyright (C) 2016 Glenn Xavier");
 		System.out.println("#      Updated: 2021 Mert Toka");
-		System.out.println("# Build 0.4.2.3-dev, Apr 23, 2021");
+		System.out.println("# Build 0.4.2.4-dev, May 12, 2021");
 		System.out.println("# This program comes with ABSOLUTELY NO WARRANTY");
 		System.out.println("# This is free software, and you are welcome to \nredistribute it under certain conditions.");
 		System.out.println("");
@@ -583,15 +587,15 @@ public class DesktopPane extends JFrame implements ActionListener {
 		record.addActionListener(this);
 		export.add(record);
 
-		// JMenu help = new JMenu("Help");
-		// help.setMnemonic(KeyEvent.VK_H);
-		// menuBar.add(help);
+		JMenu help = new JMenu("Help");
+		help.setMnemonic(KeyEvent.VK_H);
+		menuBar.add(help);
 
-		// JMenuItem about = new JMenuItem("About");
-		// about.setActionCommand("about");
-		// about.addActionListener(this);
-		// about.setEnabled(false);
-		// help.add(about);
+		JMenuItem about = new JMenuItem("About");
+		about.setActionCommand("about");
+		about.addActionListener(this);
+		about.setEnabled(true);
+		help.add(about);
 
 		// JMenu dev = new JMenu("Dev");
 		// menuBar.add(dev);
@@ -646,6 +650,20 @@ public class DesktopPane extends JFrame implements ActionListener {
 		return System.getProperty("os.name").indexOf("Mac OS X") >= 0;
 	}
 
+	public static boolean openWebpage(String urlString) {
+		Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+		if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+			try {
+				desktop.browse(new URI(urlString));
+				return true;
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+
 	// ACTION LISTENER OVERRIDE ----------------------
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -663,6 +681,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 			case "record" -> recordContainer.setVisible(true);
 			case "basemap" -> baseMapContainer.setVisible(true);
 			case "reset" -> resetWindowLocs();
+			case "about" -> openWebpage(projectWebsite);
 			case "histo" -> {
 				if (hc == null) {
 					hc = new JDialog(this);
