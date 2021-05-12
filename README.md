@@ -1,13 +1,13 @@
 # DynamoVis
 
-> Figure
-
 **DynamoVis** is a data visualization software spesifically targeted for spatiotemporal movement data. It is developed by [Move Lab @ UC Santa Barbara](https://move.geog.ucsb.edu/) and designed to be accessible and easily usable for scientists without extensive prior experience with programming, GIS software, or custom data visualization tools. The intuitive design focuses on a simple interface for scientists to apply spatial data visualization techniques, giving ecologists and biologists of all backgrounds the power to visualize complicated spatial patterns.
 
 > [Download version 0.4.2.2 (.JAR)](https://github.com/move-ucsb/DynamoVis/releases)
 
 ### TODO:
-[ ] Documentation will be available soon 
+
+[ ] Documentation will be available soon
+
 [ ] Add how to cite
 
 ## Installation
