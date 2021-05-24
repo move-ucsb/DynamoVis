@@ -2,6 +2,9 @@
 
 ### Project Name: `DynamoVis`
 
+##### 1.0 - 2021/05/24
+- Public release
+
 ##### 0.4.2.5 - 2021/05/24
 - Removed base encoding and framerate dropdowns from Recorder window
 - Unchecked 'Store frames' option in Recorder window only deletes the associated recording session's frames
