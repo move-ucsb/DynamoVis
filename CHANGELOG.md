@@ -2,6 +2,11 @@
 
 ### Project Name: `DynamoVis`
 
+##### 0.4.2.5 - 2021/05/24
+- Removed base encoding and framerate dropdowns from Recorder window
+- Unchecked 'Store frames' option in Recorder window only deletes the associated recording session's frames
+- Closing the Recorder window discards the recording and resets the time
+
 ##### 0.4.2.4 - 2021/05/12
 - Added help box back
 - Changed the maximum value of underlay opacity from 255 to 100 to make it more intuitive  

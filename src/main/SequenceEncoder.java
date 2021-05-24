@@ -66,6 +66,7 @@ public class SequenceEncoder implements PropertyChangeListener {
     private MP4Muxer muxer;
     private ProgressMonitor progressMonitor;
     DesktopPane parent;
+    private int previousExportCounter;
     Task operation;
     int start;
     int end;
@@ -77,6 +78,7 @@ public class SequenceEncoder implements PropertyChangeListener {
         start = s;
         end = e;
         deleteTemp = del;
+        previousExportCounter = parent.exportCounter;
         this.ch = NIOUtils.writableFileChannel(file);
 
         // Transform to convert between RGB and YUV
@@ -137,7 +139,7 @@ public class SequenceEncoder implements PropertyChangeListener {
                 
                 if(deleteTemp) {
                     // Delete temp folder
-                    Files.walk(Path.of("export/temp"))
+                    Files.walk(Path.of("export/temp/"+ parent.animationTitle + previousExportCounter))
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
