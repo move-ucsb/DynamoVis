@@ -44,11 +44,11 @@ public class CombinedControlPanel extends JPanel {
 	boolean line = true;
 	boolean point = false;
 	boolean vector = false;
-	boolean ghost = false;
+	// boolean ghost = false;
 	LinePanel linePanel;
 	PointPanel pointPanel;
 	VectorPanel vectorPanel;
-	GhostPanel ghostPanel;
+	// GhostPanel ghostPanel;
 
 	String formattedLabel(String str, boolean flag) {
 		String downArrowLabel = "\u25BC   "+str;
@@ -64,11 +64,12 @@ public class CombinedControlPanel extends JPanel {
 		linePanel = new LinePanel(parent);
 		pointPanel = new PointPanel(parent);
 		vectorPanel = new VectorPanel(parent);
-		ghostPanel = new GhostPanel(parent);
+		// ghostPanel = new GhostPanel(parent);
 
 		JSeparator separator = new JSeparator();
 		add(separator, "cell 0 1,growx");
 
+		// Tracks -- Added Underlay(Ghost) here
 		JLabel linelabel = new JLabel(formattedLabel("Tracks", line));
 		linelabel.setForeground(Color.BLACK);
 		linelabel.setFont(new Font("Arial", Font.BOLD, 10));
@@ -88,7 +89,9 @@ public class CombinedControlPanel extends JPanel {
 				((JLabel) e.getSource()).setText(formattedLabel("Tracks", line));
 			}
 		});
-		if (line)	add(linePanel, "cell 0 3,grow");
+		if (line){
+			add(linePanel, "cell 0 3,grow");
+		}
 
 		JSeparator separator1 = new JSeparator();
 		add(separator1, "cell 0 4,growx");
@@ -158,39 +161,6 @@ public class CombinedControlPanel extends JPanel {
 				((JLabel) e.getSource()).setText(formattedLabel("Legend", parent.legend));
 			}
 		});
-
-		JSeparator separator4 = new JSeparator();
-		add(separator4, "cell 0 13,growx");
-
-		JLabel ghostLabel = new JLabel(formattedLabel("Underlay", ghost));
-		ghostLabel.setForeground(Color.BLACK);
-		ghostLabel.setFont(new Font("Arial", Font.BOLD, 10));
-		ghostLabel.setBackground(Color.LIGHT_GRAY);
-		add(ghostLabel, "cell 0 14");
-		ghostLabel.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				if (ghost) {
-					remove(ghostPanel);
-				} else {
-					add(ghostPanel, "cell 0 15,grow");
-				}
-				revalidate();
-				parent.controlContainer.pack();
-				ghost = !ghost;
-				((JLabel) e.getSource()).setText(formattedLabel("Underlay", ghost));
-			}
-		});
-
-		// if (line) {
-		// 	add(linePanel, "cell 0 3");
-		// 	linelabel.setText("\u25B2    Tracks");
-		// }
-
-		// if (parent.legend) {
-		// 	add(parent.legendPanel, "cell 0 12,growx");
-		// 	legendlabel.setText("Legend    \u25B2");
-		// }
 
 		revalidate();
 		parent.controlContainer.pack();

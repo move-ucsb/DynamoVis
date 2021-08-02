@@ -85,6 +85,8 @@ public class DesktopPane extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 1L;
 
 	public final String projectWebsite = "https://github.com/move-ucsb/DynamoVis";
+	private static final String buildVersionString = "1.0";
+	private static final String buildVersionDate = "Aug 01, 2021";
 
 	JFrame desktop;
 	public Dimension animationSize = new Dimension(1280, 720);
@@ -188,7 +190,10 @@ public class DesktopPane extends JFrame implements ActionListener {
 		menuBar = createMenuBar();
 		setJMenuBar(menuBar);
 
-		setTitle("DynamoVis - Configure Animation");
+		if(isMacOSX())
+			setTitle("Input Data and Animation Configuration");
+		else 
+			setTitle("Input Data and Animation Configuration - [DynamoVis]");
 		setResizable(true);
 		setSize(250, 700);
 		setLocation(sWidth / 5, sHeight / 5);
@@ -200,6 +205,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 			// macos app icon
 			Image icon = new ImageIcon(this.getClass().getClassLoader().getResource("logo1024.png")).getImage();
 			com.apple.eawt.Application.getApplication().setDockIconImage(icon);
+			
 			// System.out.println("Platform: macOS");
 		}
 		else {
@@ -257,7 +263,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		System.out.println("# DynamoVis Animation Tool");
 		System.out.println("# Copyright (C) 2016 Glenn Xavier");
 		System.out.println("#      Updated: 2021 Mert Toka");
-		System.out.println("# Build 1.0, May 24, 2021");
+		System.out.println("# Version "+buildVersionString+", "+buildVersionDate+"");
 		System.out.println("# This program comes with ABSOLUTELY NO WARRANTY");
 		System.out.println("# This is free software, and you are welcome to \nredistribute it under certain conditions.");
 		System.out.println("");
@@ -333,7 +339,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 			pack();
 		}
 
-		setTitle("DynamoVis Animation Tool");
+		// setTitle("DynamoVis Animation Tool");
 
 		dataFilePath = path;
 
@@ -706,12 +712,14 @@ public class DesktopPane extends JFrame implements ActionListener {
 
 	// MAIN ------------------------------
 	public static void main(String[] args) {
+		if (isMacOSX()) {
+			System.setProperty("apple.laf.useScreenMenuBar", "true");
+			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "DynamoVis");
+		}
+		// System.out.println("App started, no UI yet");
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				if (isMacOSX()) {
-					System.setProperty("apple.laf.useScreenMenuBar", "true");
-					System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Animation Tool");
-				}
+				// System.out.println("Started the UI");
 				try {
 					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 				} catch (Exception e) {

@@ -2,8 +2,12 @@
 
 ### Project Name: `DynamoVis`
 
-##### 1.0 - 2021/05/24
-- Public release
+##### 1.0 - 2021/08/01
+- Renamed MacOS menubar title to "DynamoVis"
+- Renamed "Configure Animation" to "Input Data and Animation Configuration"
+- Renamed Control Panel entry "Line Thickness" under Tracks to "Line Width" 
+- Moved Control Panel field "Underlay" under "Tracks"
+- Public release as 1.0
 
 ##### 0.4.2.5 - 2021/05/24
 - Removed base encoding and framerate dropdowns from Recorder window
