@@ -86,7 +86,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 
 	public final String projectWebsite = "https://github.com/move-ucsb/DynamoVis";
 	private static final String buildVersionString = "1.0";
-	private static final String buildVersionDate = "Aug 01, 2021";
+	private static final String buildVersionDate = "Aug 1, 2021";
 
 	JFrame desktop;
 	public Dimension animationSize = new Dimension(1280, 720);
