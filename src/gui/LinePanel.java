@@ -22,6 +22,8 @@
 package gui;
 
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 
 import main.DesktopPane;
 import main.SketchData;
@@ -29,12 +31,15 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
@@ -66,7 +71,7 @@ public class LinePanel extends JPanel {
 		parent = father;
 		data = parent.data;
 		me = this;
-		setLayout(new MigLayout("insets 0", "[grow][]", "[][][][][]"));
+		setLayout(new MigLayout("insets 0", "[grow][grow][][]", "[][][][][][][][][][]"));
 
 		JLabel lblLineColor = new JLabel("Line Color");
 		lblLineColor.setForeground(Color.BLACK);
@@ -81,7 +86,7 @@ public class LinePanel extends JPanel {
 		colorRampList.setForeground(Color.BLACK);
 		colorRampList.setBackground(UIManager.getColor("CheckBox.background"));
 		colorRampList.setFont(new Font("Arial", Font.PLAIN, 9));
-		this.add(colorRampList, "cell 0 2,growx");
+		this.add(colorRampList, "cell 0 2 3 1,growx");
 		colorRampList.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				WideComboBox comboBox = (WideComboBox) e.getSource();
@@ -96,7 +101,7 @@ public class LinePanel extends JPanel {
 		strokeColor.setForeground(Color.BLACK);
 		strokeColor.setBackground(UIManager.getColor("CheckBox.background"));
 		strokeColor.setFont(new Font("Arial", Font.PLAIN, 9));
-		this.add(strokeColor, "cell 0 1,growx");
+		this.add(strokeColor, "cell 0 1 3 1,growx");
 		strokeColor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				WideComboBox cb = (WideComboBox) e.getSource();
@@ -121,7 +126,7 @@ public class LinePanel extends JPanel {
 		strokeColorToggle.setForeground(Color.BLACK);
 		strokeColorToggle.setFont(new Font("Arial", Font.PLAIN, 9));
 		strokeColorToggle.setBackground(Color.LIGHT_GRAY);
-		this.add(strokeColorToggle, "cell 1 1,growx");
+		this.add(strokeColorToggle, "cell 3 1,growx");
 		strokeColorToggle.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent evt) {
 				JCheckBox cb = (JCheckBox) evt.getSource();
@@ -143,7 +148,7 @@ public class LinePanel extends JPanel {
 		editColor.setBackground(new Color(227, 227, 227));
 		editColor.setFont(new Font("Arial", Font.PLAIN, 9));
 		editColor.setMargin(new Insets(0, 0, 0, 0));
-		this.add(editColor, "cell 1 2,grow");
+		this.add(editColor, "cell 3 2,grow");
 		editColor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				if (geCtr == null) {
@@ -162,7 +167,7 @@ public class LinePanel extends JPanel {
 			}
 		});
 
-		JLabel lblLineWeight = new JLabel("Line Thickness");
+		JLabel lblLineWeight = new JLabel("Line Width");
 		lblLineWeight.setForeground(Color.BLACK);
 		lblLineWeight.setFont(new Font("Arial", Font.PLAIN, 8));
 		lblLineWeight.setBackground(Color.LIGHT_GRAY);
@@ -174,7 +179,7 @@ public class LinePanel extends JPanel {
 		strokeWeight.setForeground(Color.BLACK);
 		strokeWeight.setBackground(UIManager.getColor("CheckBox.background"));
 		strokeWeight.setFont(new Font("Arial", Font.PLAIN, 9));
-		this.add(strokeWeight, "cell 0 4,growx");
+		this.add(strokeWeight, "cell 0 4 3 1,growx");
 		strokeWeight.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				WideComboBox cb = (WideComboBox) e.getSource();
@@ -194,7 +199,7 @@ public class LinePanel extends JPanel {
 		strokeWeightToggle.setForeground(Color.BLACK);
 		strokeWeightToggle.setBackground(Color.LIGHT_GRAY);
 		strokeWeightToggle.setFont(new Font("Arial", Font.PLAIN, 9));
-		this.add(strokeWeightToggle, "cell 1 4,growx");
+		this.add(strokeWeightToggle, "cell 3 4,growx");
 		strokeWeightToggle.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent evt) {
 				JCheckBox cb = (JCheckBox) evt.getSource();
@@ -213,7 +218,7 @@ public class LinePanel extends JPanel {
 		slider.setMinimum(0);
 		slider.setMaximum(20);
 		slider.setMaximumSize(new Dimension(120, 32767));
-		this.add(slider, "cell 0 5 2 1,growx");
+		this.add(slider, "cell 0 5 3 1,growx");
 		slider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent evt) {
 				RangeSlider slider = (RangeSlider) evt.getSource();
@@ -235,5 +240,105 @@ public class LinePanel extends JPanel {
 			strokeWeightToggle.setSelected(false);
 			strokeWeightToggle.setEnabled(false);
 		}
+
+
+		// UNDERLAY
+		// ===================
+
+		JSpinner ghostWeight = new JSpinner();
+		ghostWeight.setForeground(Color.BLACK);
+		ghostWeight.setBackground(Color.LIGHT_GRAY);
+		ghostWeight.setFont(new Font("Arial", Font.PLAIN, 9));
+		ghostWeight.setModel(new SpinnerNumberModel(1, 1, 100, 1));
+		ghostWeight.setToolTipText("");
+		ToolTipManager.sharedInstance().registerComponent(ghostWeight);
+		ghostWeight.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent evt) {
+				JSpinner spin = (JSpinner) evt.getSource();
+				data.ghostWeight = (Integer) spin.getValue();
+			}
+		});
+
+		// Underlay label
+		JLabel lblUnderlaySubheader = new JLabel("Underlay");
+		lblUnderlaySubheader.setForeground(Color.BLACK);
+		lblUnderlaySubheader.setFont(new Font("Arial", Font.BOLD, 9));
+		lblUnderlaySubheader.setBackground(Color.LIGHT_GRAY);
+		this.add(lblUnderlaySubheader, "cell 0 7,alignx left,aligny baseline");
+		// 
+
+		JLabel lblLineThickness = new JLabel("Line Width");
+		lblLineThickness.setForeground(Color.BLACK);
+		lblLineThickness.setFont(new Font("Arial", Font.PLAIN, 8));
+		lblLineThickness.setBackground(Color.LIGHT_GRAY);
+		this.add(lblLineThickness, "cell 0 8,alignx left,aligny baseline");
+
+		JLabel lblOpac = new JLabel("Opacity (%)");
+		lblOpac.setForeground(Color.BLACK);
+		lblOpac.setFont(new Font("Arial", Font.PLAIN, 8));
+		lblOpac.setBackground(Color.LIGHT_GRAY);
+		this.add(lblOpac, "cell 1 8,alignx left,aligny baseline");
+		ghostWeight.setValue(2);
+		this.add(ghostWeight, "flowx,cell 0 9");
+
+		JCheckBox check = new JCheckBox("");
+		check.setForeground(Color.BLACK);
+		check.setBackground(Color.LIGHT_GRAY);
+		check.setFont(new Font("Arial", Font.PLAIN, 9));
+		check.setToolTipText("");
+		ToolTipManager.sharedInstance().registerComponent(check);
+		this.add(check, "cell 3 9,growx");
+		check.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent evt) {
+				JCheckBox cb = (JCheckBox) evt.getSource();
+				if (cb.isSelected()) {
+					data.ghost = true;
+				} else {
+					data.ghost = false;
+				}
+			}
+		});
+
+		final JButton colorButton = new JButton("");
+		add(colorButton, "cell 2 9,grow");
+		colorButton.setMinimumSize(new Dimension(15, 15));
+		colorButton.setMaximumSize(new Dimension(15, 15));
+		colorButton.setBackground(data.ghostColor);
+		colorButton.setMargin(new Insets(0, 0, 0, 0));
+		colorButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				final JColorChooser colorChooser = new JColorChooser();
+				JDialog maxDialog = JColorChooser.createDialog((Component) evt.getSource(), "Pick a Color", true, // modal
+						colorChooser, new ActionListener() {
+
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								data.ghostColor = colorChooser.getColor();
+								colorButton.setBackground(data.ghostColor);
+							}
+						}, new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent event) {
+							}
+						});
+				maxDialog.setVisible(true);
+			}
+		});
+
+		JSpinner AlphaValue = new JSpinner();
+		AlphaValue.setForeground(Color.BLACK);
+		AlphaValue.setBackground(Color.LIGHT_GRAY);
+		AlphaValue.setFont(new Font("Arial", Font.PLAIN, 9));
+		AlphaValue.setModel(new SpinnerNumberModel(1, 1, 100, 1)); 
+		AlphaValue.setToolTipText("");
+		ToolTipManager.sharedInstance().registerComponent(AlphaValue);
+		AlphaValue.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent evt) {
+				JSpinner spin = (JSpinner) evt.getSource();
+				data.ghostAlpha = (Integer) spin.getValue() * 255 / 100; // scale back to [0-255]
+			}
+		});
+		AlphaValue.setValue(15);
+		this.add(AlphaValue, "flowx,cell 1 9");
 	}
 }

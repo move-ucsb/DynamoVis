@@ -21,8 +21,12 @@ package main;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.DecimalFormat;
+import java.util.Comparator;
 
 import javax.swing.JPanel;
 
@@ -58,20 +62,11 @@ public class Recorder extends JPanel {
 		parent = father;
 		data = father.data;
 		setLayout(new MigLayout("", "[grow][][]", "[][][]"));
-		time = new ActionListener() {
-
-		    @Override
-		    public void actionPerformed(ActionEvent evt) {
-		    	double frames = ((double) data.frameCounter) / 25d;
-		    	timeLabel.setText(new DecimalFormat("00.00").format(frames) + "s");
-		    }
-		};
-		timer = new Timer(timeDelay, time);
+		enableRecorder();
 
 		// checkbox to store frames
 		chkTemp = new JCheckBox("Store frames");
 		add(chkTemp, "cell 0 0 2,alignx left");
-
 
 		timeLabel = new JLabel("00.00s");
 		add(timeLabel, "cell 1 0 2,alignx right");
@@ -108,13 +103,15 @@ public class Recorder extends JPanel {
 		btnSave.setEnabled(false);
 		add(btnSave, "cell 2 1");
 		
+		// Hidden
 		JComboBox<String> comboBox = new JComboBox<String>();
-		add(comboBox, "flowx,cell 0 2 3 1,growx");
+		// add(comboBox, "flowx,cell 0 2 3 1,growx");
 		comboBox.addItem("h264 Baseline");
 		comboBox.setEnabled(false);
 		
+		// Hidden
 		JComboBox<String> comboBox_1 = new JComboBox<String>();
-		add(comboBox_1, "flowx,cell 0 2 3 1,growx");
+		// add(comboBox_1, "flowx,cell 0 2 3 1,growx");
 		comboBox_1.addItem("30 fps");
 		comboBox_1.setEnabled(false);
 		
@@ -131,9 +128,36 @@ public class Recorder extends JPanel {
 				data.frameCounter = 0;
 				timeLabel.setText("00.00s");	
 			}
-		});	
-		
-		
+		});
+	}
+
+	public void enableRecorder() {
+		time = new ActionListener() {
+		    @Override
+		    public void actionPerformed(ActionEvent evt) {
+		    	double frames = ((double) data.frameCounter) / 25d;
+		    	timeLabel.setText(new DecimalFormat("00.00").format(frames) + "s");
+		    }
+		};
+		timer = new Timer(timeDelay, time);
+	}
+	public void discardRecorder() {
+		timer = null;
+		data.frameCounter = 0;
+		timeLabel.setText("00.00s");
+
+		// Delete temp folder
+		if(!chkTemp.isSelected()) {
+			try {
+				Files.walk(Path.of("export/temp/"+ parent.animationTitle + parent.exportCounter))
+					.sorted(Comparator.reverseOrder())
+					.map(Path::toFile)
+					.forEach(File::delete);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 }

@@ -2,7 +2,14 @@
 
 ### Project Name: `DynamoVis`
 
-##### 0.5.0 - 2021/04/30
+##### `1.0` - 2021/08/01
+- Renamed MacOS menubar title to "DynamoVis"
+- Renamed "Configure Animation" to "Input Data and Animation Configuration"
+- Renamed Control Panel entry "Line Thickness" under Tracks to "Line Width" 
+- Moved Control Panel field "Underlay" under "Tracks"
+- Public release as 1.0
+
+##### 0.5.0-dev - 2021/04/30
 - Incorporated the window management from the space-time cube from Kate Carlson
 [ ] Shutdown behaviour
 [ ] Make the 3D cube work with the animation
@@ -10,6 +17,15 @@
 [ ] Date scaling
 [ ] Static/Ghost view
 [ ] Populate control panel 
+
+##### 0.4.2.5 - 2021/05/24
+- Removed base encoding and framerate dropdowns from Recorder window
+- Unchecked 'Store frames' option in Recorder window only deletes the associated recording session's frames
+- Closing the Recorder window discards the recording and resets the time
+
+##### 0.4.2.4 - 2021/05/12
+- Added help box back
+- Changed the maximum value of underlay opacity from 255 to 100 to make it more intuitive  
 
 ##### 0.4.2.3 - 2021/04/23
 - Changing base map changes both left and right maps if we repeat the map display for edge cases

@@ -117,7 +117,7 @@ public class LoadDataToJTable implements PropertyChangeListener {
 			parent.headers[3] = "study-local-timestamp";
 			parent.headers[4] = "yyyy-MM-dd HH:mm:ss.SSS";
 
-			// load the header fields from file if previously known
+			// load the header fields from config file, if previously loaded
 			LoadKnownDataHeaders lkdh = new LoadKnownDataHeaders("./config/RememberedHeaders.txt");
 			String[] previouslyFoundHeaders = lkdh.queryFilename(filename);
 			if(previouslyFoundHeaders != null) {
@@ -130,13 +130,12 @@ public class LoadDataToJTable implements PropertyChangeListener {
 				parent.headers[4] = previouslyFoundHeaders[5];
 			}
 
+			// read discarded fields for lookup
 			LoadDiscardFields ldf = new LoadDiscardFields();
 			List<String> discardFields = ldf.loadData("./config/DiscardedFields.txt");
 
 			CustomCSVReader reader = null;
 			try {
-				// BufferedReader bfr = new BufferedReader(new InputStreamReader(new
-				// FileInputStream(absolutePath)));
 				File file = new File(absolutePath);
 				reader = new CustomCSVReader(new FileReader(file));
 				max = (long) file.length();
@@ -172,9 +171,9 @@ public class LoadDataToJTable implements PropertyChangeListener {
 					
 					if(foundRequiredFields) // stop asking for field names if previous fields are already cancelled
 						if (Arrays.asList(header).contains(parent.headers[2])) {
-							System.out.println("Location-lat found");
+							System.out.println("location-lat found");
 						} else if (Arrays.asList(header).contains("location.lat")) {
-							System.out.println("Location.lat found");
+							System.out.println("location.lat found");
 							parent.headers[2] = "location.lat";
 						} else {
 							foundRequiredFields = getLat(header);
@@ -184,7 +183,7 @@ public class LoadDataToJTable implements PropertyChangeListener {
 						if (Arrays.asList(header).contains(parent.headers[3])) {
 							System.out.println("Timestamp found");
 						} else if (Arrays.asList(header).contains("study.local.timestamp")) {
-							System.out.println("Study.local.timestamp found");
+							System.out.println("study.local.timestamp found");
 							parent.headers[3] = "study.local.timestamp";
 						} else {
 							foundRequiredFields = getTime(header);
@@ -231,8 +230,9 @@ public class LoadDataToJTable implements PropertyChangeListener {
 						counter = 0;
 					}
 					counter++;
-					boolean visible = true;
 
+					// see if the row is visible
+					boolean visible = true;
 					for (int i = 0; i < row.length; i++) {
 						if (header[i].equals("visible")) {
 							if (row[i].equals("false") || row[i].equals("FALSE")) {
@@ -248,8 +248,8 @@ public class LoadDataToJTable implements PropertyChangeListener {
 						float lat = 0;
 						String tag = null;
 
+						// see if we have valid coordinates
 						boolean noCoord = false;
-
 						for (int i = 0; i < row.length; i++) {
 							if (header[i].contains(parent.headers[1])) {
 								try {
