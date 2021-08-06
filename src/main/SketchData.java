@@ -188,12 +188,11 @@ public class SketchData {
 	public int timeBoxStartMonth;
 	public int timeBoxEndYear;
 	public int timeBoxEndMonth;
-	public boolean labelMonth = false; // for labeling cubes
+	public boolean labelMonth = true; // for labeling cubes
 	public boolean timeBoxBdyHighlight = false; // highlight interactions in 3D
 	public boolean stbclose = false;
 	public boolean boxvisible = false;
 
-	public boolean resetBox = false;
 	public boolean staticBox = false;// make static box
 	public Rectangle boundingBox = null;
 	Map<String, Rectangle> bounds = new HashMap<String, Rectangle>();// All the bounding boxes for each track

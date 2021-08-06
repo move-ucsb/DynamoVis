@@ -7,6 +7,9 @@
 	<classpathentry kind="lib" path="lib/commons-lang3-3.11.jar"/>
 	<classpathentry kind="lib" path="lib/commons-math3-3.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/core.jar"/>
+	<classpathentry kind="lib" path="lib/peasycam.jar"/>
+	<classpathentry kind="lib" path="lib/peasy-math.jar"/>
+	
 	<classpathentry kind="lib" path="lib/gicentreUtils.jar"/>
 	<classpathentry kind="lib" path="lib/gluegen-rt-natives-linux-aarch64.jar"/>
 	<classpathentry kind="lib" path="lib/gluegen-rt-natives-linux-amd64.jar"/>

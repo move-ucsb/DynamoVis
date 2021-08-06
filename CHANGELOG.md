@@ -9,14 +9,18 @@
 - Moved Control Panel field "Underlay" under "Tracks"
 - Public release as 1.0
 
-##### 0.5.0-dev - 2021/04/30
-- Incorporated the window management from the space-time cube from Kate Carlson
+##### 0.5.1-dev - 2021/08/06
+- Incorporated PeasyCam library for free rotation of the cube
+[ ] Make box a pshape
+[ ] Weird shutdown behavior
 [ ] Shutdown behaviour
 [ ] Make the 3D cube work with the animation
-[ ] PeasyCam
 [ ] Date scaling
 [ ] Static/Ghost view
 [ ] Populate control panel 
+
+##### 0.5.0-dev - 2021/04/30
+- Incorporated the window management from the space-time cube from Kate Carlson
 
 ##### 0.4.2.5 - 2021/05/24
 - Removed base encoding and framerate dropdowns from Recorder window
