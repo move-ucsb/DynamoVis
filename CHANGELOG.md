@@ -11,10 +11,11 @@
 
 ##### 0.5.1-dev - 2021/08/06
 - Incorporated PeasyCam library for free rotation of the cube
+- Outline box revamped, adjusts itself with the map extent
+- STARTEDed incorporating the animation in the spacetime cube
 [ ] Make box a pshape
-[ ] Weird shutdown behavior
+[ ] Weird crash behavior
 [ ] Shutdown behaviour
-[ ] Make the 3D cube work with the animation
 [ ] Date scaling
 [ ] Static/Ghost view
 [ ] Populate control panel 

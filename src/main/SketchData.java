@@ -255,4 +255,11 @@ public class SketchData {
 
 		System.gc();
 	}
+
+	// return data extent as a float array
+	// {upperleft_x, upperleft_y, lowerright_x, lowerright_y}
+	public float[] getExtentInFloat() {
+		// 					lat, long, lat, long
+		return new float[] {mapExtent[0].y, mapExtent[0].x, mapExtent[1].y, mapExtent[1].x};
+	}
 }
