@@ -9,16 +9,22 @@
 - Moved Control Panel field "Underlay" under "Tracks"
 - Public release as 1.0
 
-##### 0.5.1-dev - 2021/08/06
-- Incorporated PeasyCam library for free rotation of the cube
-- Outline box revamped, adjusts itself with the map extent
-- STARTEDed incorporating the animation in the spacetime cube
+##### 0.5.2-dev - 2021/08/09
+- Draws boxes based on the number of days in each month 
+- Centered the coordinates correctly based on origin
+- Added mechanism to retrieve 3D coordinates based on time and map location
+- Ported the movement animation to spacetime cube, fatal error happens
 [ ] Make box a pshape
 [ ] Weird crash behavior
 [ ] Shutdown behaviour
 [ ] Date scaling
 [ ] Static/Ghost view
 [ ] Populate control panel 
+
+##### 0.5.1-dev - 2021/08/06
+- Incorporated PeasyCam library for free rotation of the cube
+- Outline box revamped, adjusts itself with the map extent
+- Started incorporating the animation in the spacetime cube
 
 ##### 0.5.0-dev - 2021/04/30
 - Incorporated the window management from the space-time cube from Kate Carlson

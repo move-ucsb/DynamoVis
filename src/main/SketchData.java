@@ -188,7 +188,7 @@ public class SketchData {
 	public int timeBoxStartMonth;
 	public int timeBoxEndYear;
 	public int timeBoxEndMonth;
-	public boolean labelMonth = true; // for labeling cubes
+	public boolean labelMonth = false; // for labeling cubes
 	public boolean timeBoxBdyHighlight = false; // highlight interactions in 3D
 	public boolean stbclose = false;
 	public boolean boxvisible = false;

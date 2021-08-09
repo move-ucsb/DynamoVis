@@ -21,9 +21,15 @@
 
 package main;
 
-import java.awt.Color;
 import java.awt.Rectangle;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.Year;
+import java.time.YearMonth;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +43,6 @@ import org.joda.time.Hours;
 import org.joda.time.Minutes;
 
 import de.fhpotsdam.unfolding.geo.Location;
-import peasy.CameraState;
 import peasy.PeasyCam;
 import processing.core.PApplet;
 import processing.core.PShape;
@@ -57,7 +62,6 @@ public class Box extends PApplet {
     public String monthLabel[] = { "", "January", "February", "March", "April", "May", "June", "July", "August",
             "September", "October", "November", "December" };
 
-    // TODO: change proportions based on the extent
     public float cubeWidth = 260;   // width
     public float cubeDepth = 260;   // depth
     public float cubeHeight = 100;  // height of each month
@@ -78,12 +82,16 @@ public class Box extends PApplet {
     // is an intersection the tracks will be
     // set to hold one bounding box
 
-    // RUN/PAUSE/EXIT BEHAVIOURS -----------------
-    public void run(int x, int y) {
-        String[] processingArgs = { "--location=" + x + "," + y, "DynamoVis Animation" };
-        PApplet.runSketch(processingArgs, this);
+    public void setParent(DesktopPane father) {
+        parent = father;
+        data = parent.data;
     }
 
+    // RUN/PAUSE/EXIT BEHAVIOURS -----------------
+    public void run(int x, int y) {
+        String[] processingArgs = { "--location=" + x + "," + y, "DynamoVis Space-time Cubes" };
+        PApplet.runSketch(processingArgs, this);
+    }
     // Overriden to prevent System.exit(0) command, that
     // shuts down the whole java environment
     @Override
@@ -126,8 +134,10 @@ public class Box extends PApplet {
     public void setup() {
         // timeLengthMonths = findTimeInterval();// find the data's time range in months
         // find_intersect_bound(); // set bounds
+		colorMode(HSB, 360, 100, 100);
         frameRate(60);
 
+        // Adjust cube ratio based on the data
         float[] extent = data.getExtentInFloat();
         // TODO: do a better world coverage
         cubeWidth = (extent[2]-extent[0])/(extent[1]-extent[3]) * cubeDepth;
@@ -144,9 +154,10 @@ public class Box extends PApplet {
 
     public void draw() {
         background(0);// black background
-        // DrawGizmo(300, 10, false); // DEBUG -- draws the coordinate system
+        DrawGizmo(100, 10, false); // DEBUG -- draws the coordinate system
 
-        drawBox(); // make space-time cubes
+        // draw the encapsulating space-time cubes
+        drawBox();
 
         // go through each data track uploaded
         for (Entry<String, Track> entry : parent.trackList.entrySet()) {
@@ -162,10 +173,12 @@ public class Box extends PApplet {
             timePath.beginShape();
             timePath.noFill();
             timePath.strokeWeight(4);
+			timePath.strokeJoin(ROUND);  // make line connections rounded
 
             PShape brush = createShape();
             boolean brushed = false;
 
+            // TODO: Make sure what is brush tag
             if (data.brushedTag != null && data.brushedTag.equals(key)) {
                 brushed = true;
                 brush.beginShape();
@@ -178,7 +191,7 @@ public class Box extends PApplet {
             ArrayList<PointRecord> points = track.getPoints();// list of all of the data points for the track
 
             // go through each point in the data track
-            for (int i = 0; i < points.size() - 1; i++) {
+            for (int i = 0; i < points.size(); i++) {
                 PointRecord marker = points.get(i);// the data point
                 DateTime markerTime = marker.getTime();// get the point's time
 
@@ -187,73 +200,11 @@ public class Box extends PApplet {
                 if (markerTime.isBefore(data.currentTime) || markerTime.isEqual(data.currentTime)) {
                     Location pos = marker.getLocation();// get the point's location
 
-                    int days = Days.daysBetween(points.get(0).getTime(), markerTime).getDays();// number of days
-                                                                                                // that have passed
-                                                                                                // since the first
-                                                                                                // day
-                    float daysinmonth = markerTime.dayOfMonth().getMaximumValue();// find what month the point is in
-                                                                                    // and find how many days are in
-                                                                                    // that month
-                    zinterval = (float) (100.0 / daysinmonth);// increment amount for z- height of cube/days in
-                                                                // month
-
-                    // find where z starts
-                    // need if the data doesn't start at the first day of the month
-                    if (i == 0) {
-                        int monthdiff = monthsBetween(markerTime);
-                        if (monthdiff == 0) {
-                            // (gap between box and screen edge) - (data start date * interval based on days
-                            // in month)
-                            z = (height - 10) - (markerTime.getDayOfMonth() * zinterval);// location of the first z
-                            startz = z;// set the start
-                        } else {
-                            float monthinterval = 0;
-                            float minterval = 0;
-                            DateTime tempStartTime = new DateTime(data.timeBoxStartYear, data.timeBoxStartMonth, 1,
-                                    1, 1);
-
-                            // goes through each month
-                            while (tempStartTime.getMonthOfYear() != markerTime
-                                    .getMonthOfYear()/*
-                                                        * && tempStartTime.getYearOfCentury()!=markerTime.
-                                                        * getYearOfCentury()
-                                                        */) {
-                                minterval = (float) (100.0 / (tempStartTime.dayOfMonth().getMaximumValue()));// interval
-                                                                                                                // based
-                                                                                                                // upon
-                                                                                                                // month
-                                                                                                                // currently
-                                                                                                                // in
-                                monthinterval = monthinterval
-                                        + (minterval * markerTime.dayOfMonth().getMaximumValue());// add up how much
-                                                                                                    // to increase per
-                                                                                                    // month
-                                tempStartTime = tempStartTime.plusMonths(1);// increment months
-                            }
-                            z = (height - 10 - monthinterval) - (markerTime.getDayOfMonth() * zinterval); // location
-                                                                                                            // of the
-                                                                                                            // first z
-                            startz = z;// set the start value
-                        }
-                    }
-
-                    if (newDay < days) {
-                        // new day so increment z
-                        z = (startz) - days * zinterval;// based on the number of days that has passed * increment
-                    }
-                    newDay = days;// reset new day either same day or a new day
-
-                    // scale the data
-                    // float ubx = (float) (bounds.get(entry.getKey()).getMaxX() / 1000);// max x of data
-                    // float lbx = (float) (bounds.get(entry.getKey()).getMinX() / 1000);// min x of data
-                    // float uby = (float) (bounds.get(entry.getKey()).getMaxY() / 1000);// max y of data
-                    // float lby = (float) (bounds.get(entry.getKey()).getMinY() / 1000);// min y of data
-                    
                     // extent minx, maxy, maxx, miny
                     float[] extent = data.getExtentInFloat();
-                    // Processing map function to map to cube
                     mx = map(pos.x, extent[0], extent[2], -cubeWidth/2, cubeWidth/2);
                     my = map(pos.y, extent[3], extent[1], -cubeDepth/2, cubeDepth/2);
+                    float mheight = getPointHeightBasedOnTime(markerTime);
 
                     int hours;
                     if (data.timeUnit.equals("minutes")) {
@@ -262,26 +213,12 @@ public class Box extends PApplet {
                         hours = Minutes.minutesBetween(markerTime, data.currentTime).getMinutes();
                     }
 
-                    // find if track is at top of panel
-                    if (z <= 25)// at the top of the screen
-                    {
-                        // goes off screen so resets at the bottom
-                        resetZ = height - 10;
-                        // data.resetBox = true;
-                        timeofReset = markerTime;// marker time when reset happens
-                    }
-
-                    // before the reset so goes back to the original position
-                    if (timeofReset == null || timeofReset.isAfter(data.currentTime)) {
-                        // data.resetBox = false;
-                        resetZ = 0;
-                    }
-
                     // color fade
                     float alpha = 255;
                     if (data.falloff) {
                         alpha = constrain(map(hours, 0, data.alphaMaxHours, 255, 0), 0, 255);
                     }
+
                     if (hours <= 24) {
                         fill(360, 100, 100, alpha);
                         timePath.stroke(360, 100, 100, alpha);
@@ -344,27 +281,16 @@ public class Box extends PApplet {
                             } else {
                                 stroke(0, 0, 100, alpha);
                             }
-                            // rotateY does not work lines so need to rotate manually
-                            // make a copy so they can be altered
-                            float vx = mx;
-                            float vy = my;
-
                             strokeWeight(2);
-                            pushMatrix();
-                            translate((width / 2), 0 + resetZ, -145);
-                            rotateY(radians(90));
-                            line(vx, z, vy, vx + x, z + y, vy + x);
-                            popMatrix();
+                            line(mx, mheight, my, mx+x, mheight, my+y);
                         }
 
                         // visual variable points
                         if (data.pointColorToggle) {
                             float size = 7; // default size
                             String pointColorVar = data.pointColorSelection;
-                            int ptcolor;// point color
                             if (pointColorVar.equals(parent.attributes.getIndex())) {
                                 fill(color, alpha);
-                                ptcolor = color;// default color
                             } else {
                                 float pointColorValue = (Float) marker.getProperty(pointColorVar);
                                 float pointColorPercent = norm(pointColorValue,
@@ -373,8 +299,6 @@ public class Box extends PApplet {
                                 int strokeColor = parent.colors.coloursCont.get(data.selectedPointSwatch)
                                         .findColour(pointColorPercent);
                                 fill(strokeColor, alpha);
-                                stroke(strokeColor);
-                                ptcolor = strokeColor;// parent color
                             }
                             if (brushed) {
                                 stroke(180, 100, 100);
@@ -390,17 +314,10 @@ public class Box extends PApplet {
                                         data.pointSizeMax);
                                 size = pointSize;// user size range
                             }
-
-                            pushMatrix();
-                            translate((width / 2), 0 + resetZ, -145);// translate points
-                            rotateY(radians(90));// rotate so fit with other data
-                            stroke(ptcolor, alpha);// point color
-                            fill(ptcolor, alpha);// point color
-                            strokeWeight(size);// point size
-                            point(mx, z, my);// draw point
-                            popMatrix();
-
+                            strokeWeight(size);
+                            point(mx, mheight, my);// draw point
                         }
+
                         // if the user changes line thickness
                         if (data.strokeWeightToggle && data.strokeWeightSelection != null) {
                             String strokeWeightVar = data.strokeWeightSelection;
@@ -424,8 +341,9 @@ public class Box extends PApplet {
                                         .findColour(strokeColorPercent);
                                 timePath.stroke(strokeColor, alpha);// user picked color
                             }
-
-                            timePath.vertex(mx, z, my);// draw the line path
+                            timePath.vertex(mx, mheight, my);// draw the line path
+							if (brushed)
+                                brush.vertex(mx, mheight, my); 
                         }
                     }
                     data.holdAlpha = alpha;
@@ -457,27 +375,22 @@ public class Box extends PApplet {
             //     }
             // }
 
-            pushMatrix();
-            translate(0, 0, -3);
             if (brushed)
                 brush.endShape();
             shape(brush);
-            popMatrix();
 
-            pushMatrix();
-            translate((width / 2), 0 + resetZ, -145);
-            rotateY(radians(90));// make sure track draws in correct direction
             timePath.endShape();
             shape(timePath);// draw data path
-            popMatrix();
+
         } // end for loop
 
-        if (data.save) {
-            String file = String.format("temp/" + parent.animationTitle + parent.exportCounter + "_3D/temp%08d.jpeg",
-                    data.frameCounter);
-            saveFrame(file);
-            data.frameCounter++;
-        }
+        // Export spacetime cube -- do we need exporting spacetime cube?
+        // if (data.save) {
+        //     String file = String.format("temp/" + parent.animationTitle + parent.exportCounter + "_3D/temp%08d.jpeg",
+        //             data.frameCounter);
+        //     saveFrame(file);
+        //     data.frameCounter++;
+        // }
 
     }// end draw()
 
@@ -498,14 +411,15 @@ public class Box extends PApplet {
         }
     }
     // draws the box outline
+    // makes the camera facing edges more transparent
     public void drawOutline(int w, int h, int d, int off, boolean last) {
         float[] camera_position = camera.getPosition(); // temp
 
         PVector pos = new PVector(camera_position[0],camera_position[2],camera_position[2]);
-        PVector[] corners = {new PVector(-w/2,-h/2,d/2), 
-                             new PVector(-w/2,-h/2,-d/2), 
-                             new PVector(w/2,-h/2,-d/2),
-                             new PVector(w/2,-h/2,d/2)};
+        PVector[] corners = {new PVector(-w/2, 0 ,d/2), 
+                             new PVector(-w/2, 0 ,-d/2),
+                             new PVector(w/2, 0,-d/2),  
+                             new PVector(w/2, 0,d/2)};  
         boolean[] dim = {false, false, false, false};
         
         float[] cam_distances = {pos.dist(corners[0]),
@@ -519,55 +433,76 @@ public class Box extends PApplet {
         else if(min_distance == cam_distances[3]) {dim[2]=true;dim[3]=true;}
         
         int steps_depth = 5;
-        int steps_width = (int)(cubeWidth/cubeDepth*steps_depth);
+        int steps_width = (int)(w/d*steps_depth);
         int offset = 4;
         stroke(255,dim[0] ? 10 : 80); drawLine(corners[0], corners[1], steps_depth, offset);
         stroke(255,dim[1] ? 10 : 80); drawLine(corners[2], corners[1], steps_width, offset);
         stroke(255,dim[2] ? 10 : 80); drawLine(corners[2], corners[3], steps_depth, offset);
         stroke(255,dim[3] ? 10 : 80); drawLine(corners[0], corners[3], steps_width, offset);
-        if(last) {pushMatrix(); translate(0, h, 0); drawOutline(w,h,d,off,false); popMatrix();}
+        if(last) {pushMatrix(); translate(0, -h, 0); drawOutline(w,h,d,off,false); popMatrix();}
     }
     // TODO: make into a PShape
     // draws all boxes for all months
     public void drawBox() {
-        int startmonth = data.timeBoxStartMonth;// first month in all the data used for labels
-        timeLengthMonths = findTimeInterval();// number of months the data lasts
-        int startYear = data.timeBoxStartYear;
+        // used for iterating year-month pairs
+        YearMonth currentYearMonth = YearMonth.of(data.timeBoxStartYear, data.timeBoxStartMonth);
+        YearMonth endYearMonth = YearMonth.of(data.timeBoxEndYear, data.timeBoxEndMonth);
         
-        for (int i = 0; i < timeLengthMonths; i++)// draw a box for each month
-        {
+        // used for calculating total number of days of the whole timeline
+        LocalDate startDate = LocalDate.of(data.timeBoxStartYear, data.timeBoxStartMonth, 1);
+        LocalDate endDate = LocalDate.of(data.timeBoxEndYear, data.timeBoxEndMonth, endYearMonth.lengthOfMonth());
+        
+        // TODO: Make these global? 
+        long durationInDays = startDate.until(endDate, ChronoUnit.DAYS);
+        float durationInPixels = cubeHeight/30.0f*durationInDays;
+        float currentHeight = durationInPixels/2;
+
+        // iterate until we pass the endYearMonth
+        while(!currentYearMonth.equals(endYearMonth.plusMonths(1))) {
             pushMatrix();
-            translate(0, 100 * (timeLengthMonths/2-i), 0);
-            // translate(width / 2, height - ((100 * i) + 60), -145); // translate to see whole cube. Shift back and
-            //                                                        // increment
-            noFill();// empty cube
-            strokeWeight(1);// line size of 1
-            drawOutline((int)cubeWidth, (int)cubeHeight, (int)cubeDepth, 5, i==0); // corner stars
-            
-            // label the cubes if user has chosen it
-            if (data.labelMonth) {
-                textSize(16);// font size
+            translate(0, currentHeight, 0);
+            noFill();
+            strokeWeight(1);
+
+            int numberOfDaysInCurrentMonth = currentYearMonth.lengthOfMonth();
+            int adjustedCubeHeight = (int)(cubeHeight/30.0f*numberOfDaysInCurrentMonth);
+
+            drawOutline((int)cubeWidth, (int)adjustedCubeHeight, (int)cubeDepth, 
+                5,      // plus sign offset 
+                currentYearMonth.equals(endYearMonth)); // draw the cap if its the last month
+
+            if(data.labelMonth) {
+                textSize(16);
                 fill(255, 100);
-                // Draw month labels as "Aug '21"
-                String label = monthLabel[startmonth].substring(0, 3) + " '" +str(startYear).substring(2);
-                text(label, cubeWidth/2+10, 0, cubeDepth/2);// month drawn to side of the cube
-                if (startmonth < 12)// not December
-                {
-                    startmonth++;
-                } else if (startmonth == 12)// December
-                {
-                    startmonth = 1; // set back to January
-                    startYear++;    // increment the year
-                }
+
+                // Draw month labels as "Aug 2021"
+                String label = monthLabel[currentYearMonth.getMonthValue()].substring(0, 3)
+                    + " "
+                    + currentYearMonth.getYear();
+                text(label, cubeWidth/2+10, -adjustedCubeHeight/2, cubeDepth/2);// month drawn to side of the cube
             }
-            popMatrix();// labels and boxes are translated back
+            popMatrix();
+
+            currentHeight -= adjustedCubeHeight;
+            currentYearMonth = currentYearMonth.plusMonths(1);
         }
     }
     // end drawbox outline
 
-    public void setParent(DesktopPane father) {
-        parent = father;
-        data = parent.data;
+    // gives the height of the point -- used for translating the point
+    public float getPointHeightBasedOnTime(DateTime t) {
+        LocalDateTime time = LocalDateTime.of(t.getYear(), t.getMonthOfYear(), t.getDayOfMonth(), t.getHourOfDay(), t.getMinuteOfHour(), t.getSecondOfMinute());
+
+        YearMonth endYearMonth = YearMonth.of(data.timeBoxEndYear, data.timeBoxEndMonth);
+        LocalDateTime startDate = LocalDateTime.of(data.timeBoxStartYear, data.timeBoxStartMonth, 1, 0, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(data.timeBoxEndYear, data.timeBoxEndMonth, endYearMonth.lengthOfMonth(), 23, 59, 59);
+        
+        long totalDurationInDays = startDate.until(endDate, ChronoUnit.DAYS);
+        float totalDurationInPixels = cubeHeight/30.0f*totalDurationInDays;
+
+        long durationInMinutes = startDate.until(time, ChronoUnit.MINUTES);
+
+        return map(durationInMinutes, 0, totalDurationInDays*24*60, -totalDurationInPixels/2, totalDurationInPixels/2);        
     }
 
     // find number of months in time range
@@ -597,6 +532,7 @@ public class Box extends PApplet {
     }
 
     // find months between the marker time and the data tracks start month
+    // TODO: just last else if should be enough
     public int monthsBetween(DateTime mTime)// Includes partial months
     {
         int mm = mTime.getMonthOfYear();// first data point month
@@ -652,10 +588,10 @@ public class Box extends PApplet {
         }
     }
 
-    // UTILITIES
+    // DRAW UTILITIES
     //
     // Draws the X,Y,Z lines with R,G,B respectively
-    void DrawGizmo(float scale, float alpha, boolean drawPlanes) {
+    private void DrawGizmo(float scale, float alpha, boolean drawPlanes) {
         pushStyle();
         colorMode(HSB, 255, 255, 255);
 

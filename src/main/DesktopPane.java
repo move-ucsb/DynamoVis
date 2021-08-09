@@ -52,6 +52,7 @@ import java.awt.event.KeyEvent;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.net.URI;
+// import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -87,8 +88,8 @@ public class DesktopPane extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 1L;
 
 	public final String projectWebsite = "https://github.com/move-ucsb/DynamoVis";
-	private static final String buildVersionString = "0.5.1-dev";
-	private static final String buildVersionDate = "Aug 6, 2021";
+	private static final String buildVersionString = "0.5.2-dev";
+	private static final String buildVersionDate = "Aug 8, 2021";
 
 	JFrame desktop;
 	public Dimension animationSize = new Dimension(1280, 720);
@@ -795,7 +796,6 @@ public class DesktopPane extends JFrame implements ActionListener {
 		// System.out.println("App started, no UI yet");
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				// System.out.println("Started the UI");
 				try {
 					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 				} catch (Exception e) {
