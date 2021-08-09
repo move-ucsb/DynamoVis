@@ -154,7 +154,7 @@ public class Box extends PApplet {
 
     public void draw() {
         background(0);// black background
-        DrawGizmo(100, 10, false); // DEBUG -- draws the coordinate system
+        // DrawGizmo(100, 50, false); // DEBUG -- draws the origin of coordinate system
 
         // draw the encapsulating space-time cubes
         drawBox();
@@ -175,17 +175,17 @@ public class Box extends PApplet {
             timePath.strokeWeight(4);
 			timePath.strokeJoin(ROUND);  // make line connections rounded
 
-            PShape brush = createShape();
-            boolean brushed = false;
+            // PShape brush = createShape();
+            // boolean brushed = false;
 
-            // TODO: Make sure what is brush tag
-            if (data.brushedTag != null && data.brushedTag.equals(key)) {
-                brushed = true;
-                brush.beginShape();
-                brush.noFill();
-                brush.stroke(180, 100, 100);
-                brush.strokeWeight(6);
-            }
+            // // TODO: Make sure what is brush tag
+            // if (data.brushedTag != null && data.brushedTag.equals(key)) {
+            //     brushed = true;
+            //     brush.beginShape();
+            //     brush.noFill();
+            //     brush.stroke(180, 100, 100);
+            //     brush.strokeWeight(6);
+            // }
 
             int color = parent.colors.getTagColor(key).getRGB();// retrieve the default color of the track
             ArrayList<PointRecord> points = track.getPoints();// list of all of the data points for the track
@@ -202,9 +202,18 @@ public class Box extends PApplet {
 
                     // extent minx, maxy, maxx, miny
                     float[] extent = data.getExtentInFloat();
-                    mx = map(pos.x, extent[0], extent[2], -cubeWidth/2, cubeWidth/2);
-                    my = map(pos.y, extent[3], extent[1], -cubeDepth/2, cubeDepth/2);
+                    mx = map(pos.y, extent[0], extent[2], -cubeWidth/2, cubeWidth/2);
+                    my = map(pos.x, extent[3], extent[1], cubeDepth/2, -cubeDepth/2);
                     float mheight = getPointHeightBasedOnTime(markerTime);
+
+                    // DEBUG 
+                    if(data.labelMonth) {
+                        pushMatrix();
+                        translate(mx, mheight, my);
+                        // fill(color);
+                        box(1);
+                        popMatrix();
+                    }
 
                     int hours;
                     if (data.timeUnit.equals("minutes")) {
@@ -300,12 +309,12 @@ public class Box extends PApplet {
                                         .findColour(pointColorPercent);
                                 fill(strokeColor, alpha);
                             }
-                            if (brushed) {
-                                stroke(180, 100, 100);
-                                strokeWeight(2);
-                            } else {
-                                noStroke();
-                            }
+                            // if (brushed) {
+                            //     stroke(180, 100, 100);
+                            //     strokeWeight(2);
+                            // } else {
+                            //     noStroke();
+                            // }
                             if (data.pointSizeToggle) {
                                 String pointSizeVar = data.pointSizeSelection;
                                 float pointSizeValue = (Float) marker.getProperty(pointSizeVar);
@@ -342,13 +351,13 @@ public class Box extends PApplet {
                                 timePath.stroke(strokeColor, alpha);// user picked color
                             }
                             timePath.vertex(mx, mheight, my);// draw the line path
-							if (brushed)
-                                brush.vertex(mx, mheight, my); 
+							// if (brushed)
+                            //     brush.vertex(mx, mheight, my); 
                         }
                     }
-                    data.holdAlpha = alpha;
+                    // data.holdAlpha = alpha;
                 }
-                data.points = marker;
+                // data.points = marker;
             }
 
             // Interaction on the fly
@@ -375,9 +384,9 @@ public class Box extends PApplet {
             //     }
             // }
 
-            if (brushed)
-                brush.endShape();
-            shape(brush);
+            // if (brushed)
+            //     brush.endShape();
+            // shape(brush);
 
             timePath.endShape();
             shape(timePath);// draw data path
@@ -502,7 +511,7 @@ public class Box extends PApplet {
 
         long durationInMinutes = startDate.until(time, ChronoUnit.MINUTES);
 
-        return map(durationInMinutes, 0, totalDurationInDays*24*60, -totalDurationInPixels/2, totalDurationInPixels/2);        
+        return map(durationInMinutes, 0, totalDurationInDays*24*60, totalDurationInPixels/2, -totalDurationInPixels/2);        
     }
 
     // find number of months in time range

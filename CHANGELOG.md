@@ -13,13 +13,16 @@
 - Draws boxes based on the number of days in each month 
 - Centered the coordinates correctly based on origin
 - Added mechanism to retrieve 3D coordinates based on time and map location
-- Ported the movement animation to spacetime cube, fatal error happens
+- Ported the movement animation to correct coordinates in spacetime cube, however fatal error happens with tracks rendering
+[ ] Point rendering color issue
+[ ] Space-timecube keyboard shortcut
 [ ] Make box a pshape
-[ ] Weird crash behavior
+[ ] Occasional crash due to fatal error
 [ ] Shutdown behaviour
 [ ] Date scaling
 [ ] Static/Ghost view
-[ ] Populate control panel 
+[ ] Populate control panel
+[ ] Close space-time windows on animation close/exit
 
 ##### 0.5.1-dev - 2021/08/06
 - Incorporated PeasyCam library for free rotation of the cube
