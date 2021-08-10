@@ -1,5 +1,12 @@
 # CHANGES
 
+## KNOWN ISSUES
+- Barscale in legend becomes too long closer to poles
+- Occasional line between repeated maps on some zoom levels.
+- Timeline checkboxes does not react to Shift/Ctrl+click well. 
+
+--------
+
 ### Project Name: `DynamoVis`
 
 ##### `1.0` - 2021/08/01
@@ -255,17 +262,3 @@
 - Removed most of the static GalapagosSketchTest code
 - Added field select dropdowns for each visual variable
 - Only has one color gradient + colors for tags
-
---------
-
-# KNOWN ISSUES
-- Malfunctioned data lines prevents loading the whole datafile (bisbing_mig.csv)
-- Barscale in legend becomes too long closer to poles
-- Occasional line between repeated maps on some zoom levels.
-- Timeline checkboxes does not react to Shift/Ctrl+click well. 
-
-# TO-DO:
-- Pending library upgrades
-  - miglayout 4.2 (5.0 available)
-  - log4j 1.2.15 (2.14.1 available but Unfolding Maps uses 1.2.15)
-  - jcodec 0.1.6 (0.2.5 available but drastically changes the encoding method)
