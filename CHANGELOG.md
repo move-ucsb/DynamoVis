@@ -9,23 +9,27 @@
 - Moved Control Panel field "Underlay" under "Tracks"
 - Public release as 1.0
 
-##### 0.5.2-dev - 2021/08/09
-- Draws boxes based on the number of days in each month 
-- Centered the coordinates correctly based on origin
-- Added mechanism to retrieve 3D coordinates based on time and map location
-- Ported the movement animation to correct coordinates in spacetime cube, however fatal error happens with tracks rendering
+##### 0.5.3-dev - 2021/08/10
+- Switched to [Processing 4.0 beta 1](https://github.com/processing/processing4/releases/tag/processing-1276-4.0b1) from alpha 6. Developers claim this release should be more stable than 3.5.4, which has been the standard for some time.
+- Changed keyboard shortcut for 3D Space-time cube window to ALT+3
+- Also dims the month labels if its on the way of camera
+- Created [an issue](https://github.com/processing/processing4/issues/243) for fatal error crash on Processing Github issues
 [ ] Point rendering color issue
-[ ] Space-timecube keyboard shortcut
 [ ] Make box a pshape
-[ ] Occasional crash due to fatal error
 [ ] Shutdown behaviour
 [ ] Date scaling
 [ ] Static/Ghost view
 [ ] Populate control panel
 [ ] Close space-time windows on animation close/exit
 
+##### 0.5.2-dev - 2021/08/09
+- Draws boxes based on the number of days in each month 
+- Centered the coordinates correctly based on origin
+- Added mechanism to retrieve 3D coordinates based on time and map location
+- Ported the movement animation to correct coordinates in spacetime cube, however fatal error happens with tracks rendering
+
 ##### 0.5.1-dev - 2021/08/06
-- Incorporated PeasyCam library for free rotation of the cube
+- Incorporated PeasyCam library for free rotation of the 3D space
 - Outline box revamped, adjusts itself with the map extent
 - Started incorporating the animation in the spacetime cube
 

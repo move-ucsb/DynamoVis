@@ -88,9 +88,9 @@ public class DesktopPane extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 1L;
 
 	public final String projectWebsite = "https://github.com/move-ucsb/DynamoVis";
-	private static final String buildVersionString = "0.5.2-dev";
-	private static final String buildVersionDate = "Aug 8, 2021";
-
+	private static final String buildVersionString = "0.5.3-dev";
+	private static final String buildVersionDate = "Aug 10, 2021";
+	
 	JFrame desktop;
 	public Dimension animationSize = new Dimension(1280, 720);
 	public Colors colors;
@@ -648,7 +648,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 		timeBoxCheck.setSelected(false);
 		timeBoxCheck.setEnabled(false);
 		timeBoxCheck.setMnemonic(KeyEvent.VK_3);
-		timeBoxCheck.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.ALT_MASK));
+		timeBoxCheck.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_3, ActionEvent.ALT_MASK));
 		timeBoxCheck.addActionListener(this);
 		vAnalytics.add(timeBoxCheck);
 		timeBoxCheck.addItemListener(new ItemListener() {

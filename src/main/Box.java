@@ -175,10 +175,9 @@ public class Box extends PApplet {
             timePath.strokeWeight(4);
 			timePath.strokeJoin(ROUND);  // make line connections rounded
 
+            // TODO: Make sure what is brush tag
             // PShape brush = createShape();
             // boolean brushed = false;
-
-            // // TODO: Make sure what is brush tag
             // if (data.brushedTag != null && data.brushedTag.equals(key)) {
             //     brushed = true;
             //     brush.beginShape();
@@ -205,15 +204,6 @@ public class Box extends PApplet {
                     mx = map(pos.y, extent[0], extent[2], -cubeWidth/2, cubeWidth/2);
                     my = map(pos.x, extent[3], extent[1], cubeDepth/2, -cubeDepth/2);
                     float mheight = getPointHeightBasedOnTime(markerTime);
-
-                    // DEBUG 
-                    if(data.labelMonth) {
-                        pushMatrix();
-                        translate(mx, mheight, my);
-                        // fill(color);
-                        box(1);
-                        popMatrix();
-                    }
 
                     int hours;
                     if (data.timeUnit.equals("minutes")) {
@@ -261,39 +251,6 @@ public class Box extends PApplet {
 
                     // if visible aka data drawing but no faded
                     if (alpha != 0) {
-                        // visual variables vectors
-                        if (data.vectorToggle) {
-                            String vectorFieldVar = data.vectorFieldSelection;
-                            float radius = (Float) marker.getProperty(vectorFieldVar);
-                            float length = 10;
-                            if (data.vectorLengthToggle) {
-                                length = map(radius, parent.attributes.getMin(vectorFieldVar),
-                                        parent.attributes.getMax(vectorFieldVar), data.vectorLengthMin,
-                                        data.vectorLengthMax);
-                            }
-                            float heading = (Float) marker.getProperty(data.headingFieldSelection);
-                            float x = cos(radians(heading)) * length;// end of the vector
-                            float y = sin(radians(heading)) * length;// end of the vector
-                            if (data.vectorColorToggle) {
-                                String vectorColorVar = data.vectorColorSelection;// color of vector
-                                if (vectorColorVar.equals(parent.attributes.getIndex())) {
-                                    stroke(color, alpha);// default color
-                                } else {
-                                    float vectorColorValue = (Float) marker.getProperty(vectorColorVar);
-                                    float vectorColorPercent = norm(vectorColorValue,
-                                            parent.attributes.getMin(vectorColorVar),
-                                            parent.attributes.getMax(vectorColorVar));
-                                    int vectorColor = parent.colors.coloursCont.get(data.selectedVectorSwatch)
-                                            .findColour(vectorColorPercent);
-                                    stroke(vectorColor, alpha);// user picked color
-                                }
-                            } else {
-                                stroke(0, 0, 100, alpha);
-                            }
-                            strokeWeight(2);
-                            line(mx, mheight, my, mx+x, mheight, my+y);
-                        }
-
                         // visual variable points
                         if (data.pointColorToggle) {
                             float size = 7; // default size
@@ -336,7 +293,7 @@ public class Box extends PApplet {
                                     data.strokeWeightMax);
                             timePath.strokeWeight(strokeWeight);
                         }
-                        // if the user changes line color
+                        // // if the user changes line color
                         if (data.strokeColorToggle) {
                             String strokeColorVar = data.strokeColorSelection;
                             if (strokeColorVar.equals(parent.attributes.getIndex())) {
@@ -353,6 +310,39 @@ public class Box extends PApplet {
                             timePath.vertex(mx, mheight, my);// draw the line path
 							// if (brushed)
                             //     brush.vertex(mx, mheight, my); 
+                        }
+                        
+                        // visual variables vectors
+                        if (data.vectorToggle) {
+                            String vectorFieldVar = data.vectorFieldSelection;
+                            float radius = (Float) marker.getProperty(vectorFieldVar);
+                            float length = 10;
+                            if (data.vectorLengthToggle) {
+                                length = map(radius, parent.attributes.getMin(vectorFieldVar),
+                                        parent.attributes.getMax(vectorFieldVar), data.vectorLengthMin,
+                                        data.vectorLengthMax);
+                            }
+                            float heading = (Float) marker.getProperty(data.headingFieldSelection);
+                            float x = cos(radians(heading)) * length;// end of the vector
+                            float y = sin(radians(heading)) * length;// end of the vector
+                            if (data.vectorColorToggle) {
+                                String vectorColorVar = data.vectorColorSelection;// color of vector
+                                if (vectorColorVar.equals(parent.attributes.getIndex())) {
+                                    stroke(color, alpha);// default color
+                                } else {
+                                    float vectorColorValue = (Float) marker.getProperty(vectorColorVar);
+                                    float vectorColorPercent = norm(vectorColorValue,
+                                            parent.attributes.getMin(vectorColorVar),
+                                            parent.attributes.getMax(vectorColorVar));
+                                    int vectorColor = parent.colors.coloursCont.get(data.selectedVectorSwatch)
+                                            .findColour(vectorColorPercent);
+                                    stroke(vectorColor, alpha);// user picked color
+                                }
+                            } else {
+                                stroke(0, 0, 100, alpha);
+                            }
+                            strokeWeight(2);
+                            line(mx, mheight, my, mx+x, mheight, my+y);
                         }
                     }
                     // data.holdAlpha = alpha;
@@ -421,7 +411,7 @@ public class Box extends PApplet {
     }
     // draws the box outline
     // makes the camera facing edges more transparent
-    public void drawOutline(int w, int h, int d, int off, boolean last) {
+    public boolean drawOutline(int w, int h, int d, int off, boolean last) {
         float[] camera_position = camera.getPosition(); // temp
 
         PVector pos = new PVector(camera_position[0],camera_position[2],camera_position[2]);
@@ -449,6 +439,8 @@ public class Box extends PApplet {
         stroke(255,dim[2] ? 10 : 80); drawLine(corners[2], corners[3], steps_depth, offset);
         stroke(255,dim[3] ? 10 : 80); drawLine(corners[0], corners[3], steps_width, offset);
         if(last) {pushMatrix(); translate(0, -h, 0); drawOutline(w,h,d,off,false); popMatrix();}
+
+        return dim[2] && dim[3];
     }
     // TODO: make into a PShape
     // draws all boxes for all months
@@ -476,13 +468,13 @@ public class Box extends PApplet {
             int numberOfDaysInCurrentMonth = currentYearMonth.lengthOfMonth();
             int adjustedCubeHeight = (int)(cubeHeight/30.0f*numberOfDaysInCurrentMonth);
 
-            drawOutline((int)cubeWidth, (int)adjustedCubeHeight, (int)cubeDepth, 
-                5,      // plus sign offset 
-                currentYearMonth.equals(endYearMonth)); // draw the cap if its the last month
+            boolean dimText = drawOutline((int)cubeWidth, (int)adjustedCubeHeight, (int)cubeDepth, 
+                                5,      // plus sign offset 
+                                currentYearMonth.equals(endYearMonth)); // draw the cap if its the last month
 
             if(data.labelMonth) {
                 textSize(16);
-                fill(255, 100);
+                fill(255, dimText ? 10 : 120);
 
                 // Draw month labels as "Aug 2021"
                 String label = monthLabel[currentYearMonth.getMonthValue()].substring(0, 3)
