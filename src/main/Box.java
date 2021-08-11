@@ -25,11 +25,8 @@ import java.awt.Rectangle;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
-import java.time.Year;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,14 +35,12 @@ import java.util.Map.Entry;
 import com.jogamp.nativewindow.WindowClosingProtocol.WindowClosingMode;
 
 import org.joda.time.DateTime;
-import org.joda.time.Days;
 import org.joda.time.Hours;
 import org.joda.time.Minutes;
 
 import de.fhpotsdam.unfolding.geo.Location;
 import peasy.PeasyCam;
 import processing.core.PApplet;
-import processing.core.PShape;
 import processing.core.PVector;
 import processing.opengl.PJOGL;
 import utils.PointRecord;
@@ -120,7 +115,6 @@ public class Box extends PApplet {
 
     public void settings() {
         size(500, 850, P3D);
-
         // Set window icon
         String iconFilename = DesktopPane.isMacOSX() ? "logo1024.png" : "logo32.png";
         URL res = parent.getClass().getClassLoader().getResource(iconFilename);
@@ -159,229 +153,214 @@ public class Box extends PApplet {
         // draw the encapsulating space-time cubes
         drawBox();
 
-        // go through each data track uploaded
         for (Entry<String, Track> entry : parent.trackList.entrySet()) {
+			// 
+			String key = entry.getKey();
+			Track track = entry.getValue();
 
-            String key = entry.getKey(); // the track ID
-            Track track = entry.getValue(); // the data track points
+			// if the data is not showing, skip draw the path
+			if (!track.getVisibility()) continue;
 
-            // if the data is not showing, skip draw the path
-            if (!track.getVisibility()) continue;
+			int color = parent.colors.getTagColor(key).getRGB();
+			ArrayList<PointRecord> points = track.getPoints();
 
-            // set up the shape to hold the data path
-            PShape timePath = createShape();
-            timePath.beginShape();
-            timePath.noFill();
-            timePath.strokeWeight(4);
-			timePath.strokeJoin(ROUND);  // make line connections rounded
+			// Underlay
+			if(data.ghost) {
+				pushStyle();
+				beginShape();
+				noFill();
+				stroke(data.ghostColor.getRGB(), data.ghostAlpha);
+				strokeWeight(data.ghostWeight);
 
-            // TODO: Make sure what is brush tag
-            // PShape brush = createShape();
-            // boolean brushed = false;
-            // if (data.brushedTag != null && data.brushedTag.equals(key)) {
-            //     brushed = true;
-            //     brush.beginShape();
-            //     brush.noFill();
-            //     brush.stroke(180, 100, 100);
-            //     brush.strokeWeight(6);
-            // }
+				for (int i = 0; i < points.size(); i++) {
+					PointRecord marker = points.get(i);
+					DateTime markerTime = marker.getTime();
+					if (markerTime.isBefore(data.currentTime) || markerTime.isEqual(data.currentTime)) {
+						Location pos = marker.getLocation();// get the point's location
 
-            int color = parent.colors.getTagColor(key).getRGB();// retrieve the default color of the track
-            ArrayList<PointRecord> points = track.getPoints();// list of all of the data points for the track
+                        // extent minx, maxy, maxx, miny
+                        float[] extent = data.getExtentInFloat();
+                        mx = map(pos.y, extent[0], extent[2], -cubeWidth/2, cubeWidth/2);
+                        my = map(pos.x, extent[3], extent[1], cubeDepth/2, -cubeDepth/2);
+                        float mheight = getPointHeightBasedOnTime(markerTime);
+	
+						vertex(mx, mheight, my);
+					}
+				}
+				endShape(); // draws underlay
+				popStyle();
+			}
 
-            // go through each point in the data track
-            for (int i = 0; i < points.size(); i++) {
-                PointRecord marker = points.get(i);// the data point
-                DateTime markerTime = marker.getTime();// get the point's time
+			// Track visualizations
+			if (data.strokeColorToggle || (data.strokeWeightToggle && data.strokeWeightSelection != null)) {
+				pushStyle();
+				beginShape();
+				noFill();
+				strokeWeight(4);
+				strokeJoin(ROUND);  // make line connections rounded
+				for (int i = 0; i < points.size(); i++) {
+					PointRecord marker = points.get(i);
+					DateTime markerTime = marker.getTime();
+					if (markerTime.isBefore(data.currentTime) || markerTime.isEqual(data.currentTime)) {
+						Location pos = marker.getLocation();// get the point's location
 
-                // visualize the data point only if the point occurs before or at the current
-                // animation time
-                if (markerTime.isBefore(data.currentTime) || markerTime.isEqual(data.currentTime)) {
-                    Location pos = marker.getLocation();// get the point's location
+                        // extent minx, maxy, maxx, miny
+                        float[] extent = data.getExtentInFloat();
+                        mx = map(pos.y, extent[0], extent[2], -cubeWidth/2, cubeWidth/2);
+                        my = map(pos.x, extent[3], extent[1], cubeDepth/2, -cubeDepth/2);
+                        float mheight = getPointHeightBasedOnTime(markerTime);
 
-                    // extent minx, maxy, maxx, miny
-                    float[] extent = data.getExtentInFloat();
-                    mx = map(pos.y, extent[0], extent[2], -cubeWidth/2, cubeWidth/2);
-                    my = map(pos.x, extent[3], extent[1], cubeDepth/2, -cubeDepth/2);
-                    float mheight = getPointHeightBasedOnTime(markerTime);
+						int hours;
+						if (data.timeUnit.equals("minutes")) {
+							hours = Hours.hoursBetween(markerTime, data.currentTime).getHours();
+						} else {
+							hours = Minutes.minutesBetween(markerTime, data.currentTime).getMinutes();
+						}
+						float alpha = 255;
+						if (data.falloff) {
+							alpha = constrain(map(hours, 0, data.alphaMaxHours, 255, 0), 0, 255);
+						}
 
-                    int hours;
-                    if (data.timeUnit.equals("minutes")) {
-                        hours = Hours.hoursBetween(markerTime, data.currentTime).getHours();
-                    } else {
-                        hours = Minutes.minutesBetween(markerTime, data.currentTime).getMinutes();
-                    }
+						if (hours <= 24) {
+							stroke(360, 100, 100, alpha);
+						} else if (hours <= 48) {
+							stroke(360, 100, 63, alpha);
+						} else if (hours <= 72) {
+							stroke(360, 100, 30, alpha);
+						}
 
-                    // color fade
-                    float alpha = 255;
-                    if (data.falloff) {
-                        alpha = constrain(map(hours, 0, data.alphaMaxHours, 255, 0), 0, 255);
-                    }
+						if (alpha != 0) {
+							if (data.strokeWeightToggle && data.strokeWeightSelection != null) {
+								String strokeWeightVar = data.strokeWeightSelection;
+								float strokeWeightValue = (Float) marker.getProperty(strokeWeightVar);
+								float strokeWeight = map(strokeWeightValue, parent.attributes.getMin(strokeWeightVar),
+										parent.attributes.getMax(strokeWeightVar), data.strokeWeightMin,
+										data.strokeWeightMax);
+								strokeWeight(strokeWeight);
+							}
 
-                    if (hours <= 24) {
-                        fill(360, 100, 100, alpha);
-                        timePath.stroke(360, 100, 100, alpha);
-                    } else if (hours <= 48) {
-                        fill(360, 100, 63, alpha);
-                        timePath.stroke(360, 100, 63, alpha);
-                    } else if (hours <= 72) {
-                        fill(360, 100, 30, alpha);
-                        timePath.stroke(360, 100, 30, alpha);
-                    }
+							if (data.strokeColorToggle) {
+								String strokeColorVar = data.strokeColorSelection;
+								if (strokeColorVar.equals(parent.attributes.getIndex())) {
+									stroke(color, alpha);
+								} else {
+									float strokeColorValue = (Float) marker.getProperty(strokeColorVar);
+									float strokeColorPercent = norm(strokeColorValue,
+											parent.attributes.getMin(strokeColorVar),
+											parent.attributes.getMax(strokeColorVar));
+									int strokeColor = parent.colors.coloursCont.get(data.selectedLineSwatch)
+											.findColour(strokeColorPercent);
+									stroke(strokeColor, alpha);
+								}
+                                vertex(mx, mheight, my);
+							}
+						}
+					}
+				}
+				endShape(); // draw tracks				
+				popStyle();
+			}
 
-                    // update all interactions
-                    // if ((track.getTag().equals(data.selectedIDs[0]) || track.getTag().equals(data.selectedIDs[1]))
-                    //         && ((data.interactionsGenerated && data.upToDate))) {
-                    //     // check to see if points are close enough to be interacting
-                    //     if (data.interactingPoints != null && data.interactingPoints.contains(points.get(i))) {
-                    //         // check to make sure user has selected to highlight all interactions
-                    //         // data.pointInteract = true;//for highlightOnFly feature
-                    //         if (data.highlightAllInteractions) {
-                    //             // draw highlighted points for all valid interactions
-                    //             pushMatrix();
-                    //             translate((width / 2), 0 + resetZ, -145);
-                    //             rotateY(radians(90));
-                    //             stroke(Color.ORANGE.getRGB(), 100);
-                    //             strokeWeight(20);
-                    //             point(mx, z, my);
-                    //             popMatrix();
-                    //         }
-                    //     }
-                    // }
+			// Point or vector visualizations
+			if(data.vectorToggle || data.pointColorToggle) {
+				for (int i = 0; i < points.size(); i++) {
+					PointRecord marker = points.get(i);
+					DateTime markerTime = marker.getTime();
+					if (markerTime.isBefore(data.currentTime) || markerTime.isEqual(data.currentTime)) {
+						Location pos = marker.getLocation();// get the point's location
 
-                    // if visible aka data drawing but no faded
-                    if (alpha != 0) {
-                        // visual variable points
-                        if (data.pointColorToggle) {
-                            float size = 7; // default size
-                            String pointColorVar = data.pointColorSelection;
-                            if (pointColorVar.equals(parent.attributes.getIndex())) {
-                                fill(color, alpha);
-                            } else {
-                                float pointColorValue = (Float) marker.getProperty(pointColorVar);
-                                float pointColorPercent = norm(pointColorValue,
-                                        parent.attributes.getMin(pointColorVar),
-                                        parent.attributes.getMax(pointColorVar));
-                                int strokeColor = parent.colors.coloursCont.get(data.selectedPointSwatch)
-                                        .findColour(pointColorPercent);
-                                fill(strokeColor, alpha);
-                            }
-                            // if (brushed) {
-                            //     stroke(180, 100, 100);
-                            //     strokeWeight(2);
-                            // } else {
-                            //     noStroke();
-                            // }
-                            if (data.pointSizeToggle) {
-                                String pointSizeVar = data.pointSizeSelection;
-                                float pointSizeValue = (Float) marker.getProperty(pointSizeVar);
-                                float pointSize = map(pointSizeValue, parent.attributes.getMin(pointSizeVar),
-                                        parent.attributes.getMax(pointSizeVar), data.pointSizeMin,
-                                        data.pointSizeMax);
-                                size = pointSize;// user size range
-                            }
-                            strokeWeight(size);
-                            point(mx, mheight, my);// draw point
-                        }
+                        // extent minx, maxy, maxx, miny
+                        float[] extent = data.getExtentInFloat();
+                        mx = map(pos.y, extent[0], extent[2], -cubeWidth/2, cubeWidth/2);
+                        my = map(pos.x, extent[3], extent[1], cubeDepth/2, -cubeDepth/2);
+                        float mheight = getPointHeightBasedOnTime(markerTime);
 
-                        // if the user changes line thickness
-                        if (data.strokeWeightToggle && data.strokeWeightSelection != null) {
-                            String strokeWeightVar = data.strokeWeightSelection;
-                            float strokeWeightValue = (Float) marker.getProperty(strokeWeightVar);
-                            float strokeWeight = map(strokeWeightValue, parent.attributes.getMin(strokeWeightVar),
-                                    parent.attributes.getMax(strokeWeightVar), data.strokeWeightMin,
-                                    data.strokeWeightMax);
-                            timePath.strokeWeight(strokeWeight);
-                        }
-                        // // if the user changes line color
-                        if (data.strokeColorToggle) {
-                            String strokeColorVar = data.strokeColorSelection;
-                            if (strokeColorVar.equals(parent.attributes.getIndex())) {
-                                timePath.stroke(color, alpha);
-                            } else {
-                                float strokeColorValue = (Float) marker.getProperty(strokeColorVar);
-                                float strokeColorPercent = norm(strokeColorValue,
-                                        parent.attributes.getMin(strokeColorVar),
-                                        parent.attributes.getMax(strokeColorVar));
-                                int strokeColor = parent.colors.coloursCont.get(data.selectedLineSwatch)
-                                        .findColour(strokeColorPercent);
-                                timePath.stroke(strokeColor, alpha);// user picked color
-                            }
-                            timePath.vertex(mx, mheight, my);// draw the line path
-							// if (brushed)
-                            //     brush.vertex(mx, mheight, my); 
-                        }
-                        
-                        // visual variables vectors
-                        if (data.vectorToggle) {
-                            String vectorFieldVar = data.vectorFieldSelection;
-                            float radius = (Float) marker.getProperty(vectorFieldVar);
-                            float length = 10;
-                            if (data.vectorLengthToggle) {
-                                length = map(radius, parent.attributes.getMin(vectorFieldVar),
-                                        parent.attributes.getMax(vectorFieldVar), data.vectorLengthMin,
-                                        data.vectorLengthMax);
-                            }
-                            float heading = (Float) marker.getProperty(data.headingFieldSelection);
-                            float x = cos(radians(heading)) * length;// end of the vector
-                            float y = sin(radians(heading)) * length;// end of the vector
-                            if (data.vectorColorToggle) {
-                                String vectorColorVar = data.vectorColorSelection;// color of vector
-                                if (vectorColorVar.equals(parent.attributes.getIndex())) {
-                                    stroke(color, alpha);// default color
-                                } else {
-                                    float vectorColorValue = (Float) marker.getProperty(vectorColorVar);
-                                    float vectorColorPercent = norm(vectorColorValue,
-                                            parent.attributes.getMin(vectorColorVar),
-                                            parent.attributes.getMax(vectorColorVar));
-                                    int vectorColor = parent.colors.coloursCont.get(data.selectedVectorSwatch)
-                                            .findColour(vectorColorPercent);
-                                    stroke(vectorColor, alpha);// user picked color
-                                }
-                            } else {
-                                stroke(0, 0, 100, alpha);
-                            }
-                            strokeWeight(2);
-                            line(mx, mheight, my, mx+x, mheight, my+y);
-                        }
-                    }
-                    // data.holdAlpha = alpha;
-                }
-                // data.points = marker;
-            }
+						int hours;
+						if (data.timeUnit.equals("minutes")) {
+							hours = Hours.hoursBetween(markerTime, data.currentTime).getHours();
+						} else {
+							hours = Minutes.minutesBetween(markerTime, data.currentTime).getMinutes();
+						}
+						float alpha = 255;
+						if (data.falloff) {
+							alpha = constrain(map(hours, 0, data.alphaMaxHours, 255, 0), 0, 255);
+						}
 
-            // Interaction on the fly
-            // if ((track.getTag().equals(data.selectedIDs[0]) || track.getTag().equals(data.selectedIDs[1]))
-            //         && data.interactionsGenerated && data.upToDate == true) {
-            //     // check to see if points are close enough to be interacting
-            //     if ((data.highlightOnFly && data.pointInteract == false)) {
-            //         pushMatrix();
-            //         translate((width / 2), 0 + resetZ, -145);
-            //         rotateY(radians(90));
-            //         stroke(Color.GRAY.getRGB(), 255); // grey when not interacting
-            //         strokeWeight(8);// set ring size of 8 px
-            //         point(mx, z, my);
-            //         popMatrix();
-            //     }
-            //     if ((data.highlightOnFly && data.pointInteract == true)) {
-            //         pushMatrix();
-            //         translate((width / 2), 0 + resetZ, -145);
-            //         rotateY(radians(90));
-            //         stroke(Color.ORANGE.getRGB(), 255);// becomes yellow when interacting
-            //         strokeWeight(12); // increase in size when interacting
-            //         point(mx, z, my);
-            //         popMatrix();
-            //     }
-            // }
+						if (hours <= 24) {
+							stroke(360, 100, 100, alpha);
+						} else if (hours <= 48) {
+							stroke(360, 100, 63, alpha);
+						} else if (hours <= 72) {
+							stroke(360, 100, 30, alpha);
+						}
 
-            // if (brushed)
-            //     brush.endShape();
-            // shape(brush);
+						if (alpha != 0) {
+							if (data.pointColorToggle) {
+								pushStyle();
+								float size = 7;
+								String pointColorVar = data.pointColorSelection;
+								if (pointColorVar.equals(parent.attributes.getIndex())) {
+									stroke(color, alpha);
+								} else {
+									float pointColorValue = (Float) marker.getProperty(pointColorVar);
+									float pointColorPercent = norm(pointColorValue,
+											parent.attributes.getMin(pointColorVar),
+											parent.attributes.getMax(pointColorVar));
+									int strokeColor = parent.colors.coloursCont.get(data.selectedPointSwatch)
+											.findColour(pointColorPercent);
+                                    stroke(strokeColor, alpha);
+								}
+								if (data.pointSizeToggle) {
+									String pointSizeVar = data.pointSizeSelection;
+									float pointSizeValue = (Float) marker.getProperty(pointSizeVar);
+									float pointSize = map(pointSizeValue, parent.attributes.getMin(pointSizeVar),
+											parent.attributes.getMax(pointSizeVar), data.pointSizeMin,
+											data.pointSizeMax);
+									size = pointSize;
+								}
+                                strokeWeight(size);
+                                point(mx, mheight, my);// draw point
+								popStyle();
+							}
 
-            timePath.endShape();
-            shape(timePath);// draw data path
-
-        } // end for loop
+							if (data.vectorToggle) {
+								pushStyle();
+								String vectorFieldVar = data.vectorFieldSelection;
+								float radius = (Float) marker.getProperty(vectorFieldVar);
+								float length = 10;
+								if (data.vectorLengthToggle) {
+									length = map(radius, parent.attributes.getMin(vectorFieldVar),
+											parent.attributes.getMax(vectorFieldVar), data.vectorLengthMin,
+											data.vectorLengthMax);
+								}
+								float heading = (Float) marker.getProperty(data.headingFieldSelection);
+								float x = cos(radians(heading)) * length;
+								float y = sin(radians(heading)) * length;
+								if (data.vectorColorToggle) {
+									String vectorColorVar = data.vectorColorSelection;
+									if (vectorColorVar.equals(parent.attributes.getIndex())) {
+										stroke(color, alpha);
+									} else {
+										float vectorColorValue = (Float) marker.getProperty(vectorColorVar);
+										float vectorColorPercent = norm(vectorColorValue,
+												parent.attributes.getMin(vectorColorVar),
+												parent.attributes.getMax(vectorColorVar));
+										int vectorColor = parent.colors.coloursCont.get(data.selectedVectorSwatch)
+												.findColour(vectorColorPercent);
+										stroke(vectorColor, alpha);
+									}
+								} else {
+									stroke(0, 0, 100, alpha);
+								}
+								strokeWeight(2);
+                                line(mx, mheight, my, mx+x, mheight, my+y);
+								popStyle();
+							}
+						}
+					}
+				}
+			}
+		}
 
         // Export spacetime cube -- do we need exporting spacetime cube?
         // if (data.save) {
@@ -487,6 +466,18 @@ public class Box extends PApplet {
             currentHeight -= adjustedCubeHeight;
             currentYearMonth = currentYearMonth.plusMonths(1);
         }
+
+        // start-current-end time indicators
+        pushStyle();
+        rectMode(CORNERS);
+        noFill();
+
+        stroke(255, 10);
+        float h = getPointHeightBasedOnTime(data.startTime);
+        pushMatrix(); rotateX(HALF_PI); translate(0,0,-h); rect(cubeWidth/2, cubeDepth/2, -cubeWidth/2, -cubeDepth/2); popMatrix();
+        h = getPointHeightBasedOnTime(data.endTime);
+        pushMatrix(); rotateX(HALF_PI); translate(0,0,-h); rect(cubeWidth/2, cubeDepth/2, -cubeWidth/2, -cubeDepth/2); popMatrix();
+        popStyle();
     }
     // end drawbox outline
 
@@ -592,55 +583,55 @@ public class Box extends PApplet {
     // DRAW UTILITIES
     //
     // Draws the X,Y,Z lines with R,G,B respectively
-    private void DrawGizmo(float scale, float alpha, boolean drawPlanes) {
-        pushStyle();
-        colorMode(HSB, 255, 255, 255);
+    // private void DrawGizmo(float scale, float alpha, boolean drawPlanes) {
+    //     pushStyle();
+    //     colorMode(HSB, 255, 255, 255);
 
-        float planeScale = scale * 0.6f;
-        float planeOpacity = alpha * 0.5f;  
-        rectMode(CORNER);
-        strokeWeight(5);
-        pushMatrix();
+    //     float planeScale = scale * 0.6f;
+    //     float planeOpacity = alpha * 0.5f;  
+    //     rectMode(CORNER);
+    //     strokeWeight(5);
+    //     pushMatrix();
         
-        // xy plane
-        if(drawPlanes){
-            noStroke();
-            fill(0,200,200,planeOpacity);
-            rect(0,0,planeScale,planeScale);
-        }
-        // x axis 
-        stroke(0,200,200,alpha);
-        line(0,0,0, scale, 0, 0);
+    //     // xy plane
+    //     if(drawPlanes){
+    //         noStroke();
+    //         fill(0,200,200,planeOpacity);
+    //         rect(0,0,planeScale,planeScale);
+    //     }
+    //     // x axis 
+    //     stroke(0,200,200,alpha);
+    //     line(0,0,0, scale, 0, 0);
         
-        // yz plane
-        if(drawPlanes){
-            pushMatrix();
-            rotateY(-PI/2);
-            noStroke();
-            fill(255/3,200,200,planeOpacity);
-            rect(0,0,planeScale,planeScale);
-            popMatrix();
-        }
-        // y axis
-        stroke(255/3,200,200,alpha);
-        line(0,0,0, 0, scale, 0);
+    //     // yz plane
+    //     if(drawPlanes){
+    //         pushMatrix();
+    //         rotateY(-PI/2);
+    //         noStroke();
+    //         fill(255/3,200,200,planeOpacity);
+    //         rect(0,0,planeScale,planeScale);
+    //         popMatrix();
+    //     }
+    //     // y axis
+    //     stroke(255/3,200,200,alpha);
+    //     line(0,0,0, 0, scale, 0);
         
-        // xz plane
-        if(drawPlanes){
-            pushMatrix();
-            rotateX(PI/2);
-            noStroke();
-            fill(255*2/3,200,200,planeOpacity);
-            rect(0,0,planeScale,planeScale);
-            popMatrix();
-        }
-        // z axis
-        stroke(255*2/3,200,200,alpha);
-        line(0,0,0, 0, 0, scale);
+    //     // xz plane
+    //     if(drawPlanes){
+    //         pushMatrix();
+    //         rotateX(PI/2);
+    //         noStroke();
+    //         fill(255*2/3,200,200,planeOpacity);
+    //         rect(0,0,planeScale,planeScale);
+    //         popMatrix();
+    //     }
+    //     // z axis
+    //     stroke(255*2/3,200,200,alpha);
+    //     line(0,0,0, 0, 0, scale);
         
-        popMatrix();
-        popStyle();
-    }
+    //     popMatrix();
+    //     popStyle();
+    // }
     ////////////////////////////////////////////////////////////////////////////////////////
   
 

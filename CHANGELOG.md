@@ -21,13 +21,15 @@
 - Changed keyboard shortcut for 3D Space-time cube window to ALT+3
 - Also dims the month labels if its on the way of camera
 - Created [an issue](https://github.com/processing/processing4/issues/243) for fatal error crash on Processing Github issues
-[ ] Point rendering color issue
-[ ] Make box a pshape
-[ ] Shutdown behaviour
-[ ] Date scaling
-[ ] Static/Ghost view
-[ ] Populate control panel
-[ ] Close space-time windows on animation close/exit
+- Restructured the *Sketch.java* and *Box.java* draw commands based on the reply. Big performance and stability gains. 
+- Removed brushed tag lines from Sketch and Box
+- Color of point rendering in space-time cube resolved
+- Added a start-end time bounds to the cube
+- [ ] Modularize two draw functions, they are practically the same
+- [ ] Make box a pshape
+- [ ] Date scaling
+- [ ] Populate control panel
+- [ ] Close space-time windows on animation close/exit
 
 ##### 0.5.2-dev - 2021/08/09
 - Draws boxes based on the number of days in each month 
