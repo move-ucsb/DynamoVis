@@ -103,8 +103,8 @@ public class PointPanel extends JPanel {
 				WideComboBox cb = (WideComboBox) e.getSource();
 				String item = (String) cb.getSelectedItem();
 
-				if(item.equals("Tag")) colorRampList.setEnabled(false);
-				else				   colorRampList.setEnabled(true);
+				if(item.equals("Identifier")) colorRampList.setEnabled(false);
+				else				   		  colorRampList.setEnabled(true);
 
 				data.pointColorSelection = parent.attributes.getName(item);
 			}

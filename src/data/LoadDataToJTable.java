@@ -340,7 +340,7 @@ public class LoadDataToJTable implements PropertyChangeListener {
 										record.setTime(time);
 										record.setID(tag);
 										record.setLocation(lat, lon);
-										record.addProperty("Tag", tag);
+										record.addProperty("Identifier", tag);
 									}
 								}
 							}
@@ -457,7 +457,7 @@ public class LoadDataToJTable implements PropertyChangeListener {
 				String units = "";
 
 				if (goodHeaders.get(i).equals(parent.headers[0])) {
-					shortName = "Tag";
+					shortName = "Identifier";
 				}
 
 				if (match != null) {
@@ -661,8 +661,8 @@ public class LoadDataToJTable implements PropertyChangeListener {
 	public boolean getTag(String[] header) {
 		Object[] fields = header;
 		String s = (String) JOptionPane.showInputDialog(parent.dataConfigPanel,
-				"individual-local-identifier not found\n" + "Please Select field containing unique tags:",
-				"Tag Selection", JOptionPane.PLAIN_MESSAGE, null, fields, null);
+				"individual-local-identifier not found\n" + "Please Select field containing unique identifier:",
+				"Identifier Selection", JOptionPane.PLAIN_MESSAGE, null, fields, null);
 
 		if(s == null) return false;
 

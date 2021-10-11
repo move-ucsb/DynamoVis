@@ -264,7 +264,8 @@ public class DataPanel extends JPanel implements ActionListener {
 		});
 		add(btnSelectAll1, "cell 0 3 3 1,alignx right,growy");
 
-		String[] tagTableCol = { "Tag", "Start", "End", "Interval (min)", "Enable" };
+		String[] tagTableCol = { "Identifier", "Start", "End", "Interval (min)", "Enable" };
+		// String[] tagTableCol = { "Tag", "Start", "End", "Interval (min)", "Enable" };
 		Integer[] tagTableColEditable = { 4 };
 		tagModel = new CustomTableModel();
 		tagModel.setCol(tagTableCol);
