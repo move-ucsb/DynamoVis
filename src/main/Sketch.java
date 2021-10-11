@@ -87,6 +87,11 @@ public class Sketch extends PApplet  {
 		parent.controlContainer.setVisible(false);
 		parent.timelineContainer.setVisible(false);
 		
+		// hide spacetime windows
+		parent.timeBoxControlPanel.setVisible(false);
+		parent.box.noLoop();
+		parent.box.exit();
+
 		// get ready for another animation
 		parent.sketch = null;
 		parent.startup = true;

@@ -16,6 +16,16 @@
 - Moved Control Panel field "Underlay" under "Tracks"
 - Public release as 1.0
 
+##### 0.5.4-dev - 2021/09/10
+- Changed "Label Month" to "Label Time"
+- Space time cube window rotates slightly when "Rotate view" is selected
+- Closing the animation window closes space-time cube related windows as well
+- Added items for controlling the transparency of space-time cube boundary
+
+- [ ] Tidy control panel
+- [ ] Modularize two draw functions, they are practically the same
+- [ ] Make box a pshape
+
 ##### 0.5.3-dev - 2021/08/10
 - Switched to [Processing 4.0 beta 1](https://github.com/processing/processing4/releases/tag/processing-1276-4.0b1) from alpha 6. Developers claim this release should be more stable than 3.5.4, which has been the standard for some time.
 - Changed keyboard shortcut for 3D Space-time cube window to ALT+3
@@ -24,12 +34,7 @@
 - Restructured the *Sketch.java* and *Box.java* draw commands based on the reply. Big performance and stability gains. 
 - Removed brushed tag lines from Sketch and Box
 - Color of point rendering in space-time cube resolved
-- Added a start-end time bounds to the cube
-- [ ] Modularize two draw functions, they are practically the same
-- [ ] Make box a pshape
-- [ ] Date scaling
-- [ ] Populate control panel
-- [ ] Close space-time windows on animation close/exit
+- Added start-end time bounds to the cube
 
 ##### 0.5.2-dev - 2021/08/09
 - Draws boxes based on the number of days in each month 

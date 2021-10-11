@@ -34,8 +34,11 @@ import java.awt.Insets;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
@@ -76,7 +79,8 @@ public class TimeBoxControlPanel extends JPanel {
     public SpinnerModel emonthSpinnerModel;
 
     // check boxes for labels and highlighting boundary interaction
-    public JCheckBox label;
+    public JCheckBox timeLabel;
+    public JCheckBox rotateLabel;
     public JCheckBox bdyInteraction;
     public JCheckBox staticbox;
 
@@ -84,7 +88,7 @@ public class TimeBoxControlPanel extends JPanel {
         parent = father;
         data = parent.data;
 
-        setLayout(new MigLayout("insets 0", "[][][]", "[][]"));
+        setLayout(new MigLayout("insets 0", "[][][][][]", "[][][][]"));
 
         Object[] tags = new Object[parent.tagList.size()];// create array of all tags used
         for (int i = 0; i < parent.tagList.size(); i++) {
@@ -97,14 +101,14 @@ public class TimeBoxControlPanel extends JPanel {
         data.timeBoxEndMonth = data.endTime.getMonthOfYear();
 
         // check box for the month labels
-        label = new JCheckBox("Label Months");
-        label.setIconTextGap(5);
-        label.setHorizontalTextPosition(SwingConstants.RIGHT);
-        label.setForeground(Color.BLACK);
-        label.setFont(new Font("Arial", Font.PLAIN, 12));
-        label.setMargin(new Insets(10, 5, 10, 10));
-        this.add(label, "cell 0 1, gapleft 10");
-        label.addChangeListener(new ChangeListener() {
+        timeLabel = new JCheckBox("Label Time");
+        timeLabel.setIconTextGap(5);
+        timeLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
+        timeLabel.setForeground(Color.BLACK);
+        timeLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        timeLabel.setMargin(new Insets(10, 5, 10, 10));
+        this.add(timeLabel, "cell 0 0, gapleft 10");
+        timeLabel.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent evt) {
                 JCheckBox cb = (JCheckBox) evt.getSource();
                 if (cb.isSelected()) {// sets boolean variable to true or false
@@ -116,5 +120,65 @@ public class TimeBoxControlPanel extends JPanel {
                 }
             }
         });
+
+        // boundary alpha values
+        JLabel label = new JLabel("Dim Edge Alpha (%)");
+		label.setBackground(Color.LIGHT_GRAY);
+		label.setForeground(Color.BLACK);
+		label.setFont(new Font("Arial", Font.PLAIN, 9));
+		this.add(label, "cell 1 0");
+        JSpinner dimAlpha = new JSpinner();
+		dimAlpha.setForeground(Color.BLACK);
+		dimAlpha.setBackground(Color.LIGHT_GRAY);
+		dimAlpha.setFont(new Font("Arial", Font.PLAIN, 9));
+		dimAlpha.setModel(new SpinnerNumberModel(25, 0, 100, 1));
+		dimAlpha.setToolTipText("Adjust the alpha value of boundary when it occludes the visualization.");
+		this.add(dimAlpha, "cell 1 1");
+		dimAlpha.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent evt) {
+				JSpinner spin = (JSpinner) evt.getSource();
+				data.dimAlpha = (Integer)(spin.getValue()) * 2.55f;
+			}
+		});
+        label = new JLabel("Normal Edge Alpha (%)");
+		label.setBackground(Color.LIGHT_GRAY);
+		label.setForeground(Color.BLACK);
+		label.setFont(new Font("Arial", Font.PLAIN, 9));
+		this.add(label, "cell 2 0");
+        JSpinner normalAlpha = new JSpinner();
+		normalAlpha.setForeground(Color.BLACK);
+		normalAlpha.setBackground(Color.LIGHT_GRAY);
+		normalAlpha.setFont(new Font("Arial", Font.PLAIN, 9));
+		normalAlpha.setModel(new SpinnerNumberModel(75, 0, 100, 1));
+		normalAlpha.setToolTipText("Adjust the alpha value of boundary when it occludes the visualization.");
+		this.add(normalAlpha, "cell 2 1");
+		normalAlpha.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent evt) {
+				JSpinner spin = (JSpinner) evt.getSource();
+				data.normalAlpha = (Integer)(spin.getValue()) * 2.55f;
+			}
+		});
+
+        // checkbox for idle rotation
+        rotateLabel = new JCheckBox("Rotate view");
+        rotateLabel.setIconTextGap(5);
+        rotateLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
+        rotateLabel.setForeground(Color.BLACK);
+        rotateLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        rotateLabel.setMargin(new Insets(10, 5, 10, 10));
+        this.add(rotateLabel, "cell 1 1, gapleft 10");
+        rotateLabel.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent evt) {
+                JCheckBox cb = (JCheckBox) evt.getSource();
+                if (cb.isSelected()) {// sets boolean variable to true or false
+                    data.rotateView = true;
+
+                } else {
+                    data.rotateView = false;
+
+                }
+            }
+        });
+		
     }
 }

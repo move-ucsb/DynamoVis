@@ -150,6 +150,11 @@ public class Box extends PApplet {
         background(0);// black background
         // DrawGizmo(100, 50, false); // DEBUG -- draws the origin of coordinate system
 
+        // rotate the view 
+        if(data.rotateView) {
+            camera.rotateY(0.001f);
+        }
+
         // draw the encapsulating space-time cubes
         drawBox();
 
@@ -413,10 +418,10 @@ public class Box extends PApplet {
         int steps_depth = 5;
         int steps_width = (int)(w/d*steps_depth);
         int offset = 4;
-        stroke(255,dim[0] ? 10 : 80); drawLine(corners[0], corners[1], steps_depth, offset);
-        stroke(255,dim[1] ? 10 : 80); drawLine(corners[2], corners[1], steps_width, offset);
-        stroke(255,dim[2] ? 10 : 80); drawLine(corners[2], corners[3], steps_depth, offset);
-        stroke(255,dim[3] ? 10 : 80); drawLine(corners[0], corners[3], steps_width, offset);
+        stroke(255,dim[0] ? data.dimAlpha : data.normalAlpha); drawLine(corners[0], corners[1], steps_depth, offset);
+        stroke(255,dim[1] ? data.dimAlpha : data.normalAlpha); drawLine(corners[2], corners[1], steps_width, offset);
+        stroke(255,dim[2] ? data.dimAlpha : data.normalAlpha); drawLine(corners[2], corners[3], steps_depth, offset);
+        stroke(255,dim[3] ? data.dimAlpha : data.normalAlpha); drawLine(corners[0], corners[3], steps_width, offset);
         if(last) {pushMatrix(); translate(0, -h, 0); drawOutline(w,h,d,off,false); popMatrix();}
 
         return dim[2] && dim[3];
@@ -453,7 +458,7 @@ public class Box extends PApplet {
 
             if(data.labelMonth) {
                 textSize(16);
-                fill(255, dimText ? 10 : 120);
+                fill(255, dimText ? data.dimAlpha+20 : data.normalAlpha+20);
 
                 // Draw month labels as "Aug 2021"
                 String label = monthLabel[currentYearMonth.getMonthValue()].substring(0, 3)

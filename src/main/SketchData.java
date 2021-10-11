@@ -188,7 +188,10 @@ public class SketchData {
 	public int timeBoxStartMonth;
 	public int timeBoxEndYear;
 	public int timeBoxEndMonth;
+	public float dimAlpha = 25;		// for edges of the box 
+	public float normalAlpha = 50;	// for edges of the box
 	public boolean labelMonth = false; // for labeling cubes
+	public boolean rotateView = false; // rotates the view
 	public boolean timeBoxBdyHighlight = false; // highlight interactions in 3D
 	public boolean stbclose = false;
 	public boolean boxvisible = false;
