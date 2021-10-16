@@ -198,12 +198,9 @@ public class Sketch extends PApplet  {
 		if(leftMapNeeded) updateMap(map, leftMap, true);
 		if(rightMapNeeded) updateMap(map, rightMap, false);
 		if(!isExiting) {
-			// pushMatrix();
-			// translate(0, 0, -5);
 			map.draw();
 			if(leftMapNeeded) leftMap.draw();
 			if(rightMapNeeded) rightMap.draw();
-			// popMatrix();
 		}
 
 		for (Entry<String, Track> entry : parent.trackList.entrySet()) {
@@ -211,45 +208,106 @@ public class Sketch extends PApplet  {
 			String key = entry.getKey();
 			Track track = entry.getValue();
 
-			if (track.getVisibility()) {
-				PShape path = createShape();
-				path.beginShape();
-				path.noFill();
-				path.strokeWeight(4);
-				path.strokeJoin(ROUND);  // make line connections rounded
-				// path.strokeCap(PROJECT); // make start and end of lines square
+			// if the data is not showing, skip draw the path
+			if (!track.getVisibility()) continue;
 
-				PShape brush = createShape();
-				boolean brushed = false;
+			int color = parent.colors.getTagColor(key).getRGB();
+			ArrayList<PointRecord> points = track.getPoints();
 
-				if (data.brushedTag != null && data.brushedTag.equals(key)) {
-					brushed = true;
-					brush.beginShape();
-					brush.noFill();
-					brush.stroke(180, 100, 100);
-					brush.strokeWeight(6);
-				}
+			// TODO: Add brushedTag visualization here if we implement timeline features
 
-				PShape ghost = createShape();
-
-				if (data.ghost) {
-					ghost.beginShape();
-					ghost.noFill();
-					ghost.stroke(data.ghostColor.getRGB(), data.ghostAlpha);
-					ghost.strokeWeight(data.ghostWeight);
-				}
-
-				int color = parent.colors.getTagColor(key).getRGB();
-				ArrayList<PointRecord> points = track.getPoints();
+			// Underlay
+			if(data.ghost) {
+				pushStyle();
+				beginShape();
+				noFill();
+				stroke(data.ghostColor.getRGB(), data.ghostAlpha);
+				strokeWeight(data.ghostWeight);
 
 				for (int i = 0; i < points.size(); i++) {
 					PointRecord marker = points.get(i);
 					DateTime markerTime = marker.getTime();
 					if (markerTime.isBefore(data.currentTime) || markerTime.isEqual(data.currentTime)) {
 						ScreenPosition pos = map.getScreenPosition(marker.getLocation());
+	
+						vertex(pos.x, pos.y);
+					}
+				}
+				endShape(); // draws underlay
+				popStyle();
+			}
 
-						if (data.ghost)
-							ghost.vertex(pos.x, pos.y);
+			// Track visualizations
+			if (data.strokeColorToggle || (data.strokeWeightToggle && data.strokeWeightSelection != null)) {
+				pushStyle();
+				beginShape();
+				noFill();
+				strokeWeight(4);
+				strokeJoin(ROUND);  // make line connections rounded
+				for (int i = 0; i < points.size(); i++) {
+					PointRecord marker = points.get(i);
+					DateTime markerTime = marker.getTime();
+					if (markerTime.isBefore(data.currentTime) || markerTime.isEqual(data.currentTime)) {
+						ScreenPosition pos = map.getScreenPosition(marker.getLocation());
+
+						int hours;
+						if (data.timeUnit.equals("minutes")) {
+							hours = Hours.hoursBetween(markerTime, data.currentTime).getHours();
+						} else {
+							hours = Minutes.minutesBetween(markerTime, data.currentTime).getMinutes();
+						}
+						float alpha = 255;
+						if (data.falloff) {
+							alpha = constrain(map(hours, 0, data.alphaMaxHours, 255, 0), 0, 255);
+						}
+
+						if (hours <= 24) {
+							stroke(360, 100, 100, alpha);
+						} else if (hours <= 48) {
+							stroke(360, 100, 63, alpha);
+						} else if (hours <= 72) {
+							stroke(360, 100, 30, alpha);
+						}
+
+						if (alpha != 0) {
+							if (data.strokeWeightToggle && data.strokeWeightSelection != null) {
+								String strokeWeightVar = data.strokeWeightSelection;
+								float strokeWeightValue = (Float) marker.getProperty(strokeWeightVar);
+								float strokeWeight = map(strokeWeightValue, parent.attributes.getMin(strokeWeightVar),
+										parent.attributes.getMax(strokeWeightVar), data.strokeWeightMin,
+										data.strokeWeightMax);
+								strokeWeight(strokeWeight);
+							}
+
+							if (data.strokeColorToggle) {
+								String strokeColorVar = data.strokeColorSelection;
+								if (strokeColorVar.equals(parent.attributes.getIndex())) {
+									stroke(color, alpha);
+								} else {
+									float strokeColorValue = (Float) marker.getProperty(strokeColorVar);
+									float strokeColorPercent = norm(strokeColorValue,
+											parent.attributes.getMin(strokeColorVar),
+											parent.attributes.getMax(strokeColorVar));
+									int strokeColor = parent.colors.coloursCont.get(data.selectedLineSwatch)
+											.findColour(strokeColorPercent);
+									stroke(strokeColor, alpha);
+								}
+								vertex(pos.x, pos.y);
+							}
+						}
+					}
+				}
+				endShape(); // draw tracks				
+				popStyle();
+			}
+
+			// Point or vector visualizations
+			if(data.vectorToggle || data.pointColorToggle) {
+				for (int i = 0; i < points.size(); i++) {
+					PointRecord marker = points.get(i);
+					DateTime markerTime = marker.getTime();
+					if (markerTime.isBefore(data.currentTime) || markerTime.isEqual(data.currentTime)) {
+						ScreenPosition pos = map.getScreenPosition(marker.getLocation());
 
 						int hours;
 						if (data.timeUnit.equals("minutes")) {
@@ -264,17 +322,15 @@ public class Sketch extends PApplet  {
 
 						if (hours <= 24) {
 							fill(360, 100, 100, alpha);
-							path.stroke(360, 100, 100, alpha);
 						} else if (hours <= 48) {
 							fill(360, 100, 63, alpha);
-							path.stroke(360, 100, 63, alpha);
 						} else if (hours <= 72) {
 							fill(360, 100, 30, alpha);
-							path.stroke(360, 100, 30, alpha);
 						}
 
 						if (alpha != 0) {
 							if (data.pointColorToggle) {
+								pushStyle();
 								float size = 7;
 								String pointColorVar = data.pointColorSelection;
 								if (pointColorVar.equals(parent.attributes.getIndex())) {
@@ -288,12 +344,6 @@ public class Sketch extends PApplet  {
 											.findColour(pointColorPercent);
 									fill(strokeColor, alpha);
 								}
-								if (brushed) {
-									stroke(180, 100, 100);
-									strokeWeight(2);
-								} else {
-									noStroke();
-								}
 								if (data.pointSizeToggle) {
 									String pointSizeVar = data.pointSizeSelection;
 									float pointSizeValue = (Float) marker.getProperty(pointSizeVar);
@@ -302,41 +352,12 @@ public class Sketch extends PApplet  {
 											data.pointSizeMax);
 									size = pointSize;
 								}
-								// pushMatrix();
-								// translate(0, 0, -1);
 								ellipse(pos.x, pos.y, size, size);
-								// popMatrix();
-							}
-
-							
-							if (data.strokeWeightToggle && data.strokeWeightSelection != null) {
-								String strokeWeightVar = data.strokeWeightSelection;
-								float strokeWeightValue = (Float) marker.getProperty(strokeWeightVar);
-								float strokeWeight = map(strokeWeightValue, parent.attributes.getMin(strokeWeightVar),
-										parent.attributes.getMax(strokeWeightVar), data.strokeWeightMin,
-										data.strokeWeightMax);
-								path.strokeWeight(strokeWeight);
-							}
-
-							if (data.strokeColorToggle) {
-								String strokeColorVar = data.strokeColorSelection;
-								if (strokeColorVar.equals(parent.attributes.getIndex())) {
-									path.stroke(color, alpha);
-								} else {
-									float strokeColorValue = (Float) marker.getProperty(strokeColorVar);
-									float strokeColorPercent = norm(strokeColorValue,
-											parent.attributes.getMin(strokeColorVar),
-											parent.attributes.getMax(strokeColorVar));
-									int strokeColor = parent.colors.coloursCont.get(data.selectedLineSwatch)
-											.findColour(strokeColorPercent);
-									path.stroke(strokeColor, alpha);
-								}
-								path.vertex(pos.x, pos.y);
-								if (brushed)
-									brush.vertex(pos.x, pos.y);
+								popStyle();
 							}
 
 							if (data.vectorToggle) {
+								pushStyle();
 								String vectorFieldVar = data.vectorFieldSelection;
 								float radius = (Float) marker.getProperty(vectorFieldVar);
 								float length = 10;
@@ -366,30 +387,10 @@ public class Sketch extends PApplet  {
 								}
 								strokeWeight(2);
 								line(pos.x, pos.y, pos.x + x, pos.y + y);
+								popStyle();
 							}
 						}
 					}
-				}
-				if(!isExiting) {
-					// pushMatrix();
-						// translate(0, 0, -3);
-						if (brushed)
-							brush.endShape();
-						shape(brush);
-					// popMatrix();
-	
-					// pushMatrix();
-					// 	translate(0, 0, -4);
-						if (data.ghost)
-							ghost.endShape();
-						shape(ghost);
-					// popMatrix();
-	
-					// pushMatrix();
-					// 	translate(0, 0, -2);
-						path.endShape();
-						shape(path);
-					// popMatrix();
 				}
 			}
 		}
@@ -420,13 +421,11 @@ public class Sketch extends PApplet  {
 		}
 
 		if(!isExiting) {
-			// pushMatrix();
-			// 	translate(0, 0, 0);
-				legend.display();
-				legend.drag(mouseX, mouseY);
-			// popMatrix();
+			legend.display();
+			legend.drag(mouseX, mouseY);
 		}
 
+		// Export
 		if (data.save) {
 			String file = String.format("export/temp/" + parent.animationTitle + parent.exportCounter + "/temp%08d.jpeg",
 					data.frameCounter);
@@ -434,6 +433,7 @@ public class Sketch extends PApplet  {
 			data.frameCounter++;
 		}
 
+		// Display approproate text if the animation window is terminated but the window itself is lingering
 		if (isExiting) {
 			textFont(legend.font2);
 			background(20);
