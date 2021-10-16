@@ -82,13 +82,13 @@ You can also run the jar file using below command in extracted folder:
 ## Data
 We distribute copies of Galapagos Albatrosses and Turkey Vultures data sets along with the repository in `./public-data` directory.
 
-#### Tested on:
-- Windows 10
-- macOS Catalina - 10.15
-- Java 15.0.2
-
 ## Compile from source
 If you'd like to clone the repository and compile from the source, make sure to have [Git Large File System](https://git-lfs.github.com/) installed and enabled. Git-LFS is required for large `*.csv` files. If you don't want to install Git-LFS, you will need to clone the repository and manually download .csv files in `/config` and `/public-data`.
 
 ## Contact
 Feel free to open an [issue](https://github.com/move-ucsb/DynamoVis/issues) in case something is wrong.
+
+#### Tested on:
+- Windows 10
+- macOS Catalina - 10.15
+- Java 15.0.2
