@@ -24,17 +24,21 @@
 </figure>
 
 ## Usage
-Download the latest release [here](https://github.com/move-ucsb/DynamoVis/releases). 
+Download the latest release (`DynamoVis-1.0.zip`) [here](https://github.com/move-ucsb/DynamoVis/releases). 
 
-Zip file contains automated scripts to run the software on Windows (`run_windows.bat`) and Unix-based systems (`run_unix.sh`). Make sure to have Java 15 installed and set up in your system or user PATH. 
+- Unzip the folder
+- (Windows) Double-click on `run_windows.bat`
+- (MacOS) Double-click on `run_unix.sh`
 
-You can also run the jar file using below command in extracted folder:
+If your system shows a security pop up, it is safe to ignore it (More info -> Run anyway, on Windows). Make sure to have Java 15 installed and set up in your system or user PATH. 
+
+Alternatively, you can also run the jar file using below command in extracted folder:
  
 ```shell
  java -jar DynamoVis-1.0.jar
 ```
 
-- Scroll down to 'Compile from source' section for notes on compiling the software from the source code. 
+See 'Compile from source' section below for notes on compiling the software from scratch. 
 
 ## Use cases
 ### Turkey vulture [data set](https://doi.org/10.5441/001/1.46ft1k05)
