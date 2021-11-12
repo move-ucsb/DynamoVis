@@ -127,3 +127,11 @@ If you'd like to clone the repository and compile from the source, make sure to 
 - macOS 10.15 Catalina
 
 w/ Java 15.0.2
+
+## List of developers
+- Mert Toka
+- Glenn Xavier
+- Wing Yi (Pinki) Wong
+- Kate Carlson 
+- Kin (Nathan) Chan 
+- Kyle Johnson
