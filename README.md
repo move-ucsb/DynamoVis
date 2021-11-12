@@ -134,4 +134,3 @@ w/ Java 15.0.2
 - Wing Yi (Pinki) Wong
 - Kate Carlson 
 - Kin (Nathan) Chan 
-- Kyle Johnson
