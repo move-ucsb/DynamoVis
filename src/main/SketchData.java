@@ -191,6 +191,7 @@ public class SketchData {
 	public float dimAlpha = 25;		// for edges of the box 
 	public float normalAlpha = 50;	// for edges of the box
 	public boolean labelMonth = false; // for labeling cubes
+	public boolean labelLatLong = false; //for labeling cube lat/long
 	public boolean rotateView = false; // rotates the view
 	public boolean timeBoxBdyHighlight = false; // highlight interactions in 3D
 	public boolean stbclose = false;

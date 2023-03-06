@@ -393,6 +393,39 @@ public class Box extends PApplet {
             drawPlus(point.x, point.y, point.z, (i==0||i==steps)?3*offset:offset);
         }
     }
+    private void drawLatLongGrid(int steps_width, int steps_depth, PVector[] corners, boolean dimText) {
+        float[] extent = data.getExtentInFloat();
+
+        textSize(16);
+        fill(255, dimText ? data.dimAlpha+20 : data.normalAlpha+20);
+        String label;
+
+        //draws the lines and labels for longitude
+        PVector inc = PVector.sub(corners[0], corners[1]).div(steps_depth);
+        for(int i=0; i<= steps_depth; i++){
+            PVector point = PVector.add(corners[1], PVector.mult(inc, i));
+            PVector end = PVector.add(corners[2], PVector.mult(inc, i));
+            line(point.x, point.y, point.z, end.x, end.y, end.z);
+            label = String.format("%.2f", map(point.z, corners[0].z, corners[1].z, extent[3], extent[1]));
+            text(label, end.x+10, end.y, end.z);
+        }
+        
+        //draws the lines and labels for latitude
+        inc = PVector.sub(corners[1], corners[2]).div(steps_depth);
+        for(int i=0; i<= steps_depth; i++){
+            PVector point = PVector.add(corners[2], PVector.mult(inc, i));
+            PVector end = PVector.add(corners[3], PVector.mult(inc, i));
+            line(point.x, point.y, point.z, end.x, end.y, end.z);
+            label = String.format("%.2f", map(point.x, corners[1].x, corners[2].x, extent[0], extent[2]));
+            pushMatrix();
+            translate(point.x, point.y, point.z);
+            rotateY(radians(45)); //rotating the text for readability, without this some numbers will run into each other
+            text(label, 0,0, 0);
+            popMatrix();
+        }
+        
+    }
+
     // draws the box outline
     // makes the camera facing edges more transparent
     public boolean drawOutline(int w, int h, int d, int off, boolean last) {
@@ -422,6 +455,11 @@ public class Box extends PApplet {
         stroke(255,dim[1] ? data.dimAlpha : data.normalAlpha); drawLine(corners[2], corners[1], steps_width, offset);
         stroke(255,dim[2] ? data.dimAlpha : data.normalAlpha); drawLine(corners[2], corners[3], steps_depth, offset);
         stroke(255,dim[3] ? data.dimAlpha : data.normalAlpha); drawLine(corners[0], corners[3], steps_width, offset);
+
+        if (data.labelLatLong) {
+            drawLatLongGrid(steps_width, steps_depth, corners, dim[2] && dim[3]);
+        }
+        
         if(last) {pushMatrix(); translate(0, -h, 0); drawOutline(w,h,d,off,false); popMatrix();}
 
         return dim[2] && dim[3];

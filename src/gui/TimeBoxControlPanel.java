@@ -80,6 +80,7 @@ public class TimeBoxControlPanel extends JPanel {
 
     // check boxes for labels and highlighting boundary interaction
     public JCheckBox timeLabel;
+    public JCheckBox latLongLabel;
     public JCheckBox rotateLabel;
     public JCheckBox bdyInteraction;
     public JCheckBox staticbox;
@@ -116,6 +117,27 @@ public class TimeBoxControlPanel extends JPanel {
 
                 } else {
                     data.labelMonth = false;
+
+                }
+            }
+        });
+
+        //checkbox for the latitude and longitude labels
+        latLongLabel = new JCheckBox("Label Lat/Long");
+        latLongLabel.setIconTextGap(5);
+        latLongLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
+        latLongLabel.setForeground(Color.BLACK);
+        latLongLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        latLongLabel.setMargin(new Insets(10, 5, 10, 10));
+        this.add(latLongLabel, "cell 0 2, gapleft 10");
+        latLongLabel.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent evt) {
+                JCheckBox cb = (JCheckBox) evt.getSource();
+                if (cb.isSelected()) {// sets boolean variable to true or false
+                    data.labelLatLong = true;
+
+                } else {
+                    data.labelLatLong = false;
 
                 }
             }
