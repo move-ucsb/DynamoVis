@@ -571,6 +571,10 @@ public class Box extends PApplet {
             drawBaseMap(currentHeight);
         }
 
+        if (data.basemap) {
+            drawBaseMap(currentHeight);
+        }
+
         // iterate until we pass the endYearMonth
         while(!currentYearMonth.equals(endYearMonth.plusMonths(1))) {
             pushMatrix();
