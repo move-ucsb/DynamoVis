@@ -50,7 +50,9 @@ public class CombinedControlPanel extends JPanel {
 	VectorPanel vectorPanel;
 	// GhostPanel ghostPanel;
 
-	String formattedLabel(String str, boolean flag) {
+	public JLabel stcLabel;
+
+	public String formattedLabel(String str, boolean flag) {
 		String downArrowLabel = "\u25BC   "+str;
 		String   upArrowLabel = "\u25B2   "+str;
 		return (flag?downArrowLabel:upArrowLabel);
@@ -58,7 +60,7 @@ public class CombinedControlPanel extends JPanel {
 
 	public CombinedControlPanel(DesktopPane father) {
 		parent = father;
-		setLayout(new MigLayout("insets 10", "[145!]", "[]10[]10[]10[]10[]10[]10[]10[]10[]10[]10[]10[]10[]"));
+		setLayout(new MigLayout("insets 10", "[145!]", "[]10[]10[]10[]10[]10[]10[]10[]10[]10[]10[]10[]10[]10[]"));
 		add(parent.controlPanel, "cell 0 0,growx");
 
 		linePanel = new LinePanel(parent);
@@ -159,6 +161,29 @@ public class CombinedControlPanel extends JPanel {
 				parent.controlContainer.pack();
 				parent.legend = !parent.legend;
 				((JLabel) e.getSource()).setText(formattedLabel("Legend", parent.legend));
+			}
+		});
+
+		JSeparator separator4 = new JSeparator();
+		add(separator4, "cell 0 13,growx");
+
+		stcLabel = new JLabel(formattedLabel("3D Space-Time Cube", parent.stc));
+		stcLabel.setForeground(Color.BLACK);
+		stcLabel.setFont(new Font("Arial", Font.BOLD, 10));
+		stcLabel.setBackground(Color.LIGHT_GRAY);
+		add(stcLabel, "cell 0 14");
+		stcLabel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (parent.stc) {
+					remove(parent.timeBoxControlPanel);
+				} else {
+					add(parent.timeBoxControlPanel, "cell 0 15,grow");
+				}
+				revalidate();
+				parent.controlContainer.pack();
+				parent.stc = !parent.stc;
+				((JLabel) e.getSource()).setText(formattedLabel("3D Space-Time Cube", parent.stc));
 			}
 		});
 

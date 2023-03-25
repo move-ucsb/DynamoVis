@@ -46,6 +46,10 @@ import processing.opengl.PJOGL;
 import utils.PointRecord;
 import utils.Track;
 
+import de.fhpotsdam.unfolding.UnfoldingMap;
+import de.fhpotsdam.unfolding.events.EventDispatcher;
+import de.fhpotsdam.unfolding.utils.MapUtils;
+import de.fhpotsdam.unfolding.utils.ScreenPosition;
 
 public class Box extends PApplet {
 
@@ -76,6 +80,18 @@ public class Box extends PApplet {
     // edited bounding boxes that hold tests for bounding box intersection. If there
     // is an intersection the tracks will be
     // set to hold one bounding box
+
+    public UnfoldingMap map;
+    public boolean leftMapNeeded = false;
+	public boolean rightMapNeeded = false;
+	public UnfoldingMap leftMap;
+	public UnfoldingMap rightMap;
+    EventDispatcher eventDispatcher;
+
+    public long durationInDays;
+    public float durationInPixels;
+    public float currentHeight;
+    public float startHeight;
 
     public void setParent(DesktopPane father) {
         parent = father;
@@ -144,7 +160,33 @@ public class Box extends PApplet {
             final com.jogamp.newt.Window w = (com.jogamp.newt.Window) getSurface().getNative();
             w.setDefaultCloseOperation(WindowClosingMode.DISPOSE_ON_CLOSE);
         }
+
+        // UnfoldingMap(processing.core.PApplet p, float x, float y, float width, float height, AbstractMapProvider provider)
+        //creates map with specific position and dimension
+        leftMapNeeded = data.needLeftMap;
+        System.out.println("left map needed: " + leftMapNeeded);
+		rightMapNeeded = data.needRightMap;
+        System.out.println("right map needed: " + rightMapNeeded);
+        map = new UnfoldingMap(this, 0,0, cubeWidth, cubeDepth, data.provider);
+
+        map.zoomAndPanToFit(data.locations);
+		eventDispatcher = MapUtils.createDefaultEventDispatcher(this, map);
+		map.zoomAndPanToFit(data.locations); // sometimes the first attempt zooms too far and bugs out, so do it again
+
+        // extra maps
+		if(leftMapNeeded) leftMap = createWrappedMap(map, eventDispatcher, 1);
+		if(rightMapNeeded) rightMap = createWrappedMap(map, eventDispatcher, 2);
     }
+
+    /// extra map functions
+	// https://github.com/tillnagel/unfolding/commit/46d03cf6ebc6e01a35dc0aede0a02b428b9cf68d
+	public UnfoldingMap createWrappedMap(UnfoldingMap mainMap, EventDispatcher eventDispatcher, int id) {
+		float x = id==1 ? -cubeWidth : cubeWidth;
+		UnfoldingMap wrappedMap = new UnfoldingMap(this, Integer.toString(id), x, 0, cubeWidth, cubeDepth, false, false, data.provider);
+		wrappedMap.zoomToLevel(mainMap.getZoomLevel());
+		eventDispatcher.register(wrappedMap, "zoom", mainMap.getId());
+		return wrappedMap;
+	}
 
     public void draw() {
         background(0);// black background
@@ -377,23 +419,39 @@ public class Box extends PApplet {
 
     }// end draw()
 
+    private void drawBaseMap(float currentHeight){
+        pushMatrix();
+        translate(-cubeWidth/2, currentHeight, -cubeDepth/2);
+        rotateX(radians(90));
+        if(leftMapNeeded) Sketch.updateMap(map, leftMap, true);
+		if(rightMapNeeded) Sketch.updateMap(map, rightMap, false);
+        map.draw();
+        if(leftMapNeeded) leftMap.draw();
+		if(rightMapNeeded) rightMap.draw();
+        popMatrix();
+    }
+
     // DRAW BOX OUTLINE
     // ==================
-    // draws a plus at the coordinate with off size
-    private void drawPlus(float x, float y, float z, float off) {
-        line(x,y,z-off, x,y,z+off);
-        line(x,y-off,z, x,y+off,z);
-        line(x-off,y,z, x+off,y,z);
-    }
-    // draws step number of plusses along a line
-    private void drawLine(PVector c1, PVector c2, int steps, int offset) {
-        PVector inc = PVector.sub(c1, c2).div(steps);
-        for(int i=0; i<= steps; i++){
-            PVector point = PVector.add(c2, PVector.mult(inc, i));
-            drawPlus(point.x, point.y, point.z, (i==0||i==steps)?3*offset:offset);
+    private void drawLines(int steps, PVector inc, PVector start, PVector end) {
+        for (int i=0; i<=steps; i++) {
+            PVector point = PVector.add(start, PVector.mult(inc, i));
+            PVector endPoint = PVector.add(end, PVector.mult(inc, i));
+            // from here
+            PVector dist = PVector.sub(endPoint, point);
+            PVector step = PVector.div(dist, steps*4);
+            PVector firstEnd = PVector.add(point, PVector.div(step, 2));
+            for (int j=0; j<steps*4; j++) {
+                line(point.x, point.y, point.z, firstEnd.x, firstEnd.y, firstEnd.z);
+                point.add(step);
+                firstEnd.add(step);
+            }
+            // to here for dashed lines
+            // line(point.x, point.y, point.z, endPoint.x, endPoint.y, endPoint.z); //for solid lines
         }
     }
-    private void drawLatLongGrid(int steps_width, int steps_depth, PVector[] corners, boolean dimText) {
+
+    private void drawLatLongGrid(int steps_width, int steps_depth, PVector[] corners, boolean dimText, boolean first) {
         float[] extent = data.getExtentInFloat();
 
         textSize(16);
@@ -402,33 +460,50 @@ public class Box extends PApplet {
 
         //draws the lines and labels for longitude
         PVector inc = PVector.sub(corners[0], corners[1]).div(steps_depth);
-        for(int i=0; i<= steps_depth; i++){
-            PVector point = PVector.add(corners[1], PVector.mult(inc, i));
-            PVector end = PVector.add(corners[2], PVector.mult(inc, i));
-            line(point.x, point.y, point.z, end.x, end.y, end.z);
-            label = String.format("%.2f", map(point.z, corners[0].z, corners[1].z, extent[3], extent[1]));
-            text(label, end.x+10, end.y, end.z);
+        drawLines(steps_depth, inc, corners[1], corners[2]);
+        if (first) {
+            for(int i=0; i<= steps_depth; i++){
+                PVector point = PVector.add(corners[1], PVector.mult(inc, i));
+                PVector end = PVector.add(corners[2], PVector.mult(inc, i));
+                label = String.format("%.2f", map(point.z, corners[0].z, corners[1].z, extent[3], extent[1]));
+                text(label, end.x+10, end.y, end.z);
+            }
         }
         
         //draws the lines and labels for latitude
         inc = PVector.sub(corners[1], corners[2]).div(steps_depth);
-        for(int i=0; i<= steps_depth; i++){
-            PVector point = PVector.add(corners[2], PVector.mult(inc, i));
-            PVector end = PVector.add(corners[3], PVector.mult(inc, i));
-            line(point.x, point.y, point.z, end.x, end.y, end.z);
-            label = String.format("%.2f", map(point.x, corners[1].x, corners[2].x, extent[0], extent[2]));
-            pushMatrix();
-            translate(point.x, point.y, point.z);
-            rotateY(radians(45)); //rotating the text for readability, without this some numbers will run into each other
-            text(label, 0,0, 0);
-            popMatrix();
+        drawLines(steps_depth, inc, corners[2], corners[3]);
+        if (first) {
+            for(int i=0; i<= steps_depth; i++){
+                PVector point = PVector.add(corners[2], PVector.mult(inc, i));
+                label = String.format("%.2f", map(point.x, corners[1].x, corners[2].x, extent[0], extent[2]));
+                pushMatrix();
+                translate(point.x, point.y, point.z);
+                rotateY(radians(45)); //rotating the text for readability, without this some numbers will run into each other
+                text(label, 0,0, 0);
+                popMatrix();
+            } 
         }
-        
+    }
+
+    //draws lines from all the corners and around top/bottom
+    private void drawSolidOutline(PVector[] corners) {
+        line(corners[0].x, corners[0].y, corners[0].z, corners[1].x, corners[1].y, corners[1].z);
+        line(corners[1].x, corners[1].y, corners[1].z, corners[2].x, corners[2].y, corners[2].z);
+        line(corners[2].x, corners[2].y, corners[2].z, corners[3].x, corners[3].y, corners[3].z);
+        line(corners[0].x, corners[0].y, corners[0].z, corners[3].x, corners[3].y, corners[3].z);
+    }
+
+    private void drawSkeleton(PVector[] corners, float startHeight, int h) {
+        line(corners[0].x, corners[0].y+startHeight+h/2, corners[0].z, corners[0].x, corners[0].y-h, corners[0].z);
+        line(corners[1].x, corners[1].y+startHeight+h/2, corners[1].z, corners[1].x, corners[1].y-h, corners[1].z);
+        line(corners[2].x, corners[2].y+startHeight+h/2, corners[2].z, corners[2].x, corners[2].y-h, corners[2].z);
+        line(corners[3].x, corners[3].y+startHeight+h/2, corners[3].z, corners[3].x, corners[3].y-h, corners[3].z);
     }
 
     // draws the box outline
     // makes the camera facing edges more transparent
-    public boolean drawOutline(int w, int h, int d, int off, boolean last) {
+    public boolean drawOutline(int w, int h, int d, int off, boolean last, boolean first) {
         float[] camera_position = camera.getPosition(); // temp
 
         PVector pos = new PVector(camera_position[0],camera_position[2],camera_position[2]);
@@ -450,17 +525,26 @@ public class Box extends PApplet {
         
         int steps_depth = 5;
         int steps_width = (int)(w/d*steps_depth);
-        int offset = 4;
-        stroke(255,dim[0] ? data.dimAlpha : data.normalAlpha); drawLine(corners[0], corners[1], steps_depth, offset);
-        stroke(255,dim[1] ? data.dimAlpha : data.normalAlpha); drawLine(corners[2], corners[1], steps_width, offset);
-        stroke(255,dim[2] ? data.dimAlpha : data.normalAlpha); drawLine(corners[2], corners[3], steps_depth, offset);
-        stroke(255,dim[3] ? data.dimAlpha : data.normalAlpha); drawLine(corners[0], corners[3], steps_width, offset);
 
+        stroke(255,dim[3] ? data.dimAlpha : data.normalAlpha);
         if (data.labelLatLong) {
-            drawLatLongGrid(steps_width, steps_depth, corners, dim[2] && dim[3]);
+            drawLatLongGrid(steps_width, steps_depth, corners, dim[2] && dim[3], first);
         }
-        
-        if(last) {pushMatrix(); translate(0, -h, 0); drawOutline(w,h,d,off,false); popMatrix();}
+
+        if (data.boxSkeleton) {
+            if (first) {
+                drawSolidOutline(corners);
+                startHeight = currentHeight;
+            } else if (last) {
+                pushMatrix(); 
+                translate(0, -h, 0);
+                drawSolidOutline(corners);
+                popMatrix();
+                drawSkeleton(corners, startHeight, h);
+            }
+        }
+
+        if(last) {pushMatrix(); translate(0, -h, 0); drawOutline(w,h,d,off,false,false); popMatrix();}
 
         return dim[2] && dim[3];
     }
@@ -470,15 +554,19 @@ public class Box extends PApplet {
         // used for iterating year-month pairs
         YearMonth currentYearMonth = YearMonth.of(data.timeBoxStartYear, data.timeBoxStartMonth);
         YearMonth endYearMonth = YearMonth.of(data.timeBoxEndYear, data.timeBoxEndMonth);
+        YearMonth startYearMonth = currentYearMonth;
         
         // used for calculating total number of days of the whole timeline
         LocalDate startDate = LocalDate.of(data.timeBoxStartYear, data.timeBoxStartMonth, 1);
         LocalDate endDate = LocalDate.of(data.timeBoxEndYear, data.timeBoxEndMonth, endYearMonth.lengthOfMonth());
         
-        // TODO: Make these global? 
-        long durationInDays = startDate.until(endDate, ChronoUnit.DAYS);
-        float durationInPixels = cubeHeight/30.0f*durationInDays;
-        float currentHeight = durationInPixels/2;
+        durationInDays = startDate.until(endDate, ChronoUnit.DAYS);
+        durationInPixels = cubeHeight/30.0f*durationInDays;
+        currentHeight = durationInPixels/2;
+
+        if (data.basemap) {
+            drawBaseMap(currentHeight);
+        }
 
         // iterate until we pass the endYearMonth
         while(!currentYearMonth.equals(endYearMonth.plusMonths(1))) {
@@ -492,7 +580,7 @@ public class Box extends PApplet {
 
             boolean dimText = drawOutline((int)cubeWidth, (int)adjustedCubeHeight, (int)cubeDepth, 
                                 5,      // plus sign offset 
-                                currentYearMonth.equals(endYearMonth)); // draw the cap if its the last month
+                                currentYearMonth.equals(endYearMonth), currentYearMonth.equals(startYearMonth)); // draw the cap if its the last month
 
             if(data.labelMonth) {
                 textSize(16);

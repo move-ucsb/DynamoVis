@@ -71,6 +71,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+import javax.swing.JLabel;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -103,7 +104,6 @@ public class DesktopPane extends JFrame implements ActionListener {
 	public TimeBoxControlPanel timeBoxControlPanel; // STC
 
 	public JDialog timelineContainer;
-	public JDialog tbcContainer; // STC
 	public Box box; // STC
 
 	public TimeLine timeLine;
@@ -147,6 +147,7 @@ public class DesktopPane extends JFrame implements ActionListener {
 
 	boolean color = false;
 	public boolean legend = false;
+	public boolean stc = false;
 	boolean vectors = false;
 	boolean startup = true; // is data loaded
 
@@ -254,7 +255,6 @@ public class DesktopPane extends JFrame implements ActionListener {
 		controlContainer = new JDialog(this);
 		recordContainer = new JDialog(this);
 		baseMapContainer = new JDialog(this);
-		tbcContainer = new JDialog(this); // STC
 
 		// BASE MAP WINDOW -----------------------------
 		bm = new BaseMapPanel(this);
@@ -310,16 +310,6 @@ public class DesktopPane extends JFrame implements ActionListener {
 
 		// STC -----------------------------
 		timeBoxControlPanel = new TimeBoxControlPanel(this);
-		tbcContainer.setResizable(false);
-		tbcContainer.setTitle("3D Space-Time Analysis Control Panel");
-		tbcContainer.setContentPane(timeBoxControlPanel);
-		tbcContainer.setSize(400, 170);
-		tbcContainer.setLocation((int) (this.getBounds().getX()), 100);
-		tbcContainer.addComponentListener(new ComponentAdapter() {
-			public void componentHidden(ComponentEvent e) {
-				timeBoxCheck.setSelected(false);
-			}
-		}); 
 		// STC -----------------------------
 
 		legendPanel = new LegendPanel(this);
@@ -370,7 +360,6 @@ public class DesktopPane extends JFrame implements ActionListener {
 			controlContainer.getContentPane().removeAll();
 			timelineContainer.getContentPane().removeAll();
 			recordContainer.getContentPane().removeAll();
-			tbcContainer.getContentPane().removeAll(); // STC
 			pack();
 		}
 
@@ -450,7 +439,6 @@ public class DesktopPane extends JFrame implements ActionListener {
 
 		// STC -----------------------------
 		if (timeBoxCheck.isSelected()) {
-			tbcContainer.setVisible(true);
 			box.getSurface().setVisible(true);
 			data.boxvisible = true;
 		}
@@ -655,11 +643,15 @@ public class DesktopPane extends JFrame implements ActionListener {
 			public void itemStateChanged(ItemEvent evt) {
 				JCheckBoxMenuItem cb = (JCheckBoxMenuItem) evt.getSource();
 				if (cb.isSelected()) {
-					tbcContainer.setVisible(true);
+					System.out.println("should open");
 					if(box == null)	 setupSpaceTimeCubeSketch();
 					box.setVisible(true);
+					cp.add(timeBoxControlPanel, "cell 0 15,grow");
+					revalidate();
+					controlContainer.pack();
+					stc = true;
+					((JLabel) cp.stcLabel).setText(cp.formattedLabel("3D Space-Time Cube", stc));
 				} else {
-					tbcContainer.setVisible(false);
 					if(box != null)	 box.exit();
 				}
 			}

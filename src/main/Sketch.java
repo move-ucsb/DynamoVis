@@ -173,7 +173,7 @@ public class Sketch extends PApplet  {
 		eventDispatcher.register(wrappedMap, "zoom", mainMap.getId());
 		return wrappedMap;
 	}
-	public void updateMap(UnfoldingMap mainMap, UnfoldingMap nextMap, boolean left) {
+	public static void updateMap(UnfoldingMap mainMap, UnfoldingMap nextMap, boolean left) {
 		float degree = (left) ? -180 : 180;
 
 		// Move next map

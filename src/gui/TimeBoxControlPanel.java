@@ -89,7 +89,7 @@ public class TimeBoxControlPanel extends JPanel {
         parent = father;
         data = parent.data;
 
-        setLayout(new MigLayout("insets 0", "[][][][][]", "[][][][]"));
+        setLayout(new MigLayout("insets 0", "[][][][][]"));
 
         Object[] tags = new Object[parent.tagList.size()];// create array of all tags used
         for (int i = 0; i < parent.tagList.size(); i++) {
@@ -101,79 +101,37 @@ public class TimeBoxControlPanel extends JPanel {
         data.timeBoxEndYear = data.endTime.getYear();
         data.timeBoxEndMonth = data.endTime.getMonthOfYear();
 
-        // check box for the month labels
-        timeLabel = new JCheckBox("Label Time");
-        timeLabel.setIconTextGap(5);
-        timeLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
-        timeLabel.setForeground(Color.BLACK);
-        timeLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-        timeLabel.setMargin(new Insets(10, 5, 10, 10));
-        this.add(timeLabel, "cell 0 0, gapleft 10");
-        timeLabel.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent evt) {
-                JCheckBox cb = (JCheckBox) evt.getSource();
-                if (cb.isSelected()) {// sets boolean variable to true or false
-                    data.labelMonth = true;
-
-                } else {
-                    data.labelMonth = false;
-
-                }
-            }
-        });
-
-        //checkbox for the latitude and longitude labels
-        latLongLabel = new JCheckBox("Label Lat/Long");
-        latLongLabel.setIconTextGap(5);
-        latLongLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
-        latLongLabel.setForeground(Color.BLACK);
-        latLongLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-        latLongLabel.setMargin(new Insets(10, 5, 10, 10));
-        this.add(latLongLabel, "cell 0 2, gapleft 10");
-        latLongLabel.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent evt) {
-                JCheckBox cb = (JCheckBox) evt.getSource();
-                if (cb.isSelected()) {// sets boolean variable to true or false
-                    data.labelLatLong = true;
-
-                } else {
-                    data.labelLatLong = false;
-
-                }
-            }
-        });
-
         // boundary alpha values
-        JLabel label = new JLabel("Dim Edge Alpha (%)");
+        JLabel label = new JLabel("Dim Alpha(%)");
 		label.setBackground(Color.LIGHT_GRAY);
 		label.setForeground(Color.BLACK);
 		label.setFont(new Font("Arial", Font.PLAIN, 9));
-		this.add(label, "cell 1 0");
+		this.add(label, "cell 0 0");
         JSpinner dimAlpha = new JSpinner();
 		dimAlpha.setForeground(Color.BLACK);
 		dimAlpha.setBackground(Color.LIGHT_GRAY);
 		dimAlpha.setFont(new Font("Arial", Font.PLAIN, 9));
 		dimAlpha.setModel(new SpinnerNumberModel(25, 0, 100, 1));
 		dimAlpha.setToolTipText("Adjust the alpha value of boundary when it occludes the visualization.");
-		this.add(dimAlpha, "cell 1 1");
+		this.add(dimAlpha, "cell 0 1");
 		dimAlpha.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent evt) {
 				JSpinner spin = (JSpinner) evt.getSource();
 				data.dimAlpha = (Integer)(spin.getValue()) * 2.55f;
 			}
 		});
-        label = new JLabel("Normal Edge Alpha (%)");
+        label = new JLabel("Normal Alpha(%)");
 		label.setBackground(Color.LIGHT_GRAY);
 		label.setForeground(Color.BLACK);
 		label.setFont(new Font("Arial", Font.PLAIN, 9));
-		this.add(label, "cell 2 0");
+		this.add(label, "cell 1 0");
         JSpinner normalAlpha = new JSpinner();
 		normalAlpha.setForeground(Color.BLACK);
 		normalAlpha.setBackground(Color.LIGHT_GRAY);
 		normalAlpha.setFont(new Font("Arial", Font.PLAIN, 9));
 		normalAlpha.setModel(new SpinnerNumberModel(75, 0, 100, 1));
 		normalAlpha.setToolTipText("Adjust the alpha value of boundary when it occludes the visualization.");
-		this.add(normalAlpha, "cell 2 1");
+		this.add(normalAlpha, "cell 1 1");
 		normalAlpha.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent evt) {
 				JSpinner spin = (JSpinner) evt.getSource();
@@ -186,9 +144,8 @@ public class TimeBoxControlPanel extends JPanel {
         rotateLabel.setIconTextGap(5);
         rotateLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
         rotateLabel.setForeground(Color.BLACK);
-        rotateLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-        rotateLabel.setMargin(new Insets(10, 5, 10, 10));
-        this.add(rotateLabel, "cell 1 1, gapleft 10");
+        rotateLabel.setFont(new Font("Arial", Font.PLAIN, 9));;
+        this.add(rotateLabel, "cell 0 2");
         rotateLabel.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent evt) {
                 JCheckBox cb = (JCheckBox) evt.getSource();
@@ -202,5 +159,87 @@ public class TimeBoxControlPanel extends JPanel {
             }
         });
 		
+        // checkbox for the basemap in the box labels
+        latLongLabel = new JCheckBox("Base Map");
+        latLongLabel.setIconTextGap(5);
+        latLongLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
+        latLongLabel.setForeground(Color.BLACK);
+        latLongLabel.setFont(new Font("Arial", Font.PLAIN, 9));
+        this.add(latLongLabel, "cell 1 2");
+        latLongLabel.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent evt) {
+                JCheckBox cb = (JCheckBox) evt.getSource();
+                if (cb.isSelected()) {// sets boolean variable to true or false
+                    data.basemap = true;
+
+                } else {
+                    data.basemap = false;
+
+                }
+            }
+        });
+
+        //checkbox for overall box outline
+        latLongLabel = new JCheckBox("Box Skeleton");
+        latLongLabel.setIconTextGap(5);
+        latLongLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
+        latLongLabel.setForeground(Color.BLACK);
+        latLongLabel.setFont(new Font("Arial", Font.PLAIN, 9));
+        latLongLabel.setSelected(true);
+        this.add(latLongLabel, "cell 0 3");
+        latLongLabel.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent evt) {
+                JCheckBox cb = (JCheckBox) evt.getSource();
+                if (cb.isSelected()) {// sets boolean variable to true or false
+                    data.boxSkeleton = true;
+
+                } else {
+                    data.boxSkeleton = false;
+
+                }
+            }
+        });
+
+        //checkbox for the latitude and longitude labels
+        latLongLabel = new JCheckBox("Lat/Long");
+        latLongLabel.setIconTextGap(5);
+        latLongLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
+        latLongLabel.setForeground(Color.BLACK);
+        latLongLabel.setFont(new Font("Arial", Font.PLAIN, 9));
+        latLongLabel.setSelected(true);
+        this.add(latLongLabel, "cell 1 3");
+        latLongLabel.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent evt) {
+                JCheckBox cb = (JCheckBox) evt.getSource();
+                if (cb.isSelected()) {// sets boolean variable to true or false
+                    data.labelLatLong = true;
+
+                } else {
+                    data.labelLatLong = false;
+
+                }
+            }
+        });
+
+        // check box for the month labels
+        timeLabel = new JCheckBox("Label Time");
+        timeLabel.setIconTextGap(5);
+        timeLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
+        timeLabel.setForeground(Color.BLACK);
+        timeLabel.setFont(new Font("Arial", Font.PLAIN, 9));
+        timeLabel.setSelected(true);
+        this.add(timeLabel, "cell 0 4");
+        timeLabel.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent evt) {
+                JCheckBox cb = (JCheckBox) evt.getSource();
+                if (cb.isSelected()) {// sets boolean variable to true or false
+                    data.labelMonth = true;
+
+                } else {
+                    data.labelMonth = false;
+
+                }
+            }
+        });
     }
 }
