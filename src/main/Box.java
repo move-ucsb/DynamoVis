@@ -81,7 +81,7 @@ public class Box extends PApplet {
     // is an intersection the tracks will be
     // set to hold one bounding box
 
-    public UnfoldingMap map;
+    public UnfoldingMap myMap;
     public boolean leftMapNeeded = false;
 	public boolean rightMapNeeded = false;
 	public UnfoldingMap leftMap;
@@ -167,15 +167,15 @@ public class Box extends PApplet {
         System.out.println("left map needed: " + leftMapNeeded);
 		rightMapNeeded = data.needRightMap;
         System.out.println("right map needed: " + rightMapNeeded);
-        map = new UnfoldingMap(this, 0,0, cubeWidth, cubeDepth, parent.sketch.map.mapDisplay.getMapProvider());
+        myMap = new UnfoldingMap(this, 0,0, cubeWidth, cubeDepth, parent.sketch.map.mapDisplay.getMapProvider());
 
-        map.zoomAndPanToFit(data.locations);
-		eventDispatcher = MapUtils.createDefaultEventDispatcher(this, map);
-		map.zoomAndPanToFit(data.locations); // sometimes the first attempt zooms too far and bugs out, so do it again
+        myMap.zoomAndPanToFit(data.locations);
+		eventDispatcher = MapUtils.createDefaultEventDispatcher(this, myMap);
+		myMap.zoomAndPanToFit(data.locations); // sometimes the first attempt zooms too far and bugs out, so do it again
 
         // extra maps
-		if(leftMapNeeded) leftMap = createWrappedMap(map, eventDispatcher, 1);
-		if(rightMapNeeded) rightMap = createWrappedMap(map, eventDispatcher, 2);
+		if(leftMapNeeded) leftMap = createWrappedMap(myMap, eventDispatcher, 1);
+		if(rightMapNeeded) rightMap = createWrappedMap(myMap, eventDispatcher, 2);
     }
 
     /// extra map functions
@@ -423,9 +423,12 @@ public class Box extends PApplet {
         pushMatrix();
         translate(-cubeWidth/2, currentHeight, -cubeDepth/2);
         rotateX(radians(90));
-        if(leftMapNeeded) Sketch.updateMap(map, leftMap, true);
-		if(rightMapNeeded) Sketch.updateMap(map, rightMap, false);
-        map.draw();
+        if(leftMapNeeded) Sketch.updateMap(myMap, leftMap, true);
+		if(rightMapNeeded) Sketch.updateMap(myMap, rightMap, false);
+        try {myMap.draw();} //this sometimes throws a null pointer exception
+        catch(Exception e) {
+            System.out.println("map error: "+ e);
+        }
         if(leftMapNeeded) leftMap.draw();
 		if(rightMapNeeded) rightMap.draw();
         popMatrix();
@@ -571,9 +574,9 @@ public class Box extends PApplet {
             drawBaseMap(currentHeight);
         }
 
-        if (data.basemap) {
-            drawBaseMap(currentHeight);
-        }
+        // if (data.basemap) { //why getting called twice?
+        //     drawBaseMap(currentHeight);
+        // }
 
         // iterate until we pass the endYearMonth
         while(!currentYearMonth.equals(endYearMonth.plusMonths(1))) {
