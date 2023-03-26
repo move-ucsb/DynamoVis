@@ -167,7 +167,7 @@ public class Box extends PApplet {
         System.out.println("left map needed: " + leftMapNeeded);
 		rightMapNeeded = data.needRightMap;
         System.out.println("right map needed: " + rightMapNeeded);
-        map = new UnfoldingMap(this, 0,0, cubeWidth, cubeDepth, data.provider);
+        map = new UnfoldingMap(this, 0,0, cubeWidth, cubeDepth, parent.sketch.map.mapDisplay.getMapProvider());
 
         map.zoomAndPanToFit(data.locations);
 		eventDispatcher = MapUtils.createDefaultEventDispatcher(this, map);
@@ -494,11 +494,11 @@ public class Box extends PApplet {
         line(corners[0].x, corners[0].y, corners[0].z, corners[3].x, corners[3].y, corners[3].z);
     }
 
-    private void drawSkeleton(PVector[] corners, float startHeight, int h) {
-        line(corners[0].x, corners[0].y+startHeight+h/2, corners[0].z, corners[0].x, corners[0].y-h, corners[0].z);
-        line(corners[1].x, corners[1].y+startHeight+h/2, corners[1].z, corners[1].x, corners[1].y-h, corners[1].z);
-        line(corners[2].x, corners[2].y+startHeight+h/2, corners[2].z, corners[2].x, corners[2].y-h, corners[2].z);
-        line(corners[3].x, corners[3].y+startHeight+h/2, corners[3].z, corners[3].x, corners[3].y-h, corners[3].z);
+    private void drawCornerLines(PVector[] corners) {
+        line(corners[0].x, corners[0].y, corners[0].z, corners[0].x, corners[0].y+cubeHeight, corners[0].z);
+        line(corners[1].x, corners[1].y, corners[1].z, corners[1].x, corners[1].y+cubeHeight, corners[1].z);
+        line(corners[2].x, corners[2].y, corners[2].z, corners[2].x, corners[2].y+cubeHeight, corners[2].z);
+        line(corners[3].x, corners[3].y, corners[3].z, corners[3].x, corners[3].y+cubeHeight, corners[3].z);
     }
 
     // draws the box outline
@@ -535,12 +535,14 @@ public class Box extends PApplet {
             if (first) {
                 drawSolidOutline(corners);
                 startHeight = currentHeight;
-            } else if (last) {
+            } else {
+                drawCornerLines(corners);
+            }
+            if (last) {
                 pushMatrix(); 
                 translate(0, -h, 0);
                 drawSolidOutline(corners);
                 popMatrix();
-                drawSkeleton(corners, startHeight, h);
             }
         }
 
@@ -555,6 +557,7 @@ public class Box extends PApplet {
         YearMonth currentYearMonth = YearMonth.of(data.timeBoxStartYear, data.timeBoxStartMonth);
         YearMonth endYearMonth = YearMonth.of(data.timeBoxEndYear, data.timeBoxEndMonth);
         YearMonth startYearMonth = currentYearMonth;
+        int numMonths = (int) startYearMonth.until(endYearMonth, ChronoUnit.MONTHS)+1;
         
         // used for calculating total number of days of the whole timeline
         LocalDate startDate = LocalDate.of(data.timeBoxStartYear, data.timeBoxStartMonth, 1);
