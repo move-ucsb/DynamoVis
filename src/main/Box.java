@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.List;
 
 import com.jogamp.nativewindow.WindowClosingProtocol.WindowClosingMode;
 
@@ -50,6 +51,7 @@ import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.events.EventDispatcher;
 import de.fhpotsdam.unfolding.utils.MapUtils;
 import de.fhpotsdam.unfolding.utils.ScreenPosition;
+
 
 public class Box extends PApplet {
 
@@ -164,29 +166,73 @@ public class Box extends PApplet {
         // UnfoldingMap(processing.core.PApplet p, float x, float y, float width, float height, AbstractMapProvider provider)
         //creates map with specific position and dimension
         leftMapNeeded = data.needLeftMap;
-        System.out.println("left map needed: " + leftMapNeeded);
 		rightMapNeeded = data.needRightMap;
-        System.out.println("right map needed: " + rightMapNeeded);
-        myMap = new UnfoldingMap(this, 0,0, cubeWidth, cubeDepth, parent.sketch.map.mapDisplay.getMapProvider());
+        UnfoldingMap starterMap = new UnfoldingMap(this, 0,0, cubeWidth, cubeDepth, parent.sketch.map.mapDisplay.getMapProvider());
+        Location wrapPoint = new Location(0f, 180f);
 
-        myMap.zoomAndPanToFit(data.locations);
-		eventDispatcher = MapUtils.createDefaultEventDispatcher(this, myMap);
-		myMap.zoomAndPanToFit(data.locations); // sometimes the first attempt zooms too far and bugs out, so do it again
+        starterMap.zoomAndPanToFit(data.locations);
+		eventDispatcher = MapUtils.createDefaultEventDispatcher(this, starterMap);
+		starterMap.zoomAndPanToFit(data.locations); 
 
-        // extra maps
-		if(leftMapNeeded) leftMap = createWrappedMap(myMap, eventDispatcher, 1);
-		if(rightMapNeeded) rightMap = createWrappedMap(myMap, eventDispatcher, 2);
+        if (leftMapNeeded || rightMapNeeded) {
+            //first need to find where the next wrap will begin if left or right map required
+            ScreenPosition screenWrap = starterMap.getScreenPosition(wrapPoint);
+            // adjust width to screenwrap position... must come after creating initial map to get the screenPosition
+            //maybe shouldn't start at 0,0 for left map
+            System.out.println("screenmWrapX: "+ screenWrap.x);
+            System.out.println("cubeWidth: "+ cubeWidth);
+            float offset = 0;
+            if (leftMapNeeded) {
+                offset = cubeWidth-screenWrap.x;
+            }
+            myMap = new UnfoldingMap(this, offset,0, screenWrap.x, cubeDepth, parent.sketch.map.mapDisplay.getMapProvider()); 
+            // List<Location> editedLocs = data.locations;
+            List<Location> editedLocs = cleanMiddleData(data.locations, leftMapNeeded);
+            myMap.zoomAndPanToFit(editedLocs);
+            eventDispatcher = MapUtils.createDefaultEventDispatcher(this, myMap);
+            myMap.zoomAndPanToFit(editedLocs); // sometimes the first attempt zooms too far and bugs out, so do it again
+            // extra maps
+            if(leftMapNeeded) leftMap = createWrappedMap(myMap, eventDispatcher, 1, screenWrap.x);
+            if(rightMapNeeded) rightMap = createWrappedMap(myMap, eventDispatcher, 2, screenWrap.x);
+        } else {
+            myMap = starterMap;
+        }
+
     }
 
     /// extra map functions
 	// https://github.com/tillnagel/unfolding/commit/46d03cf6ebc6e01a35dc0aede0a02b428b9cf68d
-	public UnfoldingMap createWrappedMap(UnfoldingMap mainMap, EventDispatcher eventDispatcher, int id) {
+	public UnfoldingMap createWrappedMap(UnfoldingMap mainMap, EventDispatcher eventDispatcher, int id, float offset) {
 		float x = id==1 ? -cubeWidth : cubeWidth;
-		UnfoldingMap wrappedMap = new UnfoldingMap(this, Integer.toString(id), x, 0, cubeWidth, cubeDepth, false, false, data.provider);
-		wrappedMap.zoomToLevel(mainMap.getZoomLevel());
+        float width = cubeWidth-offset;
+        System.out.println("width: " + cubeWidth);
+        System.out.println("offset: "+ offset);
+        System.out.println("cubeWidth-offset: "+ width);
+        //TODO: fix left wrapping map
+		// UnfoldingMap wrappedMap = new UnfoldingMap(this, Integer.toString(id), 0, 0, cubeWidth, cubeDepth, false, false, parent.sketch.map.mapDisplay.getMapProvider());
+		UnfoldingMap wrappedMap = new UnfoldingMap(this, Integer.toString(id), 0, 0, cubeWidth-offset, cubeDepth, false, false, parent.sketch.map.mapDisplay.getMapProvider());
+        wrappedMap.zoomToLevel(mainMap.getZoomLevel());
 		eventDispatcher.register(wrappedMap, "zoom", mainMap.getId());
 		return wrappedMap;
 	}
+
+    private List<Location> cleanMiddleData(List<Location> original, boolean left) {
+        float degree = (left) ? -180 : 180;
+        List<Location> edited = new ArrayList<>();
+        for (Location loc : original) {
+            // System.out.println("loc: " + loc);
+            if (left) {
+                if (loc.y > degree) {
+                    edited.add(loc);
+                }
+            } else {
+                if (loc.y < 180) {
+                    edited.add(loc);
+                }
+            }
+        }
+        return edited;
+    }
 
     public void draw() {
         background(0);// black background
@@ -423,14 +469,16 @@ public class Box extends PApplet {
         pushMatrix();
         translate(-cubeWidth/2, currentHeight, -cubeDepth/2);
         rotateX(radians(90));
-        if(leftMapNeeded) Sketch.updateMap(myMap, leftMap, true);
+        // if(leftMapNeeded) Sketch.updateMap(myMap, leftMap, true);
 		if(rightMapNeeded) Sketch.updateMap(myMap, rightMap, false);
-        try {myMap.draw();} //this sometimes throws a null pointer exception
+        try {
+            myMap.draw();
+            if(leftMapNeeded) leftMap.draw();
+            if(rightMapNeeded) rightMap.draw();
+        } //this sometimes throws a null pointer exception
         catch(Exception e) {
             System.out.println("map error: "+ e);
         }
-        if(leftMapNeeded) leftMap.draw();
-		if(rightMapNeeded) rightMap.draw();
         popMatrix();
     }
 
@@ -502,6 +550,19 @@ public class Box extends PApplet {
         line(corners[1].x, corners[1].y, corners[1].z, corners[1].x, corners[1].y+cubeHeight, corners[1].z);
         line(corners[2].x, corners[2].y, corners[2].z, corners[2].x, corners[2].y+cubeHeight, corners[2].z);
         line(corners[3].x, corners[3].y, corners[3].z, corners[3].x, corners[3].y+cubeHeight, corners[3].z);
+    }
+
+    private void drawDayLabels(YearMonth currentYearMonth) {
+        int dayNum = currentYearMonth.lengthOfMonth();
+        String monthName = monthLabel[currentYearMonth.getMonthValue()].substring(0, 3);
+        float dy = -cubeHeight/dayNum;
+        for (int i=1; i<=dayNum; i++){
+            line((cubeWidth/2)-2.5f, dy*(i-1), cubeDepth/2, (cubeWidth/2)+2.5f, dy*(i-1), cubeDepth/2); //can adjust length of line for visual appeal
+            if (i%5 == 0) {
+                String label = monthName + " " + i;
+                text(label, (cubeWidth/2)+10, dy*(i-1), cubeDepth/2);
+            }
+        }
     }
 
     // draws the box outline
@@ -592,6 +653,17 @@ public class Box extends PApplet {
                                 5,      // plus sign offset 
                                 currentYearMonth.equals(endYearMonth), currentYearMonth.equals(startYearMonth)); // draw the cap if its the last month
 
+            //check zoom level
+            double zoomDist = camera.getDistance();
+            if (data.labelTime){
+                if (zoomDist <= 1000) {
+                    data.labelDay = true;
+                    data.labelMonth = false;
+                } else {
+                    data.labelDay = false;
+                    data.labelMonth = true;
+                }
+            }
             if(data.labelMonth) {
                 textSize(16);
                 fill(255, dimText ? data.dimAlpha+20 : data.normalAlpha+20);
@@ -602,6 +674,14 @@ public class Box extends PApplet {
                     + currentYearMonth.getYear();
                 text(label, cubeWidth/2+10, -adjustedCubeHeight/2, cubeDepth/2);// month drawn to side of the cube
             }
+            if (data.labelDay) {
+                textSize(12);
+                fill(255, dimText ? data.dimAlpha+20 : data.normalAlpha+20);
+
+                //Draw day labels as "1 Aug"
+                drawDayLabels(currentYearMonth);
+            }
+
             popMatrix();
 
             currentHeight -= adjustedCubeHeight;

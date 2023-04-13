@@ -643,16 +643,11 @@ public class DesktopPane extends JFrame implements ActionListener {
 			public void itemStateChanged(ItemEvent evt) {
 				JCheckBoxMenuItem cb = (JCheckBoxMenuItem) evt.getSource();
 				if (cb.isSelected()) {
-					System.out.println("should open");
-					if(box == null)	 setupSpaceTimeCubeSketch();
-					box.setVisible(true);
-					cp.add(timeBoxControlPanel, "cell 0 15,grow");
-					revalidate();
-					controlContainer.pack();
-					stc = true;
-					((JLabel) cp.stcLabel).setText(cp.formattedLabel("3D Space-Time Cube", stc));
+					openSTC();
+					timeBoxControlPanel.on.setSelected(true);
 				} else {
-					if(box != null)	 box.exit();
+					closeSTC();
+					timeBoxControlPanel.on.setSelected(false);
 				}
 			}
 		});
@@ -713,6 +708,21 @@ public class DesktopPane extends JFrame implements ActionListener {
 		if (sketch != null)
 			sketch.exit();
 		System.exit(0);
+	}
+
+	public void openSTC() {
+		System.out.println("should open");
+		if(box == null)	 setupSpaceTimeCubeSketch();
+		box.setVisible(true);
+		cp.add(timeBoxControlPanel, "cell 0 15,grow");
+		revalidate();
+		controlContainer.pack();
+		stc = true;
+		((JLabel) cp.stcLabel).setText(cp.formattedLabel("3D Space-Time Cube", stc));
+	}
+
+	public void closeSTC() {
+		if(box != null)	 box.exit();
 	}
 	
 	// STATIC METHODS

@@ -190,7 +190,9 @@ public class SketchData {
 	public int timeBoxEndMonth;
 	public float dimAlpha = 25;		// for edges of the box 
 	public float normalAlpha = 50;	// for edges of the box
+	public boolean labelTime = true;
 	public boolean labelMonth = true; // for labeling cubes
+	public boolean labelDay = true; // for labeling cube smaller timescale
 	public boolean labelLatLong = true; //for labeling cube lat/long
 	public boolean basemap = false; //basemap at the bottom of the cube
 	public boolean boxSkeleton = true; //solid outline around the cube

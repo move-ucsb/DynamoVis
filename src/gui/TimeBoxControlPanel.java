@@ -84,6 +84,7 @@ public class TimeBoxControlPanel extends JPanel {
     public JCheckBox rotateLabel;
     public JCheckBox bdyInteraction;
     public JCheckBox staticbox;
+    public JCheckBox on;
 
     public TimeBoxControlPanel(DesktopPane father) {
         parent = father;
@@ -139,13 +140,30 @@ public class TimeBoxControlPanel extends JPanel {
 			}
 		});
 
+        on = new JCheckBox("On/Off");
+        on.setIconTextGap(5);
+        on.setHorizontalTextPosition(SwingConstants.RIGHT);
+        on.setForeground(Color.BLACK);
+        on.setFont(new Font("Arial", Font.PLAIN, 9));;
+        this.add(on, "cell 0 2");
+        on.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent evt) {
+                JCheckBox cb = (JCheckBox) evt.getSource();
+                if (cb.isSelected()) {
+                    parent.openSTC();
+				} else {
+					parent.closeSTC();
+				}
+            }
+        });
+
         // checkbox for idle rotation
-        rotateLabel = new JCheckBox("Rotate view");
+        rotateLabel = new JCheckBox("Rotate");
         rotateLabel.setIconTextGap(5);
         rotateLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
         rotateLabel.setForeground(Color.BLACK);
         rotateLabel.setFont(new Font("Arial", Font.PLAIN, 9));;
-        this.add(rotateLabel, "cell 0 2");
+        this.add(rotateLabel, "cell 1 2");
         rotateLabel.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent evt) {
                 JCheckBox cb = (JCheckBox) evt.getSource();
@@ -165,7 +183,7 @@ public class TimeBoxControlPanel extends JPanel {
         latLongLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
         latLongLabel.setForeground(Color.BLACK);
         latLongLabel.setFont(new Font("Arial", Font.PLAIN, 9));
-        this.add(latLongLabel, "cell 1 2");
+        this.add(latLongLabel, "cell 1 4");
         latLongLabel.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent evt) {
                 JCheckBox cb = (JCheckBox) evt.getSource();
@@ -233,10 +251,10 @@ public class TimeBoxControlPanel extends JPanel {
             public void stateChanged(ChangeEvent evt) {
                 JCheckBox cb = (JCheckBox) evt.getSource();
                 if (cb.isSelected()) {// sets boolean variable to true or false
-                    data.labelMonth = true;
+                    data.labelTime = true;
 
                 } else {
-                    data.labelMonth = false;
+                    data.labelTime = false;
 
                 }
             }
