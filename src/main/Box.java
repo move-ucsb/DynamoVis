@@ -95,6 +95,8 @@ public class Box extends PApplet {
     public float currentHeight;
     public float startHeight;
 
+    public YearMonth[] visibleMonths;
+
     public void setParent(DesktopPane father) {
         parent = father;
         data = parent.data;
@@ -156,6 +158,7 @@ public class Box extends PApplet {
         
         // setup camera navigation
         camera = new PeasyCam(this, 0, 0, 0, 1000);   
+        camera.setMaximumDistance(1300);
         
         // Closes only the sketch on exit
         if (getGraphics().isGL() && !DesktopPane.isMacOSX()) {
@@ -178,7 +181,6 @@ public class Box extends PApplet {
             //first need to find where the next wrap will begin if left or right map required
             ScreenPosition screenWrap = starterMap.getScreenPosition(wrapPoint);
             // adjust width to screenwrap position... must come after creating initial map to get the screenPosition
-            //maybe shouldn't start at 0,0 for left map
             System.out.println("screenmWrapX: "+ screenWrap.x);
             System.out.println("cubeWidth: "+ cubeWidth);
             float offset = 0;
@@ -186,7 +188,6 @@ public class Box extends PApplet {
                 offset = cubeWidth-screenWrap.x;
             }
             myMap = new UnfoldingMap(this, offset,0, screenWrap.x, cubeDepth, parent.sketch.map.mapDisplay.getMapProvider()); 
-            // List<Location> editedLocs = data.locations;
             List<Location> editedLocs = cleanMiddleData(data.locations, leftMapNeeded);
             myMap.zoomAndPanToFit(editedLocs);
             eventDispatcher = MapUtils.createDefaultEventDispatcher(this, myMap);
@@ -205,22 +206,29 @@ public class Box extends PApplet {
 	public UnfoldingMap createWrappedMap(UnfoldingMap mainMap, EventDispatcher eventDispatcher, int id, float offset) {
 		float x = id==1 ? -cubeWidth : cubeWidth;
         float width = cubeWidth-offset;
-        System.out.println("width: " + cubeWidth);
-        System.out.println("offset: "+ offset);
-        System.out.println("cubeWidth-offset: "+ width);
-        //TODO: fix left wrapping map
-		// UnfoldingMap wrappedMap = new UnfoldingMap(this, Integer.toString(id), 0, 0, cubeWidth, cubeDepth, false, false, parent.sketch.map.mapDisplay.getMapProvider());
-		UnfoldingMap wrappedMap = new UnfoldingMap(this, Integer.toString(id), 0, 0, cubeWidth-offset, cubeDepth, false, false, parent.sketch.map.mapDisplay.getMapProvider());
+        UnfoldingMap wrappedMap = new UnfoldingMap(this, Integer.toString(id), 0, 0, cubeWidth, cubeDepth, false, false, parent.sketch.map.mapDisplay.getMapProvider());
+        ScreenPosition origin = new ScreenPosition(0,0);
+        Location leftEdge = wrappedMap.getLocation(origin);
+        System.out.println("new left edge: "+ leftEdge);
+        List<Location> leftLocs = cleanLeftData(data.locations, leftEdge);
+        wrappedMap = new UnfoldingMap(this, Integer.toString(id), 0, 0, cubeWidth-offset, cubeDepth, false, false, parent.sketch.map.mapDisplay.getMapProvider());
+        if (id == 1) {
+            wrappedMap.zoomAndPanToFit(leftLocs);
+        }
+        // if (id == 2) {
+        //     // below works for right wrapping map
+        //     wrappedMap = new UnfoldingMap(this, Integer.toString(id), 0, 0, cubeWidth-offset, cubeDepth, false, false, parent.sketch.map.mapDisplay.getMapProvider());
+        // }
         wrappedMap.zoomToLevel(mainMap.getZoomLevel());
 		eventDispatcher.register(wrappedMap, "zoom", mainMap.getId());
 		return wrappedMap;
 	}
 
+    //todo: combine the next two functions
     private List<Location> cleanMiddleData(List<Location> original, boolean left) {
         float degree = (left) ? -180 : 180;
         List<Location> edited = new ArrayList<>();
         for (Location loc : original) {
-            // System.out.println("loc: " + loc);
             if (left) {
                 if (loc.y > degree) {
                     edited.add(loc);
@@ -229,6 +237,18 @@ public class Box extends PApplet {
                 if (loc.y < 180) {
                     edited.add(loc);
                 }
+            }
+        }
+        return edited;
+    }
+    
+    private List<Location> cleanLeftData(List<Location> original, Location leftEdge) {
+        float leftX = leftEdge.getLon();
+        List<Location> edited = new ArrayList<>();
+        for (Location loc: original) {
+            if (loc.y > leftX) {
+                // System.out.println("loc: "+loc);
+                edited.add(loc);
             }
         }
         return edited;
@@ -469,13 +489,13 @@ public class Box extends PApplet {
         pushMatrix();
         translate(-cubeWidth/2, currentHeight, -cubeDepth/2);
         rotateX(radians(90));
-        // if(leftMapNeeded) Sketch.updateMap(myMap, leftMap, true);
-		if(rightMapNeeded) Sketch.updateMap(myMap, rightMap, false);
-        try {
+        try { //this sometimes throws a null pointer exception
+            // if(leftMapNeeded) Sketch.updateMap(myMap, leftMap, true);
+            if(rightMapNeeded) Sketch.updateMap(myMap, rightMap, false);
             myMap.draw();
             if(leftMapNeeded) leftMap.draw();
             if(rightMapNeeded) rightMap.draw();
-        } //this sometimes throws a null pointer exception
+        }
         catch(Exception e) {
             System.out.println("map error: "+ e);
         }
@@ -614,19 +634,43 @@ public class Box extends PApplet {
 
         return dim[2] && dim[3];
     }
+
+    private void setVisibleMonths(YearMonth currentYearMonth, YearMonth endYearMonth) {
+        int numCurrentMonths = floor(this.displayHeight/cubeHeight);
+        int totalMonthsBetween = 1+(int)currentYearMonth.until(endYearMonth, ChronoUnit.MONTHS);
+        if (totalMonthsBetween < numCurrentMonths) {
+            numCurrentMonths = totalMonthsBetween;
+        }
+        visibleMonths = new YearMonth[numCurrentMonths];
+        //if data not in currentMonth - endMonth, shift until it is
+        YearMonth newEndMonth = currentYearMonth.plusMonths(numCurrentMonths);
+        int currDataMonth = data.currentTime.getMonthOfYear();
+        int currDataYear = data.currentTime.getYear();
+        YearMonth currDataYearMonth = YearMonth.of(currDataYear, currDataMonth);
+        while (currDataYearMonth.isAfter(newEndMonth.minusMonths(1))){
+            newEndMonth = newEndMonth.plusMonths(1);
+            currentYearMonth = currentYearMonth.plusMonths(1);
+        }
+        for (int i=0; i<numCurrentMonths; i++) {
+            visibleMonths[i] = currentYearMonth.plusMonths(i);
+        }
+    }
+
     // TODO: make into a PShape
     // draws all boxes for all months
     public void drawBox() {
         // used for iterating year-month pairs
         YearMonth currentYearMonth = YearMonth.of(data.timeBoxStartYear, data.timeBoxStartMonth);
         YearMonth endYearMonth = YearMonth.of(data.timeBoxEndYear, data.timeBoxEndMonth);
+
+        setVisibleMonths(currentYearMonth, endYearMonth);
+        currentYearMonth = visibleMonths[0];
+        endYearMonth = visibleMonths[visibleMonths.length-1];
         YearMonth startYearMonth = currentYearMonth;
-        int numMonths = (int) startYearMonth.until(endYearMonth, ChronoUnit.MONTHS)+1;
-        
-        // used for calculating total number of days of the whole timeline
-        LocalDate startDate = LocalDate.of(data.timeBoxStartYear, data.timeBoxStartMonth, 1);
-        LocalDate endDate = LocalDate.of(data.timeBoxEndYear, data.timeBoxEndMonth, endYearMonth.lengthOfMonth());
-        
+
+        LocalDate startDate = LocalDate.of(currentYearMonth.getYear(), currentYearMonth.getMonth(), 1);
+        LocalDate endDate = LocalDate.of(endYearMonth.getYear(), endYearMonth.getMonth(), endYearMonth.lengthOfMonth());
+
         durationInDays = startDate.until(endDate, ChronoUnit.DAYS);
         durationInPixels = cubeHeight/30.0f*durationInDays;
         currentHeight = durationInPixels/2;
@@ -634,10 +678,6 @@ public class Box extends PApplet {
         if (data.basemap) {
             drawBaseMap(currentHeight);
         }
-
-        // if (data.basemap) { //why getting called twice?
-        //     drawBaseMap(currentHeight);
-        // }
 
         // iterate until we pass the endYearMonth
         while(!currentYearMonth.equals(endYearMonth.plusMonths(1))) {
@@ -651,7 +691,7 @@ public class Box extends PApplet {
 
             boolean dimText = drawOutline((int)cubeWidth, (int)adjustedCubeHeight, (int)cubeDepth, 
                                 5,      // plus sign offset 
-                                currentYearMonth.equals(endYearMonth), currentYearMonth.equals(startYearMonth)); // draw the cap if its the last month
+                                currentYearMonth.equals(endYearMonth), currentYearMonth.equals(startYearMonth));
 
             //check zoom level
             double zoomDist = camera.getDistance();
@@ -706,10 +746,10 @@ public class Box extends PApplet {
     public float getPointHeightBasedOnTime(DateTime t) {
         LocalDateTime time = LocalDateTime.of(t.getYear(), t.getMonthOfYear(), t.getDayOfMonth(), t.getHourOfDay(), t.getMinuteOfHour(), t.getSecondOfMinute());
 
-        YearMonth endYearMonth = YearMonth.of(data.timeBoxEndYear, data.timeBoxEndMonth);
-        LocalDateTime startDate = LocalDateTime.of(data.timeBoxStartYear, data.timeBoxStartMonth, 1, 0, 0, 0);
-        LocalDateTime endDate = LocalDateTime.of(data.timeBoxEndYear, data.timeBoxEndMonth, endYearMonth.lengthOfMonth(), 23, 59, 59);
-        
+        YearMonth endYearMonth = visibleMonths[visibleMonths.length-1];
+        YearMonth startYearMonth = visibleMonths[0];
+        LocalDateTime startDate = LocalDateTime.of(startYearMonth.getYear(), startYearMonth.getMonth(), 1, 0, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(endYearMonth.getYear(), endYearMonth.getMonth(), endYearMonth.lengthOfMonth(), 23, 59, 59);
         long totalDurationInDays = startDate.until(endDate, ChronoUnit.DAYS);
         float totalDurationInPixels = cubeHeight/30.0f*totalDurationInDays;
 
