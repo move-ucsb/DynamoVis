@@ -28,7 +28,7 @@
 4. Double-click on `DynamoVis-1.0.jar`
    - If this doesn't do anything:
      - (Windows) Double-click on `run_windows.bat`
-     - (macOS) Start Terminal, type `cd ` (with a white space). Drag and drop the DynamoVis folder on the terminal window and press enter. Type `./run_unix.sh` and press enter. 
+     - (macOS) Start Terminal, type `cd ` (with a white space). Drag and drop the DynamoVis folder on the terminal window and press enter. Type `./run_unix.sh` or `bash run_unix.sh`and press enter. 
 
 5. If your system shows a security pop up from an unidentified developer, it is safe to ignore it.
    - (Windows) On the security pop up `More info -> Run anyway`.
