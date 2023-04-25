@@ -57,6 +57,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import java.awt.Taskbar;
+
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
@@ -204,7 +206,8 @@ public class DesktopPane extends JFrame implements ActionListener {
 		if (isMacOSX()) {
 			// macos app icon
 			Image icon = new ImageIcon(this.getClass().getClassLoader().getResource("logo1024.png")).getImage();
-			com.apple.eawt.Application.getApplication().setDockIconImage(icon);
+			final Taskbar taskbar = Taskbar.getTaskbar();
+			taskbar.setIconImage(icon);
 			
 			// System.out.println("Platform: macOS");
 		}
