@@ -115,7 +115,7 @@ We distribute copies of Galapagos Albatrosses and Turkey Vultures data sets alon
 </div>
 
 ## Contact
-Feel free to open an [issue](https://github.com/move-ucsb/DynamoVis/issues) in case something is wrong. Please make sure to note the description of the issue and your computer spesifications (operating system, java version, error messages, etc.). 
+Feel free to open an [issue](https://github.com/move-ucsb/DynamoVis/issues) in case something is wrong. Please make sure to note the description of the issue and your computer specifications (operating system, java version, error messages, etc.). 
 
 ## Compile from source
 If you'd like to clone the repository and compile from the source, make sure to have [Git Large File System](https://git-lfs.github.com/) installed and enabled. Git-LFS is required for large `*.csv` files. If you don't want to install Git-LFS, you will need to clone the repository and manually download .csv files in `/config` and `/public-data`.
