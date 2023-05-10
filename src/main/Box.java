@@ -620,14 +620,14 @@ public class Box extends PApplet {
             numCurrentMonths = totalMonthsBetween;
         }
         visibleMonths = new YearMonth[numCurrentMonths];
-        //if data not in currentMonth - endMonth, shift until it is
+        //if data not in currentMonth - endMonth, shift until it is by numCurrentMonths
         YearMonth newEndMonth = currentYearMonth.plusMonths(numCurrentMonths);
         int currDataMonth = data.currentTime.getMonthOfYear();
         int currDataYear = data.currentTime.getYear();
         YearMonth currDataYearMonth = YearMonth.of(currDataYear, currDataMonth);
         while (currDataYearMonth.isAfter(newEndMonth.minusMonths(1))){
-            newEndMonth = newEndMonth.plusMonths(1);
-            currentYearMonth = currentYearMonth.plusMonths(1);
+            newEndMonth = newEndMonth.plusMonths(numCurrentMonths);
+            currentYearMonth = currentYearMonth.plusMonths(numCurrentMonths);
         }
         for (int i=0; i<numCurrentMonths; i++) {
             visibleMonths[i] = currentYearMonth.plusMonths(i);
