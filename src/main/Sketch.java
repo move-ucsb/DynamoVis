@@ -180,7 +180,7 @@ public class Sketch extends PApplet  {
 		ScreenPosition pos = mainMap.getScreenPosition(new Location(0, degree));
 		nextMap.move(pos.x, 0);
 		if (left) {
-			nextMap.moveBy(-800, 0);
+			nextMap.moveBy(-nextMap.getWidth(), 0);
 		}
 
 		// Pan next map

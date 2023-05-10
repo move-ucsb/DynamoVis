@@ -178,24 +178,29 @@ public class TimeBoxControlPanel extends JPanel {
         });
 		
         // checkbox for the basemap in the box labels
-        latLongLabel = new JCheckBox("Base Map");
-        latLongLabel.setIconTextGap(5);
-        latLongLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
-        latLongLabel.setForeground(Color.BLACK);
-        latLongLabel.setFont(new Font("Arial", Font.PLAIN, 9));
-        this.add(latLongLabel, "cell 1 4");
-        latLongLabel.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent evt) {
-                JCheckBox cb = (JCheckBox) evt.getSource();
-                if (cb.isSelected()) {// sets boolean variable to true or false
-                    data.basemap = true;
+        //only have the option to have a basemap if map isn't too large for it to be helpful
+        float longDiff = data.mapExtent[1].getLon()-data.mapExtent[0].getLon();
+        float latDiff = data.mapExtent[0].getLat()-data.mapExtent[1].getLat();
+        if (longDiff <= 100 && latDiff <=100) {
+            latLongLabel = new JCheckBox("Base Map");
+            latLongLabel.setIconTextGap(5);
+            latLongLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
+            latLongLabel.setForeground(Color.BLACK);
+            latLongLabel.setFont(new Font("Arial", Font.PLAIN, 9));
+            this.add(latLongLabel, "cell 1 4");
+            latLongLabel.addChangeListener(new ChangeListener() {
+                public void stateChanged(ChangeEvent evt) {
+                    JCheckBox cb = (JCheckBox) evt.getSource();
+                    if (cb.isSelected()) {// sets boolean variable to true or false
+                        data.basemap = true;
 
-                } else {
-                    data.basemap = false;
+                    } else {
+                        data.basemap = false;
 
+                    }
                 }
-            }
-        });
+            });
+        }
 
         //checkbox for overall box outline
         latLongLabel = new JCheckBox("Box Skeleton");

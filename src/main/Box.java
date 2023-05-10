@@ -155,6 +155,10 @@ public class Box extends PApplet {
         float[] extent = data.getExtentInFloat();
         // TODO: do a better world coverage
         cubeWidth = (extent[2]-extent[0])/(extent[1]-extent[3]) * cubeDepth;
+        float maxWidth = 1.5f*cubeDepth;
+        if (cubeWidth > maxWidth) {
+            cubeWidth = maxWidth;
+        }
         
         // setup camera navigation
         camera = new PeasyCam(this, 0, 0, 0, 1000);   
@@ -171,30 +175,34 @@ public class Box extends PApplet {
         leftMapNeeded = data.needLeftMap;
 		rightMapNeeded = data.needRightMap;
         UnfoldingMap starterMap = new UnfoldingMap(this, 0,0, cubeWidth, cubeDepth, parent.sketch.map.mapDisplay.getMapProvider());
-        Location wrapPoint = new Location(0f, 180f);
 
         starterMap.zoomAndPanToFit(data.locations);
-		eventDispatcher = MapUtils.createDefaultEventDispatcher(this, starterMap);
 		starterMap.zoomAndPanToFit(data.locations); 
 
-        if (leftMapNeeded || rightMapNeeded) {
+        Location rightWrapPoint = new Location(0f, 180f);
+        Location leftWrapPoint = new Location(0f, -180f);
+
+        if (leftMapNeeded || rightMapNeeded) { //should be exclusivce or
             //first need to find where the next wrap will begin if left or right map required
-            ScreenPosition screenWrap = starterMap.getScreenPosition(wrapPoint);
-            // adjust width to screenwrap position... must come after creating initial map to get the screenPosition
-            System.out.println("screenmWrapX: "+ screenWrap.x);
-            System.out.println("cubeWidth: "+ cubeWidth);
+            //wrap point will be different for left and right maps
+            ScreenPosition rightScreenWrap = starterMap.getScreenPosition(rightWrapPoint);
+            ScreenPosition leftScreenWrap = starterMap.getScreenPosition(leftWrapPoint);
             float offset = 0;
-            if (leftMapNeeded) {
-                offset = cubeWidth-screenWrap.x;
+            float mapWidth = cubeWidth;
+            if (rightMapNeeded) {
+                mapWidth = rightScreenWrap.x;
             }
-            myMap = new UnfoldingMap(this, offset,0, screenWrap.x, cubeDepth, parent.sketch.map.mapDisplay.getMapProvider()); 
-            List<Location> editedLocs = cleanMiddleData(data.locations, leftMapNeeded);
+            if (leftMapNeeded) {
+                offset = leftScreenWrap.x;
+                mapWidth = mapWidth-offset;
+            }
+            myMap = new UnfoldingMap(this, offset,0, mapWidth, cubeDepth, parent.sketch.map.mapDisplay.getMapProvider()); 
+            List<Location> editedLocs = cleanMiddleData(data.locations); //this should account for both left and right
             myMap.zoomAndPanToFit(editedLocs);
-            eventDispatcher = MapUtils.createDefaultEventDispatcher(this, myMap);
             myMap.zoomAndPanToFit(editedLocs); // sometimes the first attempt zooms too far and bugs out, so do it again
             // extra maps
-            if(leftMapNeeded) leftMap = createWrappedMap(myMap, eventDispatcher, 1, screenWrap.x);
-            if(rightMapNeeded) rightMap = createWrappedMap(myMap, eventDispatcher, 2, screenWrap.x);
+            if(leftMapNeeded) leftMap = createWrappedMap(myMap, 1, leftScreenWrap.x); 
+            if(rightMapNeeded) rightMap = createWrappedMap(myMap, 2, rightScreenWrap.x);
         } else {
             myMap = starterMap;
         }
@@ -203,51 +211,21 @@ public class Box extends PApplet {
 
     /// extra map functions
 	// https://github.com/tillnagel/unfolding/commit/46d03cf6ebc6e01a35dc0aede0a02b428b9cf68d
-	public UnfoldingMap createWrappedMap(UnfoldingMap mainMap, EventDispatcher eventDispatcher, int id, float offset) {
-		float x = id==1 ? -cubeWidth : cubeWidth;
-        float width = cubeWidth-offset;
-        UnfoldingMap wrappedMap = new UnfoldingMap(this, Integer.toString(id), 0, 0, cubeWidth, cubeDepth, false, false, parent.sketch.map.mapDisplay.getMapProvider());
-        ScreenPosition origin = new ScreenPosition(0,0);
-        Location leftEdge = wrappedMap.getLocation(origin);
-        System.out.println("new left edge: "+ leftEdge);
-        List<Location> leftLocs = cleanLeftData(data.locations, leftEdge);
-        wrappedMap = new UnfoldingMap(this, Integer.toString(id), 0, 0, cubeWidth-offset, cubeDepth, false, false, parent.sketch.map.mapDisplay.getMapProvider());
-        if (id == 1) {
-            wrappedMap.zoomAndPanToFit(leftLocs);
+	public UnfoldingMap createWrappedMap(UnfoldingMap mainMap, int id, float offset) {
+		// float x = id==1 ? -cubeWidth : cubeWidth;
+        UnfoldingMap wrappedMap = new UnfoldingMap(this, Integer.toString(id), 0, 0, offset, cubeDepth, false, false, parent.sketch.map.mapDisplay.getMapProvider());
+        if (id == 2) {
+            wrappedMap = new UnfoldingMap(this, Integer.toString(id), 0, 0, cubeWidth-offset, cubeDepth, false, false, parent.sketch.map.mapDisplay.getMapProvider());
         }
-        // if (id == 2) {
-        //     // below works for right wrapping map
-        //     wrappedMap = new UnfoldingMap(this, Integer.toString(id), 0, 0, cubeWidth-offset, cubeDepth, false, false, parent.sketch.map.mapDisplay.getMapProvider());
-        // }
         wrappedMap.zoomToLevel(mainMap.getZoomLevel());
-		eventDispatcher.register(wrappedMap, "zoom", mainMap.getId());
 		return wrappedMap;
 	}
 
     //todo: combine the next two functions
-    private List<Location> cleanMiddleData(List<Location> original, boolean left) {
-        float degree = (left) ? -180 : 180;
+    private List<Location> cleanMiddleData(List<Location> original) {
         List<Location> edited = new ArrayList<>();
         for (Location loc : original) {
-            if (left) {
-                if (loc.y > degree) {
-                    edited.add(loc);
-                }
-            } else {
-                if (loc.y < 180) {
-                    edited.add(loc);
-                }
-            }
-        }
-        return edited;
-    }
-    
-    private List<Location> cleanLeftData(List<Location> original, Location leftEdge) {
-        float leftX = leftEdge.getLon();
-        List<Location> edited = new ArrayList<>();
-        for (Location loc: original) {
-            if (loc.y > leftX) {
-                // System.out.println("loc: "+loc);
+            if (loc.y >= -180 && loc.y <= 180) {
                 edited.add(loc);
             }
         }
@@ -490,7 +468,7 @@ public class Box extends PApplet {
         translate(-cubeWidth/2, currentHeight, -cubeDepth/2);
         rotateX(radians(90));
         try { //this sometimes throws a null pointer exception
-            // if(leftMapNeeded) Sketch.updateMap(myMap, leftMap, true);
+            if(leftMapNeeded) Sketch.updateMap(myMap, leftMap, true);
             if(rightMapNeeded) Sketch.updateMap(myMap, rightMap, false);
             myMap.draw();
             if(leftMapNeeded) leftMap.draw();
