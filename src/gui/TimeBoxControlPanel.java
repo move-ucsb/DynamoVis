@@ -179,7 +179,9 @@ public class TimeBoxControlPanel extends JPanel {
 		
         // checkbox for the basemap in the box labels
         //only have the option to have a basemap if map isn't too large for it to be helpful
-        float longDiff = data.mapExtent[1].getLon()-data.mapExtent[0].getLon();
+        float maxEast = data.mapExtent[1].getLon();
+        float maxWest = data.mapExtent[0].getLon();
+        float longDiff = Math.abs(maxEast)-Math.abs(maxWest);
         float latDiff = data.mapExtent[0].getLat()-data.mapExtent[1].getLat();
         if (longDiff <= 100 && latDiff <=100) {
             latLongLabel = new JCheckBox("Base Map");

@@ -188,7 +188,8 @@ public class Sketch extends PApplet  {
 		ScreenPosition map1RightPos = mainMap.getScreenPosition(new Location(0, degree));
 		Location map1RightLocation = nextMap.getLocation(map1RightPos);
 		float lonDiff = (-map1RightLocation.getLon()) - degree;
-		nextMap.panTo(new Location(-map1RightLocation.getLat(), lonDiff));
+		Location mainMapCenter = mainMap.getCenter();
+		nextMap.panTo(new Location(mainMapCenter.getLat(), lonDiff));
 
 		// Ensure next map is always over main map (push 1px)
 		nextMap.panBy( (left ? 1 : -1), 0);

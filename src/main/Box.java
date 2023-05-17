@@ -153,11 +153,20 @@ public class Box extends PApplet {
 
         // Adjust cube ratio based on the data
         float[] extent = data.getExtentInFloat();
+        leftMapNeeded = data.needLeftMap;
+		rightMapNeeded = data.needRightMap;
         // TODO: do a better world coverage
-        cubeWidth = (extent[2]-extent[0])/(extent[1]-extent[3]) * cubeDepth;
+        //latitude should be absolute value difference in case of left wrapping world
+        float[] minExtent = getMinimumBoundingBox(data.locations);
+        extent = minExtent;
+        cubeWidth = Math.abs((Math.abs(extent[2])-Math.abs(extent[0])))/(extent[1]-extent[3]) * cubeDepth;
         float maxWidth = 1.5f*cubeDepth;
+        float minWidth = cubeDepth;
         if (cubeWidth > maxWidth) {
             cubeWidth = maxWidth;
+        }
+        if (cubeWidth < minWidth) {
+            cubeWidth = minWidth;
         }
         
         // setup camera navigation
@@ -172,8 +181,6 @@ public class Box extends PApplet {
 
         // UnfoldingMap(processing.core.PApplet p, float x, float y, float width, float height, AbstractMapProvider provider)
         //creates map with specific position and dimension
-        leftMapNeeded = data.needLeftMap;
-		rightMapNeeded = data.needRightMap;
         UnfoldingMap starterMap = new UnfoldingMap(this, 0,0, cubeWidth, cubeDepth, parent.sketch.map.mapDisplay.getMapProvider());
 
         starterMap.zoomAndPanToFit(data.locations);
@@ -182,31 +189,71 @@ public class Box extends PApplet {
         Location rightWrapPoint = new Location(0f, 180f);
         Location leftWrapPoint = new Location(0f, -180f);
 
-        if (leftMapNeeded || rightMapNeeded) { //should be exclusivce or
+        if (leftMapNeeded || rightMapNeeded) {
             //first need to find where the next wrap will begin if left or right map required
             //wrap point will be different for left and right maps
             ScreenPosition rightScreenWrap = starterMap.getScreenPosition(rightWrapPoint);
             ScreenPosition leftScreenWrap = starterMap.getScreenPosition(leftWrapPoint);
+            List<Location> editedLocs = cleanMiddleData(data.locations, leftMapNeeded); //this should account for both left and right
             float offset = 0;
             float mapWidth = cubeWidth;
             if (rightMapNeeded) {
                 mapWidth = rightScreenWrap.x;
             }
             if (leftMapNeeded) {
+                starterMap.zoomAndPanToFit(editedLocs);
+                starterMap.zoomAndPanToFit(editedLocs); // sometimes the first attempt zooms too far and bugs out, so do it again
+                leftWrapPoint = new Location(extent[1], -180f);
+                leftScreenWrap = starterMap.getScreenPosition(leftWrapPoint); //everything is messed up bc thjis is wrong
                 offset = leftScreenWrap.x;
                 mapWidth = mapWidth-offset;
             }
             myMap = new UnfoldingMap(this, offset,0, mapWidth, cubeDepth, parent.sketch.map.mapDisplay.getMapProvider()); 
-            List<Location> editedLocs = cleanMiddleData(data.locations); //this should account for both left and right
             myMap.zoomAndPanToFit(editedLocs);
             myMap.zoomAndPanToFit(editedLocs); // sometimes the first attempt zooms too far and bugs out, so do it again
+            ScreenPosition newleftScreenWrap = myMap.getScreenPosition(leftWrapPoint);
             // extra maps
-            if(leftMapNeeded) leftMap = createWrappedMap(myMap, 1, leftScreenWrap.x); 
+            if(leftMapNeeded) leftMap = createWrappedMap(myMap, 1, newleftScreenWrap.x); 
             if(rightMapNeeded) rightMap = createWrappedMap(myMap, 2, rightScreenWrap.x);
         } else {
             myMap = starterMap;
         }
 
+    }
+
+    public float[] getMinimumBoundingBox(List<Location> locations) {
+        float minPosLong = 1000;
+        float maxPosLong = -1000;
+        float maxNegLong = -1000;
+        float minNegLong = 1000;
+
+        for (Location loc : locations) {
+            float lon = loc.getLon();
+            if (lon >= 0) { //pos
+                if (lon < minPosLong) {
+                    minPosLong = lon;
+                }
+                if (lon > maxPosLong) {
+                    maxPosLong = lon;
+                }
+            } else { //neg
+                if (lon < minNegLong) {
+                    minNegLong = lon;
+                } 
+                if (lon > maxNegLong) {
+                    maxNegLong = lon;
+                }
+            }
+        }
+
+        float[] initialExtent = data.getExtentInFloat();
+        if (maxNegLong == -1000 || maxPosLong == -1000 || rightMapNeeded) { //only pos or only neg values
+            return initialExtent; // should be the case for rightWrapping maps as well, even if there is a left wrap
+        }
+        float northMost = initialExtent[1];
+        float southMost = initialExtent[3];
+        //diff situation if right wrapping/both wrapping vs left wrapping 
+        return new float[] {minPosLong, northMost, maxNegLong, southMost};
     }
 
     /// extra map functions
@@ -222,11 +269,19 @@ public class Box extends PApplet {
 	}
 
     //todo: combine the next two functions
-    private List<Location> cleanMiddleData(List<Location> original) {
+    private List<Location> cleanMiddleData(List<Location> original, boolean onlyNegative) {
         List<Location> edited = new ArrayList<>();
-        for (Location loc : original) {
-            if (loc.y >= -180 && loc.y <= 180) {
-                edited.add(loc);
+        if (onlyNegative) {
+            for (Location loc : original) {
+                if (loc.y >= -180 && loc.y < 0) {
+                    edited.add(loc);
+                }
+            }
+        } else {
+            for (Location loc : original) {
+                if (loc.y >= -180 && loc.y <= 180) {
+                    edited.add(loc);
+                }
             }
         }
         return edited;
@@ -256,6 +311,7 @@ public class Box extends PApplet {
 			ArrayList<PointRecord> points = track.getPoints();
 
 			// Underlay
+            //TODO: swap neg and pos for left Wrapping maps
 			if(data.ghost) {
 				pushStyle();
 				beginShape();
@@ -271,7 +327,11 @@ public class Box extends PApplet {
 
                         // extent minx, maxy, maxx, miny
                         float[] extent = data.getExtentInFloat();
-                        mx = map(pos.y, extent[0], extent[2], -cubeWidth/2, cubeWidth/2);
+                        if (leftMapNeeded && !rightMapNeeded) {
+                            mx = getLeftWrappedXScreenLoc(pos.y, cubeWidth/2, -cubeWidth/2);
+                        } else {
+                            mx = map(pos.y, extent[0], extent[2], -cubeWidth/2, cubeWidth/2);
+                        }
                         my = map(pos.x, extent[3], extent[1], cubeDepth/2, -cubeDepth/2);
                         float mheight = getPointHeightBasedOnTime(markerTime);
 	
@@ -297,7 +357,12 @@ public class Box extends PApplet {
 
                         // extent minx, maxy, maxx, miny
                         float[] extent = data.getExtentInFloat();
-                        mx = map(pos.y, extent[0], extent[2], -cubeWidth/2, cubeWidth/2);
+                        if (leftMapNeeded && !rightMapNeeded) {
+                            // System.out.println("pos.y: "+ pos.y);
+                            mx = getLeftWrappedXScreenLoc(pos.y, cubeWidth/2, -cubeWidth/2);
+                        } else {
+                            mx = map(pos.y, extent[0], extent[2], -cubeWidth/2, cubeWidth/2);
+                        }
                         my = map(pos.x, extent[3], extent[1], cubeDepth/2, -cubeDepth/2);
                         float mheight = getPointHeightBasedOnTime(markerTime);
 
@@ -525,13 +590,40 @@ public class Box extends PApplet {
         if (first) {
             for(int i=0; i<= steps_depth; i++){
                 PVector point = PVector.add(corners[2], PVector.mult(inc, i));
-                label = String.format("%.2f", map(point.x, corners[1].x, corners[2].x, extent[0], extent[2]));
+                if (leftMapNeeded && !rightMapNeeded) {
+                    float xLoc = getLeftWrappedXLabel(point.x, corners[2].x, corners[1].x);
+                    label = String.format("%.2f", xLoc);
+                } else {
+                    label = String.format("%.2f", map(point.x, corners[1].x, corners[2].x, extent[0], extent[2]));
+                }
                 pushMatrix();
                 translate(point.x, point.y, point.z);
                 rotateY(radians(45)); //rotating the text for readability, without this some numbers will run into each other
                 text(label, 0,0, 0);
                 popMatrix();
             } 
+        }
+    }
+
+    private float getLeftWrappedXLabel(float locX, float maxX, float minX) {
+        float[] extent = getMinimumBoundingBox(data.locations);
+        float fullExtent = Math.abs(Math.abs(-180 - extent[2])+Math.abs(180-extent[0]));
+        float forwardMap = map(locX, minX, maxX, 0, fullExtent) + extent[0];
+        if (forwardMap >=180) {
+            forwardMap = forwardMap -360;
+        }
+        return forwardMap;
+    }
+
+    private float getLeftWrappedXScreenLoc(float locX, float maxX, float minX) {
+        //maxX-minX is the width of the cube
+        float[] extent = getMinimumBoundingBox(data.locations);
+        float fullExtent = Math.abs(Math.abs(-180 - extent[2])+Math.abs(180-extent[0]));
+        if (locX >= 180) {
+            return map(locX-extent[0], 0, fullExtent, minX, maxX);
+        } else {
+            float dist = Math.abs(Math.abs(-180 - locX)+Math.abs(180-extent[0]));
+            return map(dist, 0, fullExtent, minX, maxX);
         }
     }
 
