@@ -62,6 +62,8 @@ public class ControlPanel extends JPanel {
 	private DesktopPane parent;
 	private SketchData data;
 
+	private int lastSeekVal;
+
 	public ControlPanel(DesktopPane father) {
 		parent = father;
 		data = parent.data;
@@ -103,16 +105,21 @@ public class ControlPanel extends JPanel {
 		seek.setValue(data.seek);
 		seek.setMinimum(0);
 		seek.setMaximum((data.totalTime / data.dataInterval));
+		lastSeekVal = seek.getValue();
 		this.add(seek, "cell 2 0 1 8,alignx center");
 		seek.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent evt) {
 				JSlider slider = (JSlider) evt.getSource();
-				if (data.timeUnit.equals("minutes")) {
-					data.currentTime = data.startTime.plusMinutes(slider.getValue() * data.dataInterval);
-				} else if (data.timeUnit.equals("seconds")) {
-					data.currentTime = data.startTime.plusSeconds(slider.getValue() * data.dataInterval);
+				//if value didn't change, don't change marker
+				if (slider.getValueIsAdjusting() || data.seek != lastSeekVal) {
+					if (data.timeUnit.equals("minutes")) {
+						data.currentTime = data.startTime.plusMinutes(slider.getValue() * data.dataInterval);
+					} else if (data.timeUnit.equals("seconds")) {
+						data.currentTime = data.startTime.plusSeconds(slider.getValue() * data.dataInterval);
+					}
+					parent.timeLine.setMarker(data.currentTime);
+					lastSeekVal = data.seek;
 				}
-				parent.timeLine.setMarker(data.currentTime);
 			}
 		});
 		seek.addMouseListener(new MouseAdapter() {

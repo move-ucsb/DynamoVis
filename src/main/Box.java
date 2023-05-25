@@ -311,7 +311,6 @@ public class Box extends PApplet {
 			ArrayList<PointRecord> points = track.getPoints();
 
 			// Underlay
-            //TODO: swap neg and pos for left Wrapping maps
 			if(data.ghost) {
 				pushStyle();
 				beginShape();
@@ -706,6 +705,11 @@ public class Box extends PApplet {
     }
 
     private void setVisibleMonths(YearMonth currentYearMonth, YearMonth endYearMonth) {
+        if (data.timeRange) {
+            currentYearMonth = YearMonth.of(data.startTime.getYear(), data.startTime.getMonthOfYear());
+            endYearMonth = YearMonth.of(data.endTime.getYear(), data.endTime.getMonthOfYear());
+        }
+
         int numCurrentMonths = floor(this.displayHeight/cubeHeight);
         int totalMonthsBetween = 1+(int)currentYearMonth.until(endYearMonth, ChronoUnit.MONTHS);
         if (totalMonthsBetween < numCurrentMonths) {

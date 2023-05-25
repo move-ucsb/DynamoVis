@@ -50,6 +50,8 @@ import utils.Track;
 import net.miginfocom.swing.MigLayout;
 
 import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.Minutes;
 import org.joda.time.Seconds;
 
 import de.jaret.util.date.Interval;
@@ -91,9 +93,19 @@ public class TimeLine extends JPanel implements ComponentListener {
 	Double ppi;
 	public TimeBarMarkerImpl marker1;
 
+	public DateTime originalStartTime;
+	public DateTime originalEndTime;
+
+	public TimeBarMarkerImpl beginRangeMarker;
+	public TimeBarMarkerImpl endRangeMarker;
+
 	public TimeLine(DesktopPane father) {
 		parent = father;
 		data = parent.data;
+
+		originalStartTime = data.startTime;
+		originalEndTime = data.endTime;
+
 		try {
 			UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 		} catch (Exception e) {
@@ -124,21 +136,180 @@ public class TimeLine extends JPanel implements ComponentListener {
 		marker1 = new TimeBarMarkerImpl(true, new JaretDate(data.currentTime.toDate()));
 		marker1.addTimeBarMarkerListener(new MarkerListener());
 		tbv.addMarker(marker1);
+		tbv.setMarkerDraggingInDiagramArea(true); //makes marker draggable so can select on timeline itself rather than seek bar
+
+		if (data.timeRange) {
+			addRangeMarkers();
+		}
 		this.add(tbv, "cell 0 0, grow");
 		addComponentListener(this);
 
 		for (int i = 0; i < model.getRowCount(); i++) {
 			tbv.getSelectionModel().setSelectedRow(model.getRow(i));
 		}
+	}
 
+	public void setSeekSliderValue() {
+		if (Minutes.minutesBetween(data.startTime, data.endTime).getMinutes() > 0) {
+			data.seek = Minutes.minutesBetween(data.startTime, data.currentTime).getMinutes();
+		} else {
+			data.seek = Seconds.secondsBetween(data.startTime, data.currentTime).getSeconds();
+		}
+		data.seek = data.seek / data.dataInterval;
+		parent.controlPanel.seek.setValue(data.seek);
+	}
+
+	public void setSeekSliderRange(){
+		if (Minutes.minutesBetween(data.startTime, data.endTime).getMinutes() > 0) {
+			data.totalTime = Minutes.minutesBetween(data.startTime, data.endTime).getMinutes();
+		} else {
+			data.totalTime = Seconds.secondsBetween(data.startTime, data.endTime).getSeconds();
+		}
+		parent.controlPanel.seek.setMaximum((data.totalTime / data.dataInterval));
+	}
+
+	public void setLimitedTimeRange(DateTime rangeStart, DateTime rangeEnd) {
+		data.startTime = rangeStart;
+		data.endTime = rangeEnd;
+
+		setSeekSliderRange();
+		setSeekSliderValue();
+	}
+
+	public void resetTimeRange() {
+		data.startTime = originalStartTime;
+		data.endTime = originalEndTime;
+
+		setSeekSliderRange();
+		setSeekSliderValue();
+	}
+
+	public void setTimeSelectable() {
+		data.daysSelectable = Days.daysBetween(data.startTime.toLocalDate(), data.endTime.toLocalDate()).getDays();
+	}
+
+	public void setTimeSelectableFromSpinners(int months, int weeks, int days) {
+		int numDays = 0;
+		numDays+= (int)months*30.437; //avg num days in a month
+		numDays+= weeks*7;
+		numDays+=days;
+		data.daysSelectable = numDays;
+		moveEndRangeMarker(numDays);
+	}
+
+	public void moveEndRangeMarker(int days) {
+		DateTime newEndDate = data.startTime.plusDays(days);
+		data.endTime = newEndDate;
+		JaretDate markerDate = new JaretDate(newEndDate.toDate());
+		if (tbv.getMarkers().size() > 1) {
+			endRangeMarker.setDate(markerDate);
+		}
+	}
+
+	public void addRangeMarkers() {
+		DateTime[] selectableRange = getSelectionBounds();
+			
+		beginRangeMarker = new TimeBarMarkerImpl(true, new JaretDate(selectableRange[0].toDate()));
+		endRangeMarker = new TimeBarMarkerImpl(true, new JaretDate(selectableRange[1].toDate()));
+		beginRangeMarker.setDescription("rangeMarker");
+		beginRangeMarker.addTimeBarMarkerListener(new RangeStartMarkerListener());
+		endRangeMarker.setDescription("rangeMarker");
+		endRangeMarker.addTimeBarMarkerListener(new RangeEndMarkerListener());
+		tbv.remMarker(marker1);
+		List<TimeBarMarker> markers = new ArrayList<>();
+		markers.add(beginRangeMarker);
+		markers.add(endRangeMarker);
+		markers.add(marker1);
+		tbv.addMarkers(markers);
+
+		setLimitedTimeRange(selectableRange[0], selectableRange[1]);
+	}
+
+	public void removeRangeMarkers() { 
+		List<TimeBarMarker> markers = tbv.getMarkers();
+		while (markers.size() >1) {
+			if (markers.get(0).getDescription() == "rangeMarker") {
+				tbv.remMarker(markers.get(0));
+			}
+			markers = tbv.getMarkers();
+		}
+		resetTimeRange();
+	}
+
+	public DateTime[] getSelectionBounds() {
+		DateTime newEnd = data.currentTime.plusDays(data.daysSelectable);
+		if (newEnd.isAfter(data.endTime)){
+			newEnd = data.endTime;
+		}
+
+		return new DateTime[] {data.currentTime, newEnd};
+	}
+
+	public class RangeStartMarkerListener implements TimeBarMarkerListener {
+		@Override
+		public void markerMoved(TimeBarMarker marker, JaretDate oldDate, JaretDate currentDate) {
+			DateTime startTimeConverted = new DateTime(currentDate.getDate());
+			if (startTimeConverted.isAfter(data.endTime)) {
+				marker.setDate(new JaretDate(data.endTime.minusDays(1).toDate()));
+			}
+
+			DateTime desiredEndTime = startTimeConverted.plusDays(data.daysSelectable);
+			if ((desiredEndTime.isBefore(data.endTime) || desiredEndTime.isAfter(data.endTime)) && data.moveRangeTogether) {
+				data.endTime = desiredEndTime;
+				endRangeMarker.setDate(new JaretDate(data.endTime.toDate()));
+			}
+
+			setLimitedTimeRange(startTimeConverted, data.endTime);
+			if (marker1.getDate().compareTo(currentDate) <0){
+				marker1.setDate(currentDate);
+			}
+		}
+
+		@Override
+		public void markerDescriptionChanged(TimeBarMarker marker, String oldValue, String newValue) {
+		}
+	}
+
+	public class RangeEndMarkerListener implements TimeBarMarkerListener {
+		@Override
+		public void markerMoved(TimeBarMarker marker, JaretDate oldDate, JaretDate currentDate) {
+			DateTime endTimeConverted = new DateTime(currentDate.getDate());
+			DateTime desiredStartTime = endTimeConverted.minusDays(data.daysSelectable);
+
+			if (endTimeConverted.isBefore(data.startTime)) {
+				marker.setDate(new JaretDate(data.startTime.plusDays(1).toDate()));
+			}
+			if ((desiredStartTime.isAfter(data.startTime) || desiredStartTime.isBefore(data.startTime)) && data.moveRangeTogether){
+				data.startTime = desiredStartTime;
+				beginRangeMarker.setDate(new JaretDate(data.startTime.toDate()));
+			}
+			setLimitedTimeRange(data.startTime,endTimeConverted);
+
+			if (marker1.getDate().compareTo(currentDate) >0){
+				marker1.setDate(currentDate);
+			}
+		}
+
+		@Override
+		public void markerDescriptionChanged(TimeBarMarker marker, String oldValue, String newValue) {
+		}
 	}
 
 	public class MarkerListener implements TimeBarMarkerListener {
 
 		@Override
 		public void markerMoved(TimeBarMarker marker, JaretDate oldDate, JaretDate currentDate) {
-			DateTime time = new DateTime(currentDate.getDate());
-			parent.data.currentTime = time;
+			DateTime currentConverted = new DateTime(currentDate.getDate());
+			if (currentConverted.isBefore(data.startTime)) {
+				marker.setDate(new JaretDate(data.startTime.toDate()));
+			}
+			else if (currentConverted.isAfter(data.endTime)) { 
+				marker.setDate(new JaretDate(data.endTime.toDate()));
+			} else {
+				DateTime time = new DateTime(currentDate.getDate());
+				parent.data.currentTime = time;
+			}
+			setSeekSliderValue();
 		}
 
 		@Override
@@ -198,28 +369,54 @@ public class TimeLine extends JPanel implements ComponentListener {
 
 	public class CustomMarkerRenderer implements IMarkerRenderer {
 		protected Color _draggedColor = new Color(0, 0, 255, 150);
-		protected Color _markerColor = new Color(255, 0, 0, 150);
+		protected Color _markerColor =  new Color(255, 234, 0, 255);
+		protected Color _rangeMarkerColor = new Color(255, 0, 0, 150);
+		protected BasicStroke _rangeStroke = new BasicStroke(5f);
+		protected BasicStroke _markerStroke = new BasicStroke(2.5f);
 
 		public int getMarkerWidth(TimeBarMarker marker) {
 			return 50;
 		}
 
+		public void drawRangeHighlight(Graphics gc, JaretDate startDate, JaretDate endDate) {
+			int startX = tbv.xForDate(startDate);
+			int endX = tbv.xForDate(endDate);
+
+			gc.setColor(new Color(150, 150, 150, 25));
+			gc.fillRect(startX, 0, endX-startX, getHeight());
+		}
+
 		public void renderMarker(TimeBarViewerDelegate delegate, Graphics graphics, TimeBarMarker marker, int x,
 				boolean isDragged) {
-
 			Graphics2D g2 = (Graphics2D) graphics;
 			Stroke oldStroke = g2.getStroke();
-			BasicStroke stroke = new BasicStroke(5f);
+			Stroke stroke = _markerStroke;
+
+			if (data.timeRange) {
+				drawRangeHighlight(g2,beginRangeMarker.getDate(), endRangeMarker.getDate());
+			}
+
+			if (marker.getDescription() == "rangeMarker"){
+				stroke = _rangeStroke;
+			}
 			g2.setStroke(stroke);
 			Color oldCol = g2.getColor();
 			if (isDragged) {
 				g2.setColor(_draggedColor);
 			} else {
-				g2.setColor(_markerColor);
+				if (marker.getDescription() == "rangeMarker") {
+					g2.setColor(_rangeMarkerColor);
+				} else {
+					g2.setColor(_markerColor);
+				}
 			}
 			Line2D line = new Line2D.Double(x, 0, x, delegate.getDiagramRect().height + delegate.getXAxisHeight());
 			g2.draw(line);
-			g2.setColor(oldCol);
+			if (marker.getDescription() == "rangeMarker") {
+				g2.setColor(_rangeMarkerColor);
+			} else {
+				g2.setColor(oldCol);
+			}
 			g2.setStroke(oldStroke);
 		}
 	}

@@ -90,11 +90,14 @@ public class SketchData {
 	public int seek;
 	public int alphaMaxHours;
 	public int speed;
+	public int daysSelectable = 243;
 
 	public boolean falloff;
 	public boolean pause = true;
 	public boolean mouse = false;
 	public boolean loop;
+	public boolean timeRange = false;
+	public boolean moveRangeTogether = true;
 	public boolean strokeWeightToggle;
 	public boolean pointColorToggle;
 	public boolean pointSizeToggle;
