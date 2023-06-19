@@ -147,6 +147,9 @@ public class TimeLine extends JPanel implements ComponentListener {
 		for (int i = 0; i < model.getRowCount(); i++) {
 			tbv.getSelectionModel().setSelectedRow(model.getRow(i));
 		}
+
+		setTimeSelectable();
+		setMinimumSelectionSize();
 	}
 
 	public void setSeekSliderValue() {
@@ -169,11 +172,27 @@ public class TimeLine extends JPanel implements ComponentListener {
 	}
 
 	public void setLimitedTimeRange(DateTime rangeStart, DateTime rangeEnd) {
-		data.startTime = rangeStart;
-		data.endTime = rangeEnd;
+		if (Days.daysBetween(rangeStart, rangeEnd).getDays() >= data.minDaysSelectable) {
+			data.startTime = rangeStart;
+			data.endTime = rangeEnd;
 
-		setSeekSliderRange();
-		setSeekSliderValue();
+			setSeekSliderRange();
+			setSeekSliderValue();
+			if (data.daysSelectable != Days.daysBetween(rangeStart, rangeEnd).getDays()) {
+				data.daysSelectable = Days.daysBetween(rangeStart, rangeEnd).getDays();
+				updateTimeSpinners();
+			}
+		} 
+	}
+
+	public void setMinimumSelectionSize() {
+		int minDays = 1;
+		if (Minutes.minutesBetween(data.startTime, data.endTime).getMinutes() > 0) {
+			if ((data.dataInterval * 5) > 1440) {//minutes in a day
+				minDays = (int) (data.dataInterval * 5)/1440;
+			}
+		} 
+		data.minDaysSelectable = minDays;
 	}
 
 	public void resetTimeRange() {
@@ -195,6 +214,38 @@ public class TimeLine extends JPanel implements ComponentListener {
 		numDays+=days;
 		data.daysSelectable = numDays;
 		moveEndRangeMarker(numDays);
+	}
+
+	public void updateTimeSpinners() {
+		if (!parent.cp.timeLinePanel.spinnerMoved) {
+			int[] times = getMonthsWeeksDays();
+			parent.cp.timeLinePanel.timelinemoved = true;
+			parent.cp.timeLinePanel.MonthValue.setValue(times[0]);
+			parent.cp.timeLinePanel.WeeksValue.setValue(times[1]);
+			parent.cp.timeLinePanel.DaysValue.setValue(times[2]);
+			parent.cp.timeLinePanel.timelinemoved = false;
+		}
+	}
+
+	public int[] getMonthsWeeksDays() {
+		double totalDays = (double) Days.daysBetween(data.startTime, data.endTime).getDays()+1;
+		int numMonths = 0;
+		int numWeeks = 0;
+		int numDays = 0;
+		if (totalDays/30.437 >= 1) { //avg num days in a month
+			numMonths += (int) totalDays/30.437;
+			totalDays = totalDays%30.437;
+		}
+		if (totalDays/7 >= 1) {
+			numWeeks += (int) totalDays/7;
+			totalDays = totalDays%7;
+		}
+		if (totalDays >= 1) {
+			numDays += (int) totalDays;
+		}
+
+		int[] times = new int[]{numMonths, numWeeks, numDays};
+		return times;
 	}
 
 	public void moveEndRangeMarker(int days) {
@@ -249,8 +300,8 @@ public class TimeLine extends JPanel implements ComponentListener {
 		@Override
 		public void markerMoved(TimeBarMarker marker, JaretDate oldDate, JaretDate currentDate) {
 			DateTime startTimeConverted = new DateTime(currentDate.getDate());
-			if (startTimeConverted.isAfter(data.endTime)) {
-				marker.setDate(new JaretDate(data.endTime.minusDays(1).toDate()));
+			if (startTimeConverted.isAfter(data.endTime.minusDays(data.minDaysSelectable))) {
+				marker.setDate(new JaretDate(data.endTime.minusDays(data.minDaysSelectable).toDate()));
 			}
 
 			DateTime desiredEndTime = startTimeConverted.plusDays(data.daysSelectable);
@@ -276,8 +327,8 @@ public class TimeLine extends JPanel implements ComponentListener {
 			DateTime endTimeConverted = new DateTime(currentDate.getDate());
 			DateTime desiredStartTime = endTimeConverted.minusDays(data.daysSelectable);
 
-			if (endTimeConverted.isBefore(data.startTime)) {
-				marker.setDate(new JaretDate(data.startTime.plusDays(1).toDate()));
+			if (endTimeConverted.isBefore(data.startTime.plusDays(data.minDaysSelectable))) {
+				marker.setDate(new JaretDate(data.startTime.plusDays(data.minDaysSelectable).toDate()));
 			}
 			if ((desiredStartTime.isAfter(data.startTime) || desiredStartTime.isBefore(data.startTime)) && data.moveRangeTogether){
 				data.startTime = desiredStartTime;

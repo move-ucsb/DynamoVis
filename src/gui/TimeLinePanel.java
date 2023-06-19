@@ -26,14 +26,28 @@ public class TimeLinePanel extends JPanel {
 	SketchData data;
     TimeLinePanel me;
 
-	int numMos =8;
+	int DEFAULT_MONTHS = 8;
+	int numMos =DEFAULT_MONTHS;
 	int numWeeks = 0;
 	int numDays = 0;
 
+	JSpinner MonthValue;
+	JSpinner WeeksValue;
+	JSpinner DaysValue;
+	Boolean timelinemoved = false;
+	Boolean spinnerMoved = false;
+
     public TimeLinePanel(DesktopPane father) {
-        parent = father;
+        parent = father; 
 		data = parent.data;
 		me = this;
+
+		int[] times = parent.timeLine.getMonthsWeeksDays();
+		if (times[0] < DEFAULT_MONTHS) {
+			numMos = times[0];
+			numWeeks = times[1];
+			numDays = times[2];
+		}
 
         setLayout(new MigLayout("insets 0", "[][][]", "[][][][]"));
 
@@ -52,7 +66,6 @@ public class TimeLinePanel extends JPanel {
 				} else {
 					data.timeRange = false;
 					myTimeLine.removeRangeMarkers();
-					myTimeLine.setTimeSelectableFromSpinners(numMos, numWeeks, numDays);
 				}
 			}
 		});
@@ -71,7 +84,6 @@ public class TimeLinePanel extends JPanel {
                     myTimeLine.setTimeSelectable();
 				} else {
 					data.moveRangeTogether = false;
-					myTimeLine.setTimeSelectableFromSpinners(numMos, numWeeks, numDays);
 				}
 			}
 		});
@@ -97,7 +109,7 @@ public class TimeLinePanel extends JPanel {
 		lblNumDays.setBackground(Color.LIGHT_GRAY);
 		this.add(lblNumDays, "cell 2 2,alignx left,aligny baseline, growx");
 
-		JSpinner MonthValue = new JSpinner();
+		MonthValue = new JSpinner();
 		MonthValue.setForeground(Color.BLACK);
 		MonthValue.setBackground(Color.LIGHT_GRAY);
 		MonthValue.setFont(new Font("Arial", Font.PLAIN, 9));
@@ -109,13 +121,17 @@ public class TimeLinePanel extends JPanel {
 			public void stateChanged(ChangeEvent evt) {
 				JSpinner spin = (JSpinner) evt.getSource();
 				numMos = (int) spin.getValue();
-				parent.timeLine.setTimeSelectableFromSpinners(numMos, numWeeks, numDays);
+				spinnerMoved = true;
+				if (!timelinemoved) {
+					parent.timeLine.setTimeSelectableFromSpinners(numMos, numWeeks, numDays);
+				}
+				spinnerMoved = false;
 			}
 		});
 		MonthValue.setValue(numMos);
 		this.add(MonthValue, "flowx,cell 0 3,split 3");
 
-        JSpinner WeeksValue = new JSpinner();
+        WeeksValue = new JSpinner();
 		WeeksValue.setForeground(Color.BLACK);
 		WeeksValue.setBackground(Color.LIGHT_GRAY);
 		WeeksValue.setFont(new Font("Arial", Font.PLAIN, 9));
@@ -126,13 +142,17 @@ public class TimeLinePanel extends JPanel {
 			public void stateChanged(ChangeEvent evt) {
 				JSpinner spin = (JSpinner) evt.getSource();
 				numWeeks = (int) spin.getValue();
-				parent.timeLine.setTimeSelectableFromSpinners(numMos, numWeeks, numDays);
+				spinnerMoved = true;
+				if (!timelinemoved) {
+					parent.timeLine.setTimeSelectableFromSpinners(numMos, numWeeks, numDays);
+				}
+				spinnerMoved = false;
 			}
 		});
 		WeeksValue.setValue(numWeeks);
 		this.add(WeeksValue, "flowx,cell 1 3");
 
-        JSpinner DaysValue = new JSpinner();
+        DaysValue = new JSpinner();
 		DaysValue.setForeground(Color.BLACK);
 		DaysValue.setBackground(Color.LIGHT_GRAY);
 		DaysValue.setFont(new Font("Arial", Font.PLAIN, 9));
@@ -143,7 +163,11 @@ public class TimeLinePanel extends JPanel {
 			public void stateChanged(ChangeEvent evt) {
 				JSpinner spin = (JSpinner) evt.getSource();
 				numDays = (int) spin.getValue();
-				parent.timeLine.setTimeSelectableFromSpinners(numMos, numWeeks, numDays);
+				spinnerMoved = true;
+				if (!timelinemoved) {
+					parent.timeLine.setTimeSelectableFromSpinners(numMos, numWeeks, numDays);
+				}
+				spinnerMoved = false;
 			}
 		});
 		DaysValue.setValue(numDays);

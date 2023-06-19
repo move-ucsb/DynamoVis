@@ -90,7 +90,8 @@ public class SketchData {
 	public int seek;
 	public int alphaMaxHours;
 	public int speed;
-	public int daysSelectable = 243;
+	public int daysSelectable = 244;
+	public int minDaysSelectable = 1;
 
 	public boolean falloff;
 	public boolean pause = true;
