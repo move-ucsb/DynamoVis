@@ -208,12 +208,16 @@ public class TimeLine extends JPanel implements ComponentListener {
 	}
 
 	public void setTimeSelectableFromSpinners(int months, int weeks, int days) {
-		int numDays = 0;
-		numDays+= (int)months*30.437; //avg num days in a month
-		numDays+= weeks*7;
-		numDays+=days;
-		data.daysSelectable = numDays;
-		moveEndRangeMarker(numDays);
+		if (data.timeRange) {
+			int numDays = 0;
+			numDays+= (int)months*30.437; //avg num days in a month
+			numDays+= weeks*7;
+			numDays+=days;
+			data.daysSelectable = numDays;
+			if (tbv.getMarkers().size() > 1) {
+				moveEndRangeMarker(numDays);
+			}
+		}
 	}
 
 	public void updateTimeSpinners() {

@@ -62,6 +62,7 @@ public class TimeLinePanel extends JPanel {
 				JCheckBox cb = (JCheckBox) evt.getSource();
 				if (cb.isSelected()) {
 					data.timeRange = true;
+					myTimeLine.setTimeSelectableFromSpinners(numMos, numWeeks, numDays);
 					myTimeLine.addRangeMarkers();
 				} else {
 					data.timeRange = false;

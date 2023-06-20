@@ -49,7 +49,6 @@ import utils.Track;
 
 import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.events.EventDispatcher;
-import de.fhpotsdam.unfolding.utils.MapUtils;
 import de.fhpotsdam.unfolding.utils.ScreenPosition;
 
 
@@ -193,27 +192,21 @@ public class Box extends PApplet {
             //first need to find where the next wrap will begin if left or right map required
             //wrap point will be different for left and right maps
             ScreenPosition rightScreenWrap = starterMap.getScreenPosition(rightWrapPoint);
-            ScreenPosition leftScreenWrap = starterMap.getScreenPosition(leftWrapPoint);
             List<Location> editedLocs = cleanMiddleData(data.locations, leftMapNeeded); //this should account for both left and right
             float offset = 0;
             float mapWidth = cubeWidth;
             if (rightMapNeeded) {
                 mapWidth = rightScreenWrap.x;
             }
-            if (leftMapNeeded) {
-                starterMap.zoomAndPanToFit(editedLocs);
-                starterMap.zoomAndPanToFit(editedLocs); // sometimes the first attempt zooms too far and bugs out, so do it again
-                leftWrapPoint = new Location(extent[1], -180f);
-                leftScreenWrap = starterMap.getScreenPosition(leftWrapPoint); //everything is messed up bc thjis is wrong
-                offset = leftScreenWrap.x;
+            if (leftMapNeeded) { 
+                float totalDegWidth = (180-extent[0]) + (180+extent[2]);
+                offset= cubeWidth * ((180-extent[0])/totalDegWidth);
                 mapWidth = mapWidth-offset;
             }
             myMap = new UnfoldingMap(this, offset,0, mapWidth, cubeDepth, parent.sketch.map.mapDisplay.getMapProvider()); 
             myMap.zoomAndPanToFit(editedLocs);
             myMap.zoomAndPanToFit(editedLocs); // sometimes the first attempt zooms too far and bugs out, so do it again
-            ScreenPosition newleftScreenWrap = myMap.getScreenPosition(leftWrapPoint);
-            // extra maps
-            if(leftMapNeeded) leftMap = createWrappedMap(myMap, 1, newleftScreenWrap.x); 
+            if(leftMapNeeded) leftMap = createWrappedMap(myMap, 1, offset);
             if(rightMapNeeded) rightMap = createWrappedMap(myMap, 2, rightScreenWrap.x);
         } else {
             myMap = starterMap;
@@ -247,19 +240,17 @@ public class Box extends PApplet {
         }
 
         float[] initialExtent = data.getExtentInFloat();
-        if (maxNegLong == -1000 || maxPosLong == -1000 || rightMapNeeded) { //only pos or only neg values
-            return initialExtent; // should be the case for rightWrapping maps as well, even if there is a left wrap
+        if (maxNegLong == -1000 || maxPosLong == -1000 || (rightMapNeeded && !leftMapNeeded)) { //only pos or only neg values
+            return initialExtent;
         }
         float northMost = initialExtent[1];
         float southMost = initialExtent[3];
-        //diff situation if right wrapping/both wrapping vs left wrapping 
         return new float[] {minPosLong, northMost, maxNegLong, southMost};
     }
 
     /// extra map functions
 	// https://github.com/tillnagel/unfolding/commit/46d03cf6ebc6e01a35dc0aede0a02b428b9cf68d
 	public UnfoldingMap createWrappedMap(UnfoldingMap mainMap, int id, float offset) {
-		// float x = id==1 ? -cubeWidth : cubeWidth;
         UnfoldingMap wrappedMap = new UnfoldingMap(this, Integer.toString(id), 0, 0, offset, cubeDepth, false, false, parent.sketch.map.mapDisplay.getMapProvider());
         if (id == 2) {
             wrappedMap = new UnfoldingMap(this, Integer.toString(id), 0, 0, cubeWidth-offset, cubeDepth, false, false, parent.sketch.map.mapDisplay.getMapProvider());
@@ -326,7 +317,7 @@ public class Box extends PApplet {
 
                         // extent minx, maxy, maxx, miny
                         float[] extent = data.getExtentInFloat();
-                        if (leftMapNeeded && !rightMapNeeded) {
+                        if (leftMapNeeded) {
                             mx = getLeftWrappedXScreenLoc(pos.y, cubeWidth/2, -cubeWidth/2);
                         } else {
                             mx = map(pos.y, extent[0], extent[2], -cubeWidth/2, cubeWidth/2);
@@ -356,8 +347,7 @@ public class Box extends PApplet {
 
                         // extent minx, maxy, maxx, miny
                         float[] extent = data.getExtentInFloat();
-                        if (leftMapNeeded && !rightMapNeeded) {
-                            // System.out.println("pos.y: "+ pos.y);
+                        if (leftMapNeeded) {
                             mx = getLeftWrappedXScreenLoc(pos.y, cubeWidth/2, -cubeWidth/2);
                         } else {
                             mx = map(pos.y, extent[0], extent[2], -cubeWidth/2, cubeWidth/2);
@@ -426,7 +416,11 @@ public class Box extends PApplet {
 
                         // extent minx, maxy, maxx, miny
                         float[] extent = data.getExtentInFloat();
-                        mx = map(pos.y, extent[0], extent[2], -cubeWidth/2, cubeWidth/2);
+                        if (leftMapNeeded) {
+                            mx = getLeftWrappedXScreenLoc(pos.y, cubeWidth/2, -cubeWidth/2);
+                        } else {
+                            mx = map(pos.y, extent[0], extent[2], -cubeWidth/2, cubeWidth/2);
+                        }
                         my = map(pos.x, extent[3], extent[1], cubeDepth/2, -cubeDepth/2);
                         float mheight = getPointHeightBasedOnTime(markerTime);
 
@@ -589,7 +583,7 @@ public class Box extends PApplet {
         if (first) {
             for(int i=0; i<= steps_depth; i++){
                 PVector point = PVector.add(corners[2], PVector.mult(inc, i));
-                if (leftMapNeeded && !rightMapNeeded) {
+                if (leftMapNeeded) {
                     float xLoc = getLeftWrappedXLabel(point.x, corners[2].x, corners[1].x);
                     label = String.format("%.2f", xLoc);
                 } else {
