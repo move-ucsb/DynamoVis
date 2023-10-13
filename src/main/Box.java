@@ -771,6 +771,9 @@ public class Box extends PApplet {
                     data.labelDay = false;
                     data.labelMonth = true;
                 }
+            } else {
+                data.labelDay = false;
+                data.labelMonth = false;
             }
             if(data.labelMonth) {
                 textSize(16);
