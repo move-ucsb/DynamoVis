@@ -533,7 +533,7 @@ public class Box extends PApplet {
             if(rightMapNeeded) rightMap.draw();
         }
         catch(Exception e) {
-            System.out.println("map error: "+ e);
+            // System.out.println("map error: "+ e);
         }
         popMatrix();
     }

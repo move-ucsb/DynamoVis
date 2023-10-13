@@ -713,7 +713,6 @@ public class DesktopPane extends JFrame implements ActionListener {
 	public void openSTC() {
 		if(box == null)	 setupSpaceTimeCubeSketch();
 		box.setVisible(true);
-		cp.add(timeBoxControlPanel, "cell 0 15,grow");
 		revalidate();
 		controlContainer.pack();
 		stc = true;
