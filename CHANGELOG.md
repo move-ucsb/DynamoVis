@@ -2,6 +2,14 @@
 
 ### Project Name: `DynamoVis`
 
+##### `1.0.2` - 2023/10/27
+- Updating to work on Java 17, which is the latest Java version supported by Processing, as well as fixing some Mac specific issues. Tested on M1 Mac on macOS 14.0. 
+- Processing issue which occurs on Mac with later updates was addressed (see https://github.com/benfry/processing4/issues/544). 
+- Also removed unnecessary Mac specific fullscreen code, which sometimes causes issues with later Java versions. 
+
+##### `1.0.1` - 2023/05/25
+- Updated DesktopPane to call on java.awt.Taskbar module, which is supported by later versions of Java, rather than com.apple.eawt, which is no longer supported
+
 ##### `1.0` - 2021/08/01
 - Renamed MacOS menubar title to "DynamoVis"
 - Renamed "Configure Animation" to "Input Data and Animation Configuration"
