@@ -31,6 +31,8 @@ import utils.PointRecord;
 import utils.Track;
 
 import com.jogamp.nativewindow.WindowClosingProtocol.WindowClosingMode;
+import com.jogamp.opengl.GLProfile;
+
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 import org.joda.time.Minutes;
@@ -105,6 +107,7 @@ public class Sketch extends PApplet  {
 	}
 	// setup is replaced by settings in Processing 3
 	public void settings() {
+		GLProfile.initSingleton();
 		size(w, h, P3D);
 
 		// Set window icon

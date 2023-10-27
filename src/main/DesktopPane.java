@@ -332,7 +332,6 @@ public class DesktopPane extends JFrame implements ActionListener {
 	}
 
 	public void newData(String path, String file, String title, Period period, Dimension dimension) {
-
 		if (!startup) {
 			wl.saveLocations();
 			getContentPane().removeAll();
@@ -650,18 +649,18 @@ public class DesktopPane extends JFrame implements ActionListener {
 		System.exit(0);
 	}
 
-	public static void enableFullScreenMode(Window window) {
-		String className = "com.apple.eawt.FullScreenUtilities";
-		String methodName = "setWindowCanFullScreen";
-		try {
-			Class<?> clazz = Class.forName(className);
-			Method method = clazz.getMethod(methodName, new Class<?>[] { Window.class, boolean.class });
-			method.invoke(null, window, true);
-		} catch (Throwable t) {
-			System.err.println("Can't Full Screen");
-			t.printStackTrace();
-		}
-	}
+	// public static void enableFullScreenMode(Window window) {
+	// 	String className = "com.apple.eawt.FullScreenUtilities";
+	// 	String methodName = "setWindowCanFullScreen";
+	// 	try {
+	// 		Class<?> clazz = Class.forName(className);
+	// 		Method method = clazz.getMethod(methodName, new Class<?>[] { Window.class, boolean.class });
+	// 		method.invoke(null, window, true);
+	// 	} catch (Throwable t) {
+	// 		System.err.println("Can't Full Screen");
+	// 		t.printStackTrace();
+	// 	}
+	// }
 
 	public static boolean isMacOSX() {
 		return System.getProperty("os.name").indexOf("Mac OS X") >= 0;
@@ -730,9 +729,9 @@ public class DesktopPane extends JFrame implements ActionListener {
 				}
 				JFrame.setDefaultLookAndFeelDecorated(true);
 				DesktopPane frame = new DesktopPane();
-				if (isMacOSX()) {
-					enableFullScreenMode(frame);
-				}
+				// if (isMacOSX()) {
+				// 	enableFullScreenMode(frame);
+				// }
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				frame.setVisible(true);
 			}
