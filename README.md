@@ -21,18 +21,18 @@
 </figure>
 
 ## Usage
-0. Make sure to have [Java 15 installed](https://www.oracle.com/java/technologies/javase/jdk15-archive-downloads.html) and set up in your system or user PATH.
-   - To check Java version, start Terminal and type `java -version`. The version listed should be 15 or higher. 
-2. Download the latest release (`DynamoVis-1.0.zip`) [here](https://github.com/move-ucsb/DynamoVis/releases).
+0. Make sure to have [Java 17 installed](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html) and set up in your system or user PATH.
+   - To check Java version, start Terminal and type `java -version`. The version listed should be 17. 
+2. Download the latest release (`DynamoVis-1.0.2.zip`) [here](https://github.com/move-ucsb/DynamoVis/releases).
 3. Unzip the folder anywhere on your machine. 
-4. Double-click on `DynamoVis-1.0.jar`
+4. Double-click on `DynamoVis.jar`
    - If this doesn't do anything:
      - (Windows) Double-click on `run_windows.bat`
      - (macOS) Start Terminal, type `cd ` (with a white space). Drag and drop the DynamoVis folder on the terminal window and press enter. Type `./run_unix.sh` or `bash run_unix.sh`and press enter. 
 
 5. If your system shows a security pop up from an unidentified developer, it is safe to ignore it.
    - (Windows) On the security pop up `More info -> Run anyway`.
-   - (macOS) Click `OK` on the security pop up to close it. Then go into your `System Preferences > Security & Privacy` and then click `Open Anyway` next to the message that `DynamoVis-1.0.jar` was blocked.
+   - (macOS) Click `OK` on the security pop up to close it. Then go into your `System Preferences > Security & Privacy` and then click `Open Anyway` next to the message that `DynamoVis.jar` was blocked.
 
 6. The DynamoVis software will open with the initial _Input Data and Animation Configuration_ and _Status_ windows.
 
@@ -40,7 +40,7 @@
 Alternatively, you can also run the jar file from Terminal using below command in extracted folder:
  
 ```shell
- java -jar DynamoVis-1.0.jar
+ java -jar DynamoVis.jar
 ```
 
 See 'Compile from source' section below for notes on compiling the software from scratch. 
@@ -129,6 +129,7 @@ If you'd like to clone the repository and compile from the source, make sure to 
 w/ Java 15.0.2
 
 ## List of developers
+- Jenni Hutson
 - Mert Toka
 - Glenn Xavier
 - Wing Yi (Pinki) Wong
