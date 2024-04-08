@@ -405,6 +405,7 @@ public class DataPanel extends JPanel implements ActionListener {
 		animationSize.addItem(new Dimension(1366, 768));
 		animationSize.addItem(new Dimension(1280, 720));
 		animationSize.addItem(new Dimension(1024, 576));
+		animationSize.addItem(new Dimension(890, 720));
 		animationSize.setSelectedIndex(3);
 
 		lblSize = new JLabel("Size");

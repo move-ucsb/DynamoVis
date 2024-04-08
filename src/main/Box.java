@@ -212,6 +212,12 @@ public class Box extends PApplet {
             myMap = starterMap;
         }
 
+        YearMonth startYearMonth = YearMonth.of(data.startTime.getYear(), data.startTime.getMonthOfYear());
+        YearMonth endYearMonth = YearMonth.of(data.endTime.getYear(), data.endTime.getMonthOfYear());
+        int totalMonthsBetween = 1+(int)startYearMonth.until(endYearMonth, ChronoUnit.MONTHS);
+        if (this.displayHeight/totalMonthsBetween >= 100) {
+            cubeHeight = this.displayHeight/totalMonthsBetween;
+        }
     }
 
     public float[] getMinimumBoundingBox(List<Location> locations) {

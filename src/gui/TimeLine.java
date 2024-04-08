@@ -32,6 +32,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.time.YearMonth;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -181,6 +183,12 @@ public class TimeLine extends JPanel implements ComponentListener {
 			if (data.daysSelectable != Days.daysBetween(rangeStart, rangeEnd).getDays()) {
 				data.daysSelectable = Days.daysBetween(rangeStart, rangeEnd).getDays();
 				updateTimeSpinners();
+			}
+			YearMonth startYearMonth = YearMonth.of(data.startTime.getYear(), data.startTime.getMonthOfYear());
+        	YearMonth endYearMonth = YearMonth.of(data.endTime.getYear(), data.endTime.getMonthOfYear());
+        	int totalMonthsBetween = 1+(int)startYearMonth.until(endYearMonth, ChronoUnit.MONTHS);
+			if (parent.box.displayHeight/totalMonthsBetween >= 100) {
+				parent.box.cubeHeight = parent.box.displayHeight/totalMonthsBetween;
 			}
 		} 
 	}
