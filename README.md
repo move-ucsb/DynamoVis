@@ -20,7 +20,10 @@
      <figcaption>- <i>An animation of the user interface using Galapagos Albatross movement data with various basemaps and visualization parameters.</i></figcaption>
 </figure>
 
-## Usage
+## Dynamovis Web
+**Dynamovis Web** is now available in Beta version. Please visit Dynamovis Web here : https://dynamovis.geog.ucsb.edu/
+
+## Usage Dynamovis Desktop
 0. Make sure to have [Java 17 installed](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html) and set up in your system or user PATH.
    - To check Java version, start Terminal and type `java -version`. The version listed should be 17. 
 2. Download the latest release (`DynamoVis-1.0.2.zip`) [here](https://github.com/move-ucsb/DynamoVis/releases).
